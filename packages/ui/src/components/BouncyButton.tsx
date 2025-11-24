@@ -1,11 +1,13 @@
 "use client";
 
+import { ReactNode } from "react";
 import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "../lib/utils";
 
-interface BouncyButtonProps extends HTMLMotionProps<"button"> {
+interface BouncyButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
     variant?: "primary" | "secondary" | "accent" | "outline";
     size?: "sm" | "md" | "lg";
+    children: ReactNode;
 }
 
 export const BouncyButton = ({
