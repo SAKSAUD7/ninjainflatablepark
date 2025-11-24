@@ -59,18 +59,29 @@ export default function FAQ() {
     ];
 
     return (
-        <main className="bg-background-light min-h-screen pt-24 pb-20">
+        <main className="bg-background min-h-screen pt-24 pb-20">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
+                <div className="relative text-center mb-16 py-12 px-6 rounded-3xl overflow-hidden">
+                    <div className="absolute inset-0">
+                        <img
+                            src="/images/uploads/img-7.jpg"
+                            alt="FAQ"
+                            className="w-full h-full object-cover opacity-20"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-background/80 to-background" />
+                    </div>
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
+                        className="relative z-10"
                     >
-                        <h1 className="text-5xl md:text-6xl font-display font-black text-primary mb-6">
-                            Frequently Asked Questions
+                        <h1 className="text-5xl md:text-6xl font-display font-black mb-6">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
+                                Frequently Asked Questions
+                            </span>
                         </h1>
-                        <p className="text-xl text-gray-600 leading-relaxed">
+                        <p className="text-xl text-white/70 leading-relaxed">
                             Got questions? We've got answers! Find everything you need to know about visiting Ninja Park.
                         </p>
                     </motion.div>
@@ -84,13 +95,13 @@ export default function FAQ() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.05 }}
-                            className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-gray-100"
+                            className="bg-surface-800/50 backdrop-blur-md rounded-2xl shadow-md hover:shadow-lg transition-all overflow-hidden border border-white/10 hover:border-primary/30"
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                                className="w-full px-8 py-6 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                                className="w-full px-8 py-6 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
                             >
-                                <span className="text-lg font-bold text-gray-900 pr-8">{faq.question}</span>
+                                <span className="text-lg font-bold text-white pr-8">{faq.question}</span>
                                 <ChevronDown
                                     className={`w-6 h-6 text-primary flex-shrink-0 transition-transform duration-300 ${openIndex === index ? "transform rotate-180" : ""
                                         }`}
@@ -106,7 +117,7 @@ export default function FAQ() {
                                 transition={{ duration: 0.3 }}
                                 className="overflow-hidden"
                             >
-                                <div className="px-8 pb-6 text-gray-600 leading-relaxed">
+                                <div className="px-8 pb-6 text-white/70 leading-relaxed">
                                     {faq.answer}
                                 </div>
                             </motion.div>
@@ -119,24 +130,24 @@ export default function FAQ() {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="mt-16 text-center bg-white rounded-[3rem] p-12 shadow-xl border border-gray-100"
+                    className="mt-16 text-center bg-surface-800/50 backdrop-blur-md rounded-[3rem] p-12 shadow-xl border border-primary/20"
                 >
-                    <h2 className="text-3xl font-display font-black text-gray-900 mb-4">
+                    <h2 className="text-3xl font-display font-black text-white mb-4">
                         Still Have Questions?
                     </h2>
-                    <p className="text-lg text-gray-600 mb-8">
+                    <p className="text-lg text-white/70 mb-8">
                         Our friendly team is here to help! Give us a call or send us a message.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <a
                             href="/contact"
-                            className="inline-block bg-primary hover:bg-primary-dark text-white font-bold py-4 px-10 rounded-full shadow-lg transition-colors uppercase tracking-wide"
+                            className="inline-block bg-primary hover:bg-primary/90 text-black font-bold py-4 px-10 rounded-full shadow-lg transition-colors uppercase tracking-wide"
                         >
                             Contact Us
                         </a>
                         <a
                             href="tel:+919845471611"
-                            className="inline-block bg-white border-2 border-gray-200 hover:border-primary text-gray-900 hover:text-primary font-bold py-4 px-10 rounded-full transition-colors uppercase tracking-wide"
+                            className="inline-block bg-surface-700 border-2 border-white/20 hover:border-primary text-white hover:text-primary font-bold py-4 px-10 rounded-full transition-colors uppercase tracking-wide"
                         >
                             Call +91 98454 71611
                         </a>

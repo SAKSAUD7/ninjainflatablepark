@@ -52,8 +52,16 @@ export default function ContactPage() {
     return (
         <main className="min-h-screen bg-background text-white">
             {/* Header */}
-            <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-background-dark to-background">
-                <div className="max-w-7xl mx-auto text-center">
+            <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+                <div className="absolute inset-0">
+                    <img
+                        src="/park-group-fun.jpg"
+                        alt="Contact Us"
+                        className="w-full h-full object-cover opacity-30"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-background-dark/90 via-background/80 to-background" />
+                </div>
+                <div className="max-w-7xl mx-auto text-center relative z-10">
                     <ScrollReveal animation="fade">
                         <span className="inline-block py-1 px-3 rounded-full bg-primary text-black font-bold text-sm mb-6 tracking-wider uppercase">
                             <MessageCircle className="w-4 h-4 inline mr-1" />
