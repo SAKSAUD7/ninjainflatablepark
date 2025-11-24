@@ -2,54 +2,58 @@
 
 import { ScrollReveal, SectionDivider, BouncyButton } from "@repo/ui";
 import { motion } from "framer-motion";
-import { Heart, Shield, Users, Zap, Target, Award, Sparkles } from "lucide-react";
+import { Heart, Shield, Users, Zap, Target, Award, Sparkles, Calendar, HelpCircle, Instagram, Play } from "lucide-react";
 import Link from "next/link";
 
 export default function AboutPage() {
     const values = [
         {
-            icon: <Heart className="w-8 h-8" />,
-            title: "Safety First",
-            description: "Your safety is our top priority. All equipment is regularly inspected and maintained.",
-            color: "accent",
-        },
-        {
             icon: <Users className="w-8 h-8" />,
-            title: "Family Fun",
-            description: "Creating memorable experiences for families and friends of all ages.",
-            color: "primary",
-        },
-        {
-            icon: <Zap className="w-8 h-8" />,
-            title: "Pure Energy",
-            description: "High-energy entertainment that keeps you bouncing and smiling all day long.",
+            title: "Fun First",
+            description: "Every decision we make is centered around creating maximum fun and joy for our guests.",
             color: "secondary",
         },
         {
             icon: <Shield className="w-8 h-8" />,
-            title: "Trained Staff",
-            description: "Our team is professionally trained to ensure a safe and enjoyable experience.",
+            title: "Safety Always",
+            description: "Your safety is our top priority. Trained staff, quality equipment, and strict protocols.",
             color: "primary",
         },
         {
-            icon: <Target className="w-8 h-8" />,
-            title: "Innovation",
-            description: "Constantly updating our attractions to bring you the latest in inflatable fun.",
+            icon: <Heart className="w-8 h-8" />,
+            title: "Inclusive",
+            description: "Activities for all ages and abilities. Everyone deserves to feel like a ninja!",
             color: "accent",
         },
         {
             icon: <Award className="w-8 h-8" />,
             title: "Excellence",
-            description: "Committed to delivering world-class entertainment and customer service.",
+            description: "We strive for excellence in every aspect, from cleanliness to customer service.",
             color: "secondary",
         },
     ];
 
     const stats = [
-        { value: "20,000+", label: "Square Feet", icon: <Zap className="w-6 h-6" /> },
-        { value: "50,000+", label: "Happy Visitors", icon: <Users className="w-6 h-6" /> },
-        { value: "11+", label: "Attractions", icon: <Sparkles className="w-6 h-6" /> },
-        { value: "100%", label: "Fun Guaranteed", icon: <Heart className="w-6 h-6" /> },
+        { value: "20,000+", label: "Sq Ft of Fun", icon: <Zap className="w-6 h-6" /> },
+        { value: "50,000+", label: "Happy Ninjas", icon: <Users className="w-6 h-6" /> },
+        { value: "11+", label: "Unique Zones", icon: <Sparkles className="w-6 h-6" /> },
+        { value: "100%", label: "Safety Record", icon: <Shield className="w-6 h-6" /> },
+    ];
+
+    const timeline = [
+        { year: "2020", title: "The Dream Begins", desc: "Conceptualized India's biggest inflatable adventure park" },
+        { year: "2021", title: "Construction Starts", desc: "Began building our 20,000 sq ft facility with state-of-the-art equipment" },
+        { year: "2022", title: "Grand Opening", desc: "Opened doors to thousands of excited ninjas!" },
+        { year: "2023", title: "50K+ Happy Visitors", desc: "Celebrated serving over 50,000 happy customers" },
+        { year: "2024", title: "Expansion & Growth", desc: "Added new zones and became India's #1 inflatable park" },
+    ];
+
+    const faqs = [
+        { q: "What age groups can enjoy Ninja Park?", a: "We have zones for everyone! From a dedicated toddler area to challenging courses for teens and adults. It's truly All Ages, All Fun." },
+        { q: "Do I need to book in advance?", a: "We highly recommend booking online to secure your slot, especially on weekends. Walk-ins are subject to availability." },
+        { q: "What should I wear?", a: "Comfortable athletic wear is best. Socks are MANDATORY for hygiene and safety. We sell grip socks at the counter if you need them." },
+        { q: "Is the park safe for children?", a: "Absolutely! We have a 100% safety record. Our equipment is top-tier, and trained marshals supervise all zones." },
+        { q: "Can I host a birthday party here?", a: "Yes! We specialize in unforgettable birthday bashes. Check out our Parties page for packages." },
     ];
 
     return (
@@ -59,17 +63,17 @@ export default function AboutPage() {
                 <div className="max-w-7xl mx-auto text-center">
                     <ScrollReveal animation="fade">
                         <span className="inline-block py-1 px-3 rounded-full bg-secondary text-black font-bold text-sm mb-6 tracking-wider uppercase">
-                            Our Story
+                            About Us
                         </span>
                     </ScrollReveal>
                     <ScrollReveal animation="slideUp" delay={0.2}>
-                        <h1 className="text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
+                        <h1 className="text-5xl md:text-7xl font-display font-black mb-6 leading-tight">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
-                                About Us
+                                India's Biggest Inflatable Adventure Park
                             </span>
                         </h1>
                         <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto">
-                            India's biggest inflatable park, bringing joy and excitement to thousands of families!
+                            Experience the thrill of jumping, sliding, and bouncing in a safe and fun environment.
                         </p>
                     </ScrollReveal>
                 </div>
@@ -89,7 +93,7 @@ export default function AboutPage() {
                                     <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary/20 text-primary mb-4">
                                         {stat.icon}
                                     </div>
-                                    <div className="text-5xl font-display font-black text-white mb-2">
+                                    <div className="text-4xl md:text-5xl font-display font-black text-white mb-2">
                                         {stat.value}
                                     </div>
                                     <div className="text-white/60">{stat.label}</div>
@@ -100,7 +104,7 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Mission */}
+            {/* Our Story */}
             <section className="relative py-20 px-4 bg-background-light">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -108,39 +112,29 @@ export default function AboutPage() {
                             <div>
                                 <h2 className="text-5xl md:text-6xl font-display font-black mb-6">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">
-                                        Our Mission
+                                        Our Story
                                     </span>
                                 </h2>
                                 <p className="text-xl text-white/80 mb-6 leading-relaxed">
-                                    Welcome to Ninja Inflatable – India’s Biggest Inflatable Park! Our mission is to bring epic fun, fitness, and excitement under one roof. We are a destination where friends, families, and thrill-seekers can laugh, compete, and make unforgettable memories.
+                                    Ninja Inflatable Park was born from a simple idea: create a space where people of all ages can unleash their inner ninja, challenge themselves, and have an absolute blast doing it.
+                                </p>
+                                <p className="text-xl text-white/80 mb-6 leading-relaxed">
+                                    Spanning over 20,000 square feet, we've created India's largest inflatable adventure park with 11+ unique zones designed to thrill, challenge, and entertain.
                                 </p>
                                 <p className="text-xl text-white/80 leading-relaxed">
-                                    We cater to all ages – "All Ages, All Fun". Whether you're a toddler, teen, or adult, our safe and supervised environment ensures everyone can unleash their inner ninja. From birthdays to corporate outings, every step, jump, and bounce is an adventure.
+                                    Whether you're looking for a fun family outing, an adrenaline-pumping workout, or the perfect venue for your next celebration, Ninja Park is your destination for unforgettable memories.
                                 </p>
                             </div>
                         </ScrollReveal>
 
                         <ScrollReveal animation="slideRight">
-                            <div className="relative rounded-3xl overflow-hidden">
+                            <div className="relative rounded-3xl overflow-hidden aspect-square">
                                 <img
                                     src="/park-slides-action.jpg"
-                                    alt="Kids enjoying the park"
+                                    alt="Kids having fun at Ninja Inflatable Park"
                                     className="w-full h-full object-cover rounded-3xl"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent" />
-                            </div>
-                        </ScrollReveal>
-
-                        <ScrollReveal animation="slideRight">
-                            <div className="relative">
-                                <div className="aspect-square rounded-3xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-md border border-primary/30 flex items-center justify-center">
-                                    <div className="text-center p-8">
-                                        <Sparkles className="w-24 h-24 text-primary mx-auto mb-4" />
-                                        <p className="text-2xl font-display font-bold text-white">
-                                            Where Fun Meets Adventure
-                                        </p>
-                                    </div>
-                                </div>
                             </div>
                         </ScrollReveal>
                     </div>
@@ -148,8 +142,44 @@ export default function AboutPage() {
                 <SectionDivider position="bottom" variant="wave" color="fill-background" />
             </section>
 
-            {/* Values */}
+            {/* Our Journey (Timeline) */}
             <section className="py-20 px-4 bg-background">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal animation="fade" className="text-center mb-16">
+                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
+                                Our Journey
+                            </span>
+                        </h2>
+                    </ScrollReveal>
+
+                    <div className="relative">
+                        {/* Line */}
+                        <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-white/10 hidden md:block" />
+
+                        <div className="space-y-12">
+                            {timeline.map((item, index) => (
+                                <ScrollReveal key={index} animation={index % 2 === 0 ? "slideLeft" : "slideRight"}>
+                                    <div className={`flex flex-col md:flex-row items-center ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
+                                        <div className="flex-1 w-full md:w-1/2" />
+                                        <div className="z-10 flex items-center justify-center w-12 h-12 rounded-full bg-accent text-black font-bold border-4 border-background shrink-0 my-4 md:my-0">
+                                            <Calendar className="w-5 h-5" />
+                                        </div>
+                                        <div className={`flex-1 w-full md:w-1/2 p-6 ${index % 2 === 0 ? "md:text-right md:pr-12" : "md:pl-12"}`}>
+                                            <div className="text-accent font-bold text-xl mb-2">{item.year}</div>
+                                            <h3 className="text-2xl font-display font-bold text-white mb-2">{item.title}</h3>
+                                            <p className="text-white/70">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                </ScrollReveal>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Values */}
+            <section className="py-20 px-4 bg-background-light">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade" className="text-center mb-16">
                         <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
@@ -157,17 +187,14 @@ export default function AboutPage() {
                                 Our Values
                             </span>
                         </h2>
-                        <p className="text-xl text-white/70 max-w-2xl mx-auto">
-                            The principles that guide everything we do
-                        </p>
                     </ScrollReveal>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {values.map((value, index) => (
                             <ScrollReveal key={index} animation="slideUp" delay={index * 0.1}>
                                 <motion.div
                                     whileHover={{ scale: 1.05, y: -5 }}
-                                    className={`p-8 bg-surface-800/50 backdrop-blur-md rounded-3xl border-2 border-${value.color}/30 hover:border-${value.color} transition-all`}
+                                    className={`p-8 bg-surface-800/50 backdrop-blur-md rounded-3xl border-2 border-${value.color}/30 hover:border-${value.color} transition-all h-full`}
                                 >
                                     <div className={`w-14 h-14 rounded-full bg-${value.color}/20 flex items-center justify-center mb-4 text-${value.color}`}>
                                         {value.icon}
@@ -185,75 +212,88 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* Instagram Influencers Section */}
-            <section className="relative py-20 px-4 bg-background-light">
+            {/* People Reviews Section */}
+            <section className="relative py-20 px-4 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade" className="text-center mb-16">
                         <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
-                                As Seen On Instagram
+                                People Reviews on Ninja
                             </span>
                         </h2>
                         <p className="text-xl text-white/70 max-w-2xl mx-auto mb-8">
-                            Join the hype! Tag us <span className="text-primary font-bold">@ninjainflatablepark</span> to be featured.
+                            Check out these amazing reviews from our visitors!
                         </p>
                     </ScrollReveal>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="flex flex-wrap justify-center gap-6">
                         {[
-                            { user: "@bangalore_diaries", img: "/images/gallery-1.jpg", likes: "1,245", caption: "Best weekend ever! 🤩 #NinjaPark" },
-                            { user: "@fit_fam_india", img: "/images/gallery-2.jpg", likes: "892", caption: "Workout + Fun = Perfect Combo 💪" },
-                            { user: "@mom_life_blr", img: "/images/gallery-3.jpg", likes: "2,103", caption: "Kids slept so well after this! 😂" },
-                            { user: "@adventure_junkie", img: "/images/gallery-1.jpg", likes: "1,567", caption: "This obstacle course is insane! 🔥" },
-                        ].map((post, index) => (
-                            <ScrollReveal key={index} animation="scale" delay={index * 0.1}>
-                                <motion.div
-                                    whileHover={{ y: -10 }}
-                                    className="bg-white rounded-2xl overflow-hidden shadow-xl group"
-                                >
-                                    {/* Header */}
-                                    <div className="p-3 flex items-center space-x-3 bg-white">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 p-[2px]">
-                                            <div className="w-full h-full rounded-full bg-white" />
-                                        </div>
-                                        <span className="font-bold text-sm text-black">{post.user}</span>
-                                    </div>
-
-                                    {/* Image */}
-                                    <div className="relative aspect-square overflow-hidden">
+                            { url: "https://www.instagram.com/reel/DRSCTjdAZB8/", img: "/images/instagram/reel-1.jpg" },
+                            { url: "https://www.instagram.com/reel/DRWzwHdAVd4/", img: "/images/instagram/reel-2.jpg" },
+                            { url: "https://www.instagram.com/reel/DRYjEb_Aa6X/", img: "/images/instagram/reel-1.jpg" },
+                            { url: "https://www.instagram.com/reel/DRbC8O7EzFU/", img: "/images/instagram/reel-4.jpg" },
+                            { url: "https://www.instagram.com/reel/DRXEmvtEhMX/", img: "/images/instagram/reel-5.jpg" }
+                        ].map((item, index) => (
+                            <ScrollReveal key={index} animation="scale" delay={index * 0.1} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="block group">
+                                    <motion.div
+                                        whileHover={{ y: -10 }}
+                                        className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[9/16]"
+                                    >
                                         <img
-                                            src={post.img}
-                                            alt="Instagram Post"
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            src={item.img}
+                                            alt="Instagram Reel"
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-60"
                                         />
-                                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-4 text-white font-bold">
-                                            <span className="flex items-center"><Heart className="w-6 h-6 fill-white mr-2" /> {post.likes}</span>
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                                <Play className="w-8 h-8 text-white fill-white ml-1" />
+                                            </div>
+                                            <h3 className="text-2xl font-display font-bold text-white mb-2">Watch Review</h3>
+                                            <div className="flex items-center text-white/80 text-sm">
+                                                <Instagram className="w-4 h-4 mr-2" />
+                                                <span>View on Instagram</span>
+                                            </div>
                                         </div>
-                                    </div>
-
-                                    {/* Footer */}
-                                    <div className="p-4 bg-white">
-                                        <div className="flex space-x-3 mb-2">
-                                            <Heart className="w-6 h-6 text-black hover:text-red-500 transition-colors cursor-pointer" />
-                                            <div className="w-6 h-6 rounded-full border-2 border-black -rotate-12" /> {/* Comment icon mock */}
-                                            <div className="w-6 h-6 border-l-2 border-b-2 border-black rotate-45 ml-auto" /> {/* Share icon mock */}
-                                        </div>
-                                        <p className="text-sm text-black">
-                                            <span className="font-bold mr-2">{post.user}</span>
-                                            {post.caption}
-                                        </p>
-                                        <p className="text-xs text-gray-400 mt-2 uppercase">2 DAYS AGO</p>
-                                    </div>
-                                </motion.div>
+                                    </motion.div>
+                                </a>
                             </ScrollReveal>
                         ))}
                     </div>
                 </div>
-                <SectionDivider position="bottom" variant="diagonal" color="fill-background" />
+            </section>
+
+            {/* FAQ Section */}
+            <section className="py-20 px-4 bg-background-light">
+                <div className="max-w-4xl mx-auto">
+                    <ScrollReveal animation="fade" className="text-center mb-16">
+                        <h2 className="text-5xl md:text-6xl font-display font-black mb-4">
+                            <span className="text-white">Frequently Asked Questions</span>
+                        </h2>
+                        <p className="text-xl text-white/70">Got questions? We've got answers!</p>
+                    </ScrollReveal>
+
+                    <div className="space-y-6">
+                        {faqs.map((faq, index) => (
+                            <ScrollReveal key={index} animation="slideUp" delay={index * 0.1}>
+                                <div className="bg-surface-800/50 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-primary/50 transition-colors">
+                                    <h3 className="text-xl font-bold text-white mb-3 flex items-start">
+                                        <HelpCircle className="w-6 h-6 text-primary mr-3 shrink-0 mt-1" />
+                                        {faq.q}
+                                    </h3>
+                                    <p className="text-white/70 ml-9 leading-relaxed">
+                                        {faq.a}
+                                    </p>
+                                </div>
+                            </ScrollReveal>
+                        ))}
+                    </div>
+                </div>
+                <SectionDivider position="bottom" variant="wave" color="fill-background" />
             </section>
 
             {/* CTA */}
-            <section className="relative py-32 px-4 bg-background-light">
+            <section className="relative py-32 px-4 bg-background">
                 <div className="max-w-4xl mx-auto text-center">
                     <ScrollReveal animation="scale">
                         <h2 className="text-5xl md:text-7xl font-display font-black mb-6">
