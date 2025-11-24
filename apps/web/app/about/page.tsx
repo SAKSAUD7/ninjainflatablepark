@@ -185,6 +185,73 @@ export default function AboutPage() {
                 </div>
             </section>
 
+            {/* Instagram Influencers Section */}
+            <section className="relative py-20 px-4 bg-background-light">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal animation="fade" className="text-center mb-16">
+                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
+                                As Seen On Instagram
+                            </span>
+                        </h2>
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto mb-8">
+                            Join the hype! Tag us <span className="text-primary font-bold">@ninjainflatablepark</span> to be featured.
+                        </p>
+                    </ScrollReveal>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            { user: "@bangalore_diaries", img: "/images/gallery-1.jpg", likes: "1,245", caption: "Best weekend ever! 🤩 #NinjaPark" },
+                            { user: "@fit_fam_india", img: "/images/gallery-2.jpg", likes: "892", caption: "Workout + Fun = Perfect Combo 💪" },
+                            { user: "@mom_life_blr", img: "/images/gallery-3.jpg", likes: "2,103", caption: "Kids slept so well after this! 😂" },
+                            { user: "@adventure_junkie", img: "/images/gallery-1.jpg", likes: "1,567", caption: "This obstacle course is insane! 🔥" },
+                        ].map((post, index) => (
+                            <ScrollReveal key={index} animation="scale" delay={index * 0.1}>
+                                <motion.div
+                                    whileHover={{ y: -10 }}
+                                    className="bg-white rounded-2xl overflow-hidden shadow-xl group"
+                                >
+                                    {/* Header */}
+                                    <div className="p-3 flex items-center space-x-3 bg-white">
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 p-[2px]">
+                                            <div className="w-full h-full rounded-full bg-white" />
+                                        </div>
+                                        <span className="font-bold text-sm text-black">{post.user}</span>
+                                    </div>
+
+                                    {/* Image */}
+                                    <div className="relative aspect-square overflow-hidden">
+                                        <img
+                                            src={post.img}
+                                            alt="Instagram Post"
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-4 text-white font-bold">
+                                            <span className="flex items-center"><Heart className="w-6 h-6 fill-white mr-2" /> {post.likes}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="p-4 bg-white">
+                                        <div className="flex space-x-3 mb-2">
+                                            <Heart className="w-6 h-6 text-black hover:text-red-500 transition-colors cursor-pointer" />
+                                            <div className="w-6 h-6 rounded-full border-2 border-black -rotate-12" /> {/* Comment icon mock */}
+                                            <div className="w-6 h-6 border-l-2 border-b-2 border-black rotate-45 ml-auto" /> {/* Share icon mock */}
+                                        </div>
+                                        <p className="text-sm text-black">
+                                            <span className="font-bold mr-2">{post.user}</span>
+                                            {post.caption}
+                                        </p>
+                                        <p className="text-xs text-gray-400 mt-2 uppercase">2 DAYS AGO</p>
+                                    </div>
+                                </motion.div>
+                            </ScrollReveal>
+                        ))}
+                    </div>
+                </div>
+                <SectionDivider position="bottom" variant="diagonal" color="fill-background" />
+            </section>
+
             {/* CTA */}
             <section className="relative py-32 px-4 bg-background-light">
                 <div className="max-w-4xl mx-auto text-center">
