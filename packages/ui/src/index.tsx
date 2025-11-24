@@ -1,7 +1,18 @@
+// Legacy Components (root level)
 export { Navbar } from "./Navbar";
 export { Footer } from "./Footer";
 export { Hero } from "./Hero";
 export { Button } from "./Button";
-export { AttractionCard } from "./AttractionCard";
 export { ActivityCard } from "./ActivityCard";
 export { BookingWizard } from "./BookingWizard";
+
+// New Wonderla-Style Components
+export { AnimatedHero } from "./components/AnimatedHero";
+export { AttractionCard } from "./components/AttractionCard";
+export { BouncyButton } from "./components/BouncyButton";
+export { ScrollReveal } from "./components/ScrollReveal";
+export { SectionDivider } from "./components/SectionDivider";
+export { VideoSection } from "./components/VideoSection";
+
+// Utilities
+export { cn } from "./lib/utils";

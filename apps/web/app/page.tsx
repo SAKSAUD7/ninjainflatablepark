@@ -1,322 +1,205 @@
 "use client";
 
-import { Hero } from "@repo/ui";
+import { AnimatedHero, ScrollReveal, BouncyButton, SectionDivider } from "@repo/ui";
 import { motion } from "framer-motion";
-import { ArrowRight, Star, Users, Shield, Zap, Calendar, Trophy, Heart } from "lucide-react";
+import { Zap, Shield, Users, Trophy, Star, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
-    const features = [
-        {
-            icon: <Zap className="w-8 h-8" />,
-            title: "20,000+ Sq Ft",
-            description: "Massive play area",
-            color: "from-yellow-400 to-orange-500"
-        },
-        {
-            icon: <Shield className="w-8 h-8" />,
-            title: "100% Safe",
-            description: "Trained staff & equipment",
-            color: "from-green-400 to-emerald-500"
-        },
-        {
-            icon: <Users className="w-8 h-8" />,
-            title: "All Ages",
-            description: "Fun for everyone",
-            color: "from-blue-400 to-cyan-500"
-        },
-        {
-            icon: <Trophy className="w-8 h-8" />,
-            title: "11+ Zones",
-            description: "Unique attractions",
-            color: "from-purple-400 to-pink-500"
-        },
-    ];
-
-    const attractions = [
-        {
-            title: "Ninja Obstacle Course",
-            description: "Race through our epic obstacle course with tunnels, barriers, and challenges!",
-            image: "/obstacle-course.jpg",
-            badge: "Most Popular"
-        },
-        {
-            title: "Giant Slides",
-            description: "Experience the thrill of our towering slides with multiple lanes for racing!",
-            image: "/giant-slides.jpg",
-            badge: "Thrilling"
-        },
-        {
-            title: "Wipe-Out Challenge",
-            description: "Can you survive the spinning arms? Last person standing wins!",
-            image: "/park-group-fun.jpg",
-            badge: "Action Packed"
-        },
+    const stats = [
+        { icon: <Zap className="w-8 h-8" />, value: "20,000+", label: "Sq Ft of Fun" },
+        { icon: <Users className="w-8 h-8" />, value: "50,000+", label: "Happy Jumpers" },
+        { icon: <Trophy className="w-8 h-8" />, value: "10+", label: "Attractions" },
+        { icon: <Shield className="w-8 h-8" />, value: "100%", label: "Safe & Secure" },
     ];
 
     const testimonials = [
-        {
-            name: "Priya Sharma",
-            role: "Parent",
-            content: "Best birthday party venue ever! The kids had an absolute blast and the staff was amazing.",
-            rating: 5
-        },
-        {
-            name: "Rahul Patel",
-            role: "Visitor",
-            content: "Such an incredible experience! Perfect for both kids and adults. Highly recommended!",
-            rating: 5
-        },
-        {
-            name: "Anjali Reddy",
-            role: "Event Organizer",
-            content: "Organized a corporate team building event here. Everyone loved it! Great facilities.",
-            rating: 5
-        },
+        { name: "Priya S.", text: "Best birthday party ever! The kids had an absolute blast!", rating: 5 },
+        { name: "Rahul M.", text: "Amazing experience. The ninja course is incredibly fun!", rating: 5 },
+        { name: "Anjali K.", text: "Clean, safe, and so much fun. Highly recommend!", rating: 5 },
     ];
 
     return (
-        <main className="bg-background">
-            <Hero />
+        <main className="bg-background text-white">
+            {/* Hero Section */}
+            <AnimatedHero />
 
-            {/* Features Section */}
-            <section className="section-padding bg-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-                <div className="container-custom relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-16"
-                    >
-                        <h2 className="section-title gradient-text">
-                            Why Choose Ninja Park?
-                        </h2>
-                        <p className="section-subtitle">
-                            India's premier inflatable adventure destination with world-class facilities
-                        </p>
-                    </motion.div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        {features.map((feature, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                whileHover={{ y: -10 }}
-                                className="card card-hover p-8 text-center group"
-                            >
-                                <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center text-white shadow-soft group-hover:scale-110 transition-transform`}>
-                                    {feature.icon}
-                                </div>
-                                <h3 className="text-xl font-bold text-neutral-800 mb-2">{feature.title}</h3>
-                                <p className="text-neutral-600 text-sm">{feature.description}</p>
-                            </motion.div>
-                        ))}
-                    </div>
+            {/* Stats Section */}
+            <section className="relative pt-20 pb-32 px-4 bg-background-light">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal animation="fade">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                            {stats.map((stat, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                    viewport={{ once: true }}
+                                    className="text-center"
+                                >
+                                    <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/20 text-primary">
+                                        {stat.icon}
+                                    </div>
+                                    <div className="text-4xl font-display font-black text-white mb-2">
+                                        {stat.value}
+                                    </div>
+                                    <div className="text-white/60">{stat.label}</div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </ScrollReveal>
                 </div>
+                <SectionDivider position="bottom" variant="wave" color="fill-background" />
             </section>
 
             {/* Featured Attractions */}
-            <section className="section-padding bg-gradient-to-b from-white to-neutral-50">
-                <div className="container-custom">
-                    <div className="flex justify-between items-end mb-12">
-                        <div>
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                            >
-                                <h2 className="section-title">
-                                    Featured <span className="gradient-text">Attractions</span>
-                                </h2>
-                                <p className="section-subtitle text-left">
-                                    Discover our most popular zones
-                                </p>
-                            </motion.div>
-                        </div>
-                        <a href="/attractions" className="hidden md:flex items-center text-primary font-bold hover:text-primary-dark transition-colors group">
-                            View All <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </a>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {attractions.map((attraction, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.15 }}
-                                whileHover={{ y: -10 }}
-                                className="card card-hover overflow-hidden group"
-                            >
-                                <div className="relative h-64 overflow-hidden">
-                                    <div className="absolute top-4 right-4 z-10">
-                                        <span className="badge badge-accent shadow-soft">
-                                            {attraction.badge}
-                                        </span>
-                                    </div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-[1]" />
-                                    <img
-                                        src={attraction.image}
-                                        alt={attraction.title}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                    />
-                                    <div className="absolute bottom-0 left-0 p-6 z-10">
-                                        <h3 className="text-2xl font-display font-bold text-white mb-2">
-                                            {attraction.title}
-                                        </h3>
-                                    </div>
-                                </div>
-                                <div className="p-6">
-                                    <p className="text-neutral-600 mb-4">{attraction.description}</p>
-                                    <button className="text-primary font-bold flex items-center group/btn">
-                                        Learn More
-                                        <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                    </button>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Testimonials */}
-            <section className="section-padding bg-primary text-white relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute inset-0" style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                    }} />
-                </div>
-
-                <div className="container-custom relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-16"
-                    >
-                        <h2 className="section-title text-white">
-                            What Our <span className="text-accent">Ninjas</span> Say
+            <section className="relative py-20 px-4 bg-background">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal animation="slideUp" className="text-center mb-16">
+                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
+                                Epic Attractions
+                            </span>
                         </h2>
-                        <p className="section-subtitle text-white/80">
-                            Real experiences from our happy visitors
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto mb-8">
+                            Step into India’s ultimate inflatable adventure! Packed with giant slides, wipe-out challenges, ninja obstacle courses, climbing walls, jumping balls, and more.
                         </p>
-                    </motion.div>
+                        <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto mb-8">
+                            {["Ninja Obstacle Course", "High Slides", "Wipe-Out Challenge", "Maze Adventure", "Giant Jumping Balls", "Balance Beam", "Dinosaur Guard", "Jelly Bead Zone", "Climbing Wall", "Wave Bed & Spider Wall"].map((item) => (
+                                <span key={item} className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-bold text-secondary">
+                                    {item}
+                                </span>
+                            ))}
+                        </div>
+                        <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 max-w-xl mx-auto">
+                            <p className="text-primary font-bold mb-1">⚠️ Risk Acknowledgement</p>
+                            <p className="text-sm text-white/80">Please fill out the waiver prior to or on the date of your arrival.</p>
+                        </div>
+                    </ScrollReveal>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {testimonials.map((testimonial, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20"
-                            >
-                                <div className="flex mb-4">
-                                    {[...Array(testimonial.rating)].map((_, i) => (
-                                        <Star key={i} className="w-5 h-5 fill-accent text-accent" />
-                                    ))}
-                                </div>
-                                <p className="text-white/90 mb-6 leading-relaxed">"{testimonial.content}"</p>
-                                <div className="flex items-center">
-                                    <div className="w-12 h-12 rounded-full bg-gradient-accent flex items-center justify-center text-white font-bold text-lg mr-4">
-                                        {testimonial.name.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <p className="font-bold text-white">{testimonial.name}</p>
-                                        <p className="text-white/60 text-sm">{testimonial.role}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                    <div className="text-center mt-12">
+                        <Link href="/attractions">
+                            <BouncyButton size="lg" variant="primary">
+                                View All Attractions <ArrowRight className="w-5 h-5" />
+                            </BouncyButton>
+                        </Link>
                     </div>
                 </div>
             </section>
 
             {/* Photo Gallery Section */}
-            <section className="section-padding bg-white">
-                <div className="container-custom">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-center mb-16"
-                    >
-                        <h2 className="section-title">
-                            See the <span className="gradient-text">Action</span>
+            <section className="relative pt-20 pb-32 px-4 bg-background-light">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal animation="slideUp" className="text-center mb-16">
+                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
+                                See The Action
+                            </span>
                         </h2>
-                        <p className="section-subtitle">
-                            Real moments from our amazing park
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                            Real moments, real fun! Check out what awaits you at Ninja Inflatable Park.
                         </p>
-                    </motion.div>
+                    </ScrollReveal>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
-                            { src: "/park-birthday-party.jpg", alt: "Birthday celebrations at Ninja Park", title: "Birthday Parties" },
-                            { src: "/park-slides-action.jpg", alt: "Kids sliding down giant slides", title: "Giant Slides" },
-                            { src: "/park-group-fun.jpg", alt: "Group activities and fun", title: "Group Fun" },
-                            { src: "/obstacle-course.jpg", alt: "Ninja obstacle course action", title: "Obstacle Course" },
-                            { src: "/giant-slides.jpg", alt: "Thrilling slide experience", title: "Slide Thrills" },
-                            { src: "/party-kids-venue.jpg", alt: "Party venue with kids", title: "Party Venue" }
+                            { src: "/images/gallery-1.jpg", title: "Ninja Obstacle Course", desc: "Test your agility and speed" },
+                            { src: "/images/gallery-2.jpg", title: "Giant Slides", desc: "Feel the adrenaline rush" },
+                            { src: "/images/gallery-3.jpg", title: "Wipe-Out Challenge", desc: "Can you stay on your feet?" },
+                            { src: "/images/gallery-1.jpg", title: "Maze Adventure", desc: "Get lost in the twists and turns" }, // Reusing for now
+                            { src: "/images/gallery-2.jpg", title: "Giant Jumping Balls", desc: "Leap across massive bouncing balls" }, // Reusing for now
+                            { src: "/images/gallery-3.jpg", title: "Climbing Wall", desc: "Scale new heights safely" }, // Reusing for now
                         ].map((photo, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                whileHover={{ scale: 1.05 }}
-                                className="relative group overflow-hidden rounded-2xl shadow-soft cursor-pointer h-64"
-                            >
-                                <img
-                                    src={photo.src}
-                                    alt={photo.alt}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <div className="absolute bottom-0 left-0 p-6">
-                                        <h3 className="text-2xl font-display font-bold text-white">
-                                            {photo.title}
-                                        </h3>
+                            <ScrollReveal key={index} animation="fade" delay={index * 0.1}>
+                                <motion.div
+                                    whileHover={{ scale: 1.05, y: -10 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                    className="relative group overflow-hidden rounded-3xl cursor-pointer"
+                                >
+                                    <div className="aspect-[4/3] relative">
+                                        <img
+                                            src={photo.src}
+                                            alt={photo.title}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                                            <h3 className="text-2xl font-display font-bold text-white mb-2">
+                                                {photo.title}
+                                            </h3>
+                                            <p className="text-white/80">{photo.desc}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </motion.div>
+                                </motion.div>
+                            </ScrollReveal>
                         ))}
                     </div>
                 </div>
+                <SectionDivider position="bottom" variant="wave" color="fill-background" />
+            </section>
+
+            {/* Testimonials */}
+            <section className="relative pt-20 pb-32 px-4 bg-background-light">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal animation="fade" className="text-center mb-16">
+                        <h2 className="text-5xl md:text-6xl font-display font-black mb-4 text-white">
+                            What People Say
+                        </h2>
+                    </ScrollReveal>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {testimonials.map((testimonial, index) => (
+                            <ScrollReveal key={index} animation="slideUp" delay={index * 0.1}>
+                                <div className="bg-surface-800 p-8 rounded-3xl border border-primary/20">
+                                    <div className="flex gap-1 mb-4">
+                                        {[...Array(testimonial.rating)].map((_, i) => (
+                                            <Star key={i} className="w-5 h-5 fill-secondary text-secondary" />
+                                        ))}
+                                    </div>
+                                    <p className="text-white/90 mb-4 italic">"{testimonial.text}"</p>
+                                    <p className="text-primary font-bold">— {testimonial.name}</p>
+                                </div>
+                            </ScrollReveal>
+                        ))}
+                    </div>
+                </div>
+                <SectionDivider position="bottom" variant="diagonal" color="fill-background" />
             </section>
 
             {/* CTA Section */}
-            <section className="section-padding bg-white">
-                <div className="container-custom">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        className="card p-12 md:p-16 text-center bg-gradient-to-br from-primary to-primary-dark text-white relative overflow-hidden"
-                    >
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-3xl" />
-                        <div className="relative z-10">
-                            <h2 className="text-4xl md:text-5xl font-display font-black mb-6">
-                                Ready for an <span className="text-accent">Epic Adventure</span>?
-                            </h2>
-                            <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-                                Book your session now and experience the thrill of India's biggest inflatable park!
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <a href="/book" className="btn bg-accent hover:bg-accent-dark text-white text-lg px-10 py-4 shadow-strong">
-                                    Book Your Session
-                                </a>
-                                <a href="/contact" className="btn bg-white text-primary hover:bg-neutral-100 text-lg px-10 py-4">
-                                    Contact Us
+            <section className="relative py-32 px-4 bg-background">
+                <div className="max-w-4xl mx-auto text-center">
+                    <ScrollReveal animation="scale">
+                        <h2 className="text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
+                            Ready to
+                            <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
+                                BOUNCE?
+                            </span>
+                        </h2>
+                        <p className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
+                            Book your tickets now and experience the ultimate inflatable adventure!
+                        </p>
+                        <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+                            <Link href="/book">
+                                <BouncyButton size="lg" variant="accent">
+                                    Book Tickets Now
+                                </BouncyButton>
+                            </Link>
+                            <Link href="/parties">
+                                <BouncyButton size="lg" variant="secondary">
+                                    Plan a Party
+                                </BouncyButton>
+                            </Link>
+                            <div className="mt-4 md:mt-0 md:ml-4">
+                                <p className="text-sm text-white/60 mb-1">Questions?</p>
+                                <a href="tel:9845471611" className="text-xl font-bold text-white hover:text-primary transition-colors">
+                                    📞 9845471611
                                 </a>
                             </div>
                         </div>
-                    </motion.div>
+                    </ScrollReveal>
                 </div>
             </section>
         </main>

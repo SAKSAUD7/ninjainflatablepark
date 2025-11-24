@@ -1,126 +1,138 @@
-import { Facebook, Instagram, Twitter, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
+"use client";
+
+import { motion } from "framer-motion";
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Heart } from "lucide-react";
+import Link from "next/link";
+import { footerLinks, siteConfig } from "@repo/config";
 
 export const Footer = () => {
+    const socialLinks = [
+        { icon: <Facebook className="w-5 h-5" />, href: siteConfig.links.facebook, label: "Facebook" },
+        { icon: <Instagram className="w-5 h-5" />, href: siteConfig.links.instagram, label: "Instagram" },
+        { icon: <Twitter className="w-5 h-5" />, href: siteConfig.links.twitter, label: "Twitter" },
+    ];
+
     return (
-        <footer className="bg-neutral-900 text-white relative overflow-hidden">
-            {/* Decorative Elements */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-primary" />
+        <footer className="relative bg-background-dark text-white pt-20 pb-10">
+            {/* Decorative Top Border */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
 
-            <div className="container-custom pt-20 pb-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-                    {/* Brand */}
-                    <div>
-                        <div className="flex items-center space-x-3 mb-6">
-                            <div className="w-12 h-12 bg-gradient-primary rounded-xl flex items-center justify-center">
-                                <img src="/logo.png" alt="Ninja Park" className="w-8 h-8 object-contain" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-2xl font-display font-black text-white leading-none">
-                                    NINJA
-                                </span>
-                                <span className="text-xs font-bold text-accent uppercase tracking-wider">
-                                    Inflatable Park
-                                </span>
-                            </div>
-                        </div>
-                        <p className="text-neutral-400 mb-6 leading-relaxed">
-                            India's biggest inflatable adventure park. Experience the thrill of jumping, sliding, and bouncing in a safe and fun environment.
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Main Footer Content */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
+                    {/* Brand Column */}
+                    <div className="lg:col-span-2">
+                        <Link href="/" className="inline-block mb-4">
+                            <img
+                                src="/ninja-logo.png"
+                                alt="Ninja Inflatable Park"
+                                className="h-16 w-auto drop-shadow-neon-blue"
+                            />
+                        </Link>
+                        <p className="text-white/70 mb-6 max-w-sm">
+                            {siteConfig.description}
                         </p>
-                        <div className="flex space-x-3">
-                            <a href="#" className="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center hover:bg-primary transition-colors group">
-                                <Facebook size={18} className="group-hover:scale-110 transition-transform" />
-                            </a>
-                            <a href="#" className="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center hover:bg-accent transition-colors group">
-                                <Instagram size={18} className="group-hover:scale-110 transition-transform" />
-                            </a>
-                            <a href="#" className="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center hover:bg-primary transition-colors group">
-                                <Twitter size={18} className="group-hover:scale-110 transition-transform" />
-                            </a>
-                            <a href="#" className="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center hover:bg-accent transition-colors group">
-                                <Youtube size={18} className="group-hover:scale-110 transition-transform" />
-                            </a>
-                        </div>
-                    </div>
 
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="text-lg font-bold mb-6 text-white uppercase tracking-wider">Quick Links</h3>
-                        <ul className="space-y-3">
-                            {[
-                                { name: "Home", href: "/" },
-                                { name: "Attractions", href: "/attractions" },
-                                { name: "Pricing", href: "/pricing" },
-                                { name: "Parties", href: "/parties" },
-                                { name: "About Us", href: "/about" },
-                                { name: "FAQ", href: "/faq" },
-                            ].map((link) => (
-                                <li key={link.name}>
-                                    <a href={link.href} className="text-neutral-400 hover:text-accent transition-colors flex items-center group">
-                                        <span className="w-0 h-0.5 bg-accent group-hover:w-4 transition-all duration-300 mr-0 group-hover:mr-2" />
-                                        {link.name}
-                                    </a>
-                                </li>
+                        {/* Social Links */}
+                        <div className="flex gap-3">
+                            {socialLinks.map((social) => (
+                                <motion.a
+                                    key={social.label}
+                                    href={social.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    whileHover={{ scale: 1.1, y: -2 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="w-10 h-10 rounded-full bg-surface-800 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all shadow-neon-blue"
+                                    aria-label={social.label}
+                                >
+                                    {social.icon}
+                                </motion.a>
                             ))}
-                        </ul>
-                    </div>
-
-                    {/* Opening Hours */}
-                    <div>
-                        <h3 className="text-lg font-bold mb-6 text-white uppercase tracking-wider">Opening Hours</h3>
-                        <div className="space-y-4">
-                            <div className="flex items-start">
-                                <Clock className="w-5 h-5 text-accent mr-3 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="text-white font-bold mb-1">Tuesday - Sunday</p>
-                                    <p className="text-neutral-400 text-sm">12:00 PM - 9:00 PM</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start">
-                                <Clock className="w-5 h-5 text-neutral-600 mr-3 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="text-neutral-500 font-bold mb-1">Monday</p>
-                                    <p className="text-neutral-600 text-sm">Closed</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
-                    {/* Contact */}
-                    <div>
-                        <h3 className="text-lg font-bold mb-6 text-white uppercase tracking-wider">Contact Us</h3>
-                        <ul className="space-y-4">
-                            <li className="flex items-start group">
-                                <MapPin className="w-5 h-5 text-accent mr-3 flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" />
-                                <span className="text-neutral-400 text-sm leading-relaxed">
-                                    No. 35/11, Hennur Bagalur Main Road, Chagalatti Village, Karnataka 562149
-                                </span>
-                            </li>
-                            <li className="flex items-center group">
-                                <Phone className="w-5 h-5 text-accent mr-3 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                                <a href="tel:+919845471611" className="text-neutral-400 hover:text-white transition-colors">
-                                    +91 98454 71611
-                                </a>
-                            </li>
-                            <li className="flex items-center group">
-                                <Mail className="w-5 h-5 text-accent mr-3 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                                <a href="mailto:info@ninjainflatablepark.com" className="text-neutral-400 hover:text-white transition-colors text-sm">
-                                    info@ninjainflatablepark.com
-                                </a>
-                            </li>
-                        </ul>
+                    {/* Link Columns */}
+                    {footerLinks.map((group) => (
+                        <div key={group.title}>
+                            <h3 className="text-lg font-display font-bold mb-4 text-secondary">
+                                {group.title}
+                            </h3>
+                            <ul className="space-y-3">
+                                {group.items.map((link) => (
+                                    <li key={link.title}>
+                                        <Link
+                                            href={link.href}
+                                            className="text-white/70 hover:text-primary transition-colors inline-block hover:translate-x-1 transform duration-200"
+                                        >
+                                            {link.title}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Contact Info Bar */}
+                <div className="border-t border-white/10 pt-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <motion.a
+                            href={`tel:${siteConfig.contact.phone}`}
+                            whileHover={{ scale: 1.02 }}
+                            className="flex items-center gap-3 p-4 bg-surface-800/50 rounded-2xl border border-primary/20 hover:border-primary/50 transition-all"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                <Phone className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                                <div className="text-xs text-white/60">Call Us</div>
+                                <div className="font-bold text-white">{siteConfig.contact.phone}</div>
+                            </div>
+                        </motion.a>
+
+                        <motion.a
+                            href={`mailto:${siteConfig.contact.email}`}
+                            whileHover={{ scale: 1.02 }}
+                            className="flex items-center gap-3 p-4 bg-surface-800/50 rounded-2xl border border-secondary/20 hover:border-secondary/50 transition-all"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
+                                <Mail className="w-5 h-5 text-secondary" />
+                            </div>
+                            <div>
+                                <div className="text-xs text-white/60">Email Us</div>
+                                <div className="font-bold text-white">{siteConfig.contact.email}</div>
+                            </div>
+                        </motion.a>
+
+                        <motion.a
+                            href={siteConfig.contact.mapUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.02 }}
+                            className="flex items-center gap-3 p-4 bg-surface-800/50 rounded-2xl border border-accent/20 hover:border-accent/50 transition-all"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                                <MapPin className="w-5 h-5 text-accent" />
+                            </div>
+                            <div>
+                                <div className="text-xs text-white/60">Visit Us</div>
+                                <div className="font-bold text-white text-sm line-clamp-1">
+                                    {siteConfig.contact.address}
+                                </div>
+                            </div>
+                        </motion.a>
                     </div>
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-neutral-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                    <p className="text-neutral-500 text-sm">
-                        &copy; {new Date().getFullYear()} Ninja Inflatable Park. All rights reserved.
+                <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-white/60 text-sm">
+                        © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
                     </p>
-                    <div className="flex space-x-6 text-sm">
-                        <a href="/privacy" className="text-neutral-500 hover:text-accent transition-colors">Privacy Policy</a>
-                        <a href="/terms" className="text-neutral-500 hover:text-accent transition-colors">Terms of Service</a>
-                        <a href="/safety" className="text-neutral-500 hover:text-accent transition-colors">Safety Guidelines</a>
-                    </div>
+                    <p className="text-white/60 text-sm flex items-center gap-1">
+                        Made with <Heart className="w-4 h-4 text-accent fill-accent" /> for bouncing fun
+                    </p>
                 </div>
             </div>
         </footer>

@@ -1,141 +1,237 @@
 "use client";
 
+import { useState } from "react";
+import { ScrollReveal, SectionDivider, BouncyButton } from "@repo/ui";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Mail, Clock, Calendar } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Send, MessageCircle } from "lucide-react";
+import { siteConfig } from "@repo/config";
 
-export default function Contact() {
+export default function ContactPage() {
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        // TODO: Implement form submission
+        console.log("Form submitted:", formData);
+    };
+
+    const contactInfo = [
+        {
+            icon: <Phone className="w-6 h-6" />,
+            title: "Call Us",
+            value: siteConfig.contact.phone,
+            href: `tel:${siteConfig.contact.phone}`,
+            color: "primary",
+        },
+        {
+            icon: <Mail className="w-6 h-6" />,
+            title: "Email Us",
+            value: siteConfig.contact.email,
+            href: `mailto:${siteConfig.contact.email}`,
+            color: "secondary",
+        },
+        {
+            icon: <MapPin className="w-6 h-6" />,
+            title: "Visit Us",
+            value: siteConfig.contact.address,
+            href: siteConfig.contact.mapUrl,
+            color: "accent",
+        },
+    ];
+
+    const operatingHours = [
+        { day: "Tuesday - Sunday", hours: "12:00 PM - 9:00 PM" },
+        { day: "Monday", hours: "Closed" },
+    ];
+
     return (
-        <main className="bg-background-light min-h-screen">
-            <div className="bg-primary text-white py-20 pt-32">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h1 className="text-5xl md:text-6xl font-display font-black mb-6">
+        <main className="min-h-screen bg-background text-white">
+            {/* Header */}
+            <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-background-dark to-background">
+                <div className="max-w-7xl mx-auto text-center">
+                    <ScrollReveal animation="fade">
+                        <span className="inline-block py-1 px-3 rounded-full bg-primary text-black font-bold text-sm mb-6 tracking-wider uppercase">
+                            <MessageCircle className="w-4 h-4 inline mr-1" />
                             Get in Touch
+                        </span>
+                    </ScrollReveal>
+                    <ScrollReveal animation="slideUp" delay={0.2}>
+                        <h1 className="text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
+                                Contact Us
+                            </span>
                         </h1>
-                        <p className="text-xl text-blue-100 max-w-2xl mx-auto font-medium">
-                            We'd love to hear from you. Here's how you can reach us.
+                        <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto">
+                            Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible!
                         </p>
-                    </motion.div>
+                    </ScrollReveal>
                 </div>
-            </div>
+                <SectionDivider position="bottom" variant="wave" color="fill-background" />
+            </section>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10 pb-20">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0 }}
-                        className="bg-white p-8 rounded-[2rem] shadow-xl text-center border border-gray-100"
-                    >
-                        <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Phone className="h-10 w-10 text-primary" />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Call Us</h3>
-                        <p className="text-gray-600 mb-4 font-medium">Tue-Sun from 12pm to 9pm</p>
-                        <a href="tel:+919845471611" className="text-2xl font-black text-primary hover:text-primary-dark transition-colors">
-                            98454 71611
-                        </a>
-                    </motion.div>
+            {/* Contact Info Cards */}
+            <section className="py-20 px-4 bg-background">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+                        {contactInfo.map((info, index) => (
+                            <ScrollReveal key={info.title} animation="slideUp" delay={index * 0.1}>
+                                <motion.a
+                                    href={info.href}
+                                    target={info.title === "Visit Us" ? "_blank" : undefined}
+                                    rel={info.title === "Visit Us" ? "noopener noreferrer" : undefined}
+                                    whileHover={{ scale: 1.05, y: -5 }}
+                                    className={`block p-8 bg-surface-800/50 backdrop-blur-md rounded-3xl border-2 border-${info.color}/30 hover:border-${info.color} transition-all`}
+                                >
+                                    <div className={`w-14 h-14 rounded-full bg-${info.color}/20 flex items-center justify-center mb-4 text-${info.color}`}>
+                                        {info.icon}
+                                    </div>
+                                    <h3 className="text-lg font-bold mb-2 text-white">{info.title}</h3>
+                                    <p className={`text-${info.color} font-semibold`}>{info.value}</p>
+                                </motion.a>
+                            </ScrollReveal>
+                        ))}
+                    </div>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.1 }}
-                        className="bg-white p-8 rounded-[2rem] shadow-xl text-center border border-gray-100"
-                    >
-                        <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Mail className="h-10 w-10 text-green-600" />
-                        </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Email Us</h3>
-                        <p className="text-gray-600 mb-4 font-medium">For bookings and general inquiries</p>
-                        <a href="mailto:info@ninjainflatablepark.com" className="text-lg font-bold text-primary hover:text-primary-dark transition-colors break-all">
-                            info@ninjainflatablepark.com
-                        </a>
-                    </motion.div>
+                    {/* Form and Map Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        {/* Contact Form */}
+                        <ScrollReveal animation="slideLeft">
+                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-primary/30">
+                                <h2 className="text-3xl font-display font-black mb-6 text-primary">
+                                    Send us a Message
+                                </h2>
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div>
+                                        <label className="block text-sm font-bold mb-2 text-white/80">
+                                            Your Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white placeholder:text-white/40"
+                                            placeholder="John Doe"
+                                            required
+                                        />
+                                    </div>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.2 }}
-                        className="bg-white p-8 rounded-[2rem] shadow-xl text-center border border-gray-100"
-                    >
-                        <div className="bg-yellow-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Clock className="h-10 w-10 text-accent-dark" />
+                                    <div>
+                                        <label className="block text-sm font-bold mb-2 text-white/80">
+                                            Email Address
+                                        </label>
+                                        <input
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white placeholder:text-white/40"
+                                            placeholder="john@example.com"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-bold mb-2 text-white/80">
+                                            Phone Number
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            value={formData.phone}
+                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                            className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white placeholder:text-white/40"
+                                            placeholder="9845471611"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-bold mb-2 text-white/80">
+                                            Message
+                                        </label>
+                                        <textarea
+                                            value={formData.message}
+                                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                            rows={5}
+                                            className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white placeholder:text-white/40 resize-none"
+                                            placeholder="Tell us how we can help..."
+                                            required
+                                        />
+                                    </div>
+
+                                    <BouncyButton type="submit" variant="primary" className="w-full" size="lg">
+                                        <Send className="w-5 h-5" />
+                                        Send Message
+                                    </BouncyButton>
+                                </form>
+                            </div>
+                        </ScrollReveal>
+
+                        {/* Map and Hours */}
+                        <div className="space-y-8">
+                            {/* Map Placeholder */}
+                            <ScrollReveal animation="slideRight">
+                                <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-accent/30 h-64 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <MapPin className="w-12 h-12 text-accent mx-auto mb-3" />
+                                        <p className="text-white/70">Map integration coming soon</p>
+                                        <a
+                                            href={siteConfig.contact.mapUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-accent hover:text-accent-light underline mt-2 inline-block"
+                                        >
+                                            View on Google Maps
+                                        </a>
+                                    </div>
+                                </div>
+                            </ScrollReveal>
+
+                            {/* Operating Hours */}
+                            <ScrollReveal animation="slideRight" delay={0.2}>
+                                <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-secondary/30">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <Clock className="w-6 h-6 text-secondary" />
+                                        <h3 className="text-2xl font-display font-black text-secondary">
+                                            Operating Hours
+                                        </h3>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {operatingHours.map((schedule, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex justify-between items-center pb-4 border-b border-white/10 last:border-0"
+                                            >
+                                                <span className="text-white/80 font-semibold">{schedule.day}</span>
+                                                <span className="text-secondary font-bold">{schedule.hours}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </ScrollReveal>
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Opening Hours</h3>
-                        <p className="text-gray-600 font-medium">Tue - Sun: 12:00 PM - 9:00 PM</p>
-                        <p className="text-red-500 font-bold mt-2 flex items-center justify-center">
-                            <Calendar className="w-4 h-4 mr-2" /> Monday Closed
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA */}
+            <section className="relative py-32 px-4 bg-background-light">
+                <div className="max-w-4xl mx-auto text-center">
+                    <ScrollReveal animation="scale">
+                        <h2 className="text-5xl md:text-7xl font-display font-black mb-6">
+                            Ready to Visit?
+                        </h2>
+                        <p className="text-xl text-white/70 mb-10">
+                            Book your tickets online and skip the queue!
                         </p>
-                    </motion.div>
+                        <BouncyButton size="lg" variant="accent">
+                            Book Now
+                        </BouncyButton>
+                    </ScrollReveal>
                 </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
-                    <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <h2 className="text-3xl font-display font-black text-gray-900 mb-8">Visit Us</h2>
-                        <div className="flex items-start mb-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                            <MapPin className="h-8 w-8 text-primary mr-4 flex-shrink-0 mt-1" />
-                            <p className="text-lg text-gray-600 font-medium leading-relaxed">
-                                No. 35/11, Hennur Bagalur Main Road,<br />
-                                Chagalatti Village, Jala Hobli,<br />
-                                Karnataka, India – 562149
-                            </p>
-                        </div>
-                        <div className="rounded-[2rem] overflow-hidden shadow-2xl h-[400px] border-4 border-white">
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3884.696387817085!2d77.6396823148243!3d13.11868599075969!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae190030000001%3A0x1234567890abcdef!2sNinja%20Inflatable%20Park!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"
-                                width="100%"
-                                height="100%"
-                                style={{ border: 0 }}
-                                allowFullScreen
-                                loading="lazy"
-                            ></iframe>
-                        </div>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                    >
-                        <h2 className="text-3xl font-display font-black text-gray-900 mb-8">Send a Message</h2>
-                        <form className="bg-white p-8 md:p-10 rounded-[2rem] shadow-xl border border-gray-100">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Name</label>
-                                    <input type="text" className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 outline-none transition-all font-medium bg-gray-50 focus:bg-white" placeholder="Your Name" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Phone</label>
-                                    <input type="tel" className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 outline-none transition-all font-medium bg-gray-50 focus:bg-white" placeholder="Your Phone" />
-                                </div>
-                            </div>
-                            <div className="mb-6">
-                                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Email</label>
-                                <input type="email" className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 outline-none transition-all font-medium bg-gray-50 focus:bg-white" placeholder="Your Email" />
-                            </div>
-                            <div className="mb-8">
-                                <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Message</label>
-                                <textarea rows={4} className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 outline-none transition-all font-medium bg-gray-50 focus:bg-white" placeholder="How can we help you?"></textarea>
-                            </div>
-                            <button className="w-full bg-primary hover:bg-primary-dark text-white font-black py-4 rounded-xl transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 uppercase tracking-wide text-lg">
-                                Send Message
-                            </button>
-                        </form>
-                    </motion.div>
-                </div>
-            </div>
+            </section>
         </main>
     );
 }

@@ -1,94 +1,97 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Coffee, Wifi, Car, Lock, Baby, Heart, Video } from "lucide-react";
+import { ScrollReveal, SectionDivider } from "@repo/ui";
+import { Coffee, Car, Shield, Wifi, ShoppingBag, Utensils, Users, Baby, Lock } from "lucide-react";
 
-export default function Facilities() {
+export default function FacilitiesPage() {
     const facilities = [
         {
-            icon: <Coffee className="h-10 w-10 text-white" />,
-            title: "Ninja Cafe",
-            description: "Refuel with delicious snacks and drinks at our on-site cafe. Perfect for parents to relax while kids play.",
-            color: "bg-orange-500"
+            title: "Play Zones",
+            description: "Separate age-appropriate play areas including ninja obstacle courses, climbing walls, and giant slides.",
+            icon: <Users className="w-8 h-8 text-primary" />,
+            items: ["Ninja Course", "Toddler Zone", "Giant Slides", "Wipeout Challenge"]
         },
         {
-            icon: <Wifi className="h-10 w-10 text-white" />,
-            title: "Free Wi-Fi",
-            description: "Stay connected with our complimentary high-speed Wi-Fi available throughout the park.",
-            color: "bg-blue-500"
+            title: "Ninja Café",
+            description: "Refuel after your adventure with our selection of hot & cold drinks, meals, and snacks.",
+            icon: <Coffee className="w-8 h-8 text-secondary" />,
+            items: ["Hot & Cold Drinks", "Fresh Snacks", "Meals", "Seating Area"]
         },
         {
-            icon: <Car className="h-10 w-10 text-white" />,
-            title: "Free Parking",
-            description: "Ample parking space available for all our guests. First 2 hours are completely free!",
-            color: "bg-green-500"
+            title: "Party Rooms",
+            description: "Private party rooms available for birthdays and special events with customizable packages.",
+            icon: <Utensils className="w-8 h-8 text-accent" />,
+            items: ["Private Space", "Decorations", "Hosting Staff", "Catering"]
         },
         {
-            icon: <Lock className="h-10 w-10 text-white" />,
-            title: "Secure Lockers",
-            description: "Keep your valuables safe in our secure lockers while you enjoy the park worry-free.",
-            color: "bg-purple-500"
+            title: "Parking & Access",
+            description: "Convenient access for all visitors with ample parking space.",
+            icon: <Car className="w-8 h-8 text-primary" />,
+            items: ["Free Parking (2 Hrs)", "Accessible Entry", "Drop-off Zone"]
         },
         {
-            icon: <Baby className="h-10 w-10 text-white" />,
-            title: "Baby Care",
-            description: "Dedicated baby changing facilities and nursing areas for the comfort of our youngest guests.",
-            color: "bg-pink-500"
+            title: "Health & Safety",
+            description: "Your safety is our priority with trained staff and first-aid facilities.",
+            icon: <Shield className="w-8 h-8 text-secondary" />,
+            items: ["First Aid Staff", "CCTV Surveillance", "Hygiene Stations", "Daily Cleaning"]
         },
         {
-            icon: <Heart className="h-10 w-10 text-white" />,
-            title: "First Aid",
-            description: "Trained first aid staff always on site to handle any minor bumps or scrapes immediately.",
-            color: "bg-red-500"
-        },
-        {
-            icon: <Video className="h-10 w-10 text-white" />,
-            title: "CCTV Coverage",
-            description: "24/7 CCTV surveillance across the entire park to ensure maximum safety and security.",
-            color: "bg-gray-700"
+            title: "Amenities",
+            description: "Everything you need for a comfortable visit.",
+            icon: <Wifi className="w-8 h-8 text-accent" />,
+            items: ["Free Wi-Fi", "Lockers", "Baby Care Room", "Merchandise Store"]
         }
     ];
 
     return (
-        <main className="bg-background-light min-h-screen pt-24 pb-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                    >
-                        <h1 className="text-5xl md:text-6xl font-display font-black text-primary mb-6">
-                            Park Facilities
+        <main className="bg-background text-white min-h-screen pt-24">
+            {/* Header */}
+            <section className="relative py-20 px-4">
+                <div className="max-w-7xl mx-auto text-center">
+                    <ScrollReveal animation="slideUp">
+                        <h1 className="text-5xl md:text-7xl font-display font-black mb-6">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
+                                Park Facilities
+                            </span>
                         </h1>
-                        <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-                            We've thought of everything to make your visit comfortable and convenient.
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                            More than just bouncing! Explore our world-class facilities designed for your comfort and enjoyment.
                         </p>
-                    </motion.div>
+                    </ScrollReveal>
                 </div>
+            </section>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {facilities.map((facility, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            whileHover={{ y: -10 }}
-                            className="bg-white rounded-[2rem] p-8 shadow-lg hover:shadow-xl transition-all border border-gray-100"
-                        >
-                            <div className={`${facility.color} w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-lg transform -rotate-3`}>
-                                {facility.icon}
-                            </div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-4">{facility.title}</h3>
-                            <p className="text-gray-600 leading-relaxed font-medium">
-                                {facility.description}
-                            </p>
-                        </motion.div>
-                    ))}
+            {/* Facilities Grid */}
+            <section className="relative px-4 pb-20">
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {facilities.map((facility, index) => (
+                            <ScrollReveal key={index} animation="fade" delay={index * 0.1}>
+                                <div className="bg-surface-800 p-8 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors h-full">
+                                    <div className="bg-white/5 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+                                        {facility.icon}
+                                    </div>
+                                    <h3 className="text-2xl font-display font-bold mb-3 text-white">
+                                        {facility.title}
+                                    </h3>
+                                    <p className="text-white/70 mb-6 min-h-[3rem]">
+                                        {facility.description}
+                                    </p>
+                                    <ul className="space-y-2">
+                                        {facility.items.map((item, i) => (
+                                            <li key={i} className="flex items-center gap-2 text-sm text-white/60">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                                {item}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </ScrollReveal>
+                        ))}
+                    </div>
                 </div>
-            </div>
+                <SectionDivider position="bottom" variant="wave" color="fill-background" />
+            </section>
         </main>
     );
 }
