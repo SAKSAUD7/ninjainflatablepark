@@ -1,10 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "../lib/utils";
-import { ButtonHTMLAttributes } from "react";
 
-interface BouncyButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface BouncyButtonProps extends HTMLMotionProps<"button"> {
     variant?: "primary" | "secondary" | "accent" | "outline";
     size?: "sm" | "md" | "lg";
 }
