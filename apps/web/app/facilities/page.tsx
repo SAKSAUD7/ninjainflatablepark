@@ -67,24 +67,37 @@ export default function FacilitiesPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {facilities.map((facility, index) => (
                             <ScrollReveal key={index} animation="fade" delay={index * 0.1}>
-                                <div className="bg-surface-800 p-8 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors h-full">
-                                    <div className="bg-white/5 w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
-                                        {facility.icon}
+                                <div className="bg-surface-800 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors h-full overflow-hidden group">
+                                    <div className="h-48 overflow-hidden relative">
+                                        <img
+                                            src={`/images/uploads/img-${(index % 10) + 1}.jpg`}
+                                            alt={facility.title}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            onError={(e) => {
+                                                e.currentTarget.src = "/images/hero-background.jpg"; // Fallback
+                                            }}
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-surface-800 to-transparent opacity-60" />
+                                        <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-md p-2 rounded-xl">
+                                            {facility.icon}
+                                        </div>
                                     </div>
-                                    <h3 className="text-2xl font-display font-bold mb-3 text-white">
-                                        {facility.title}
-                                    </h3>
-                                    <p className="text-white/70 mb-6 min-h-[3rem]">
-                                        {facility.description}
-                                    </p>
-                                    <ul className="space-y-2">
-                                        {facility.items.map((item, i) => (
-                                            <li key={i} className="flex items-center gap-2 text-sm text-white/60">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                                {item}
-                                            </li>
-                                        ))}
-                                    </ul>
+                                    <div className="p-6">
+                                        <h3 className="text-2xl font-display font-bold mb-3 text-white">
+                                            {facility.title}
+                                        </h3>
+                                        <p className="text-white/70 mb-6 min-h-[3rem]">
+                                            {facility.description}
+                                        </p>
+                                        <ul className="space-y-2">
+                                            {facility.items.map((item, i) => (
+                                                <li key={i} className="flex items-center gap-2 text-sm text-white/60">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                                    {item}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </div>
                             </ScrollReveal>
                         ))}

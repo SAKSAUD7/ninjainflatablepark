@@ -68,8 +68,19 @@ export default function GuidelinesPage() {
     return (
         <main className="bg-background text-white min-h-screen pt-24">
             {/* Header */}
-            <section className="relative py-20 px-4">
-                <div className="max-w-7xl mx-auto text-center">
+            <section className="relative py-32 px-4 overflow-hidden">
+                <div className="absolute inset-0">
+                    <img
+                        src="/images/uploads/img-6.jpg"
+                        alt="Safety Guidelines"
+                        className="w-full h-full object-cover opacity-30"
+                        onError={(e) => {
+                            e.currentTarget.src = "/images/hero-background.jpg";
+                        }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background" />
+                </div>
+                <div className="max-w-7xl mx-auto text-center relative z-10">
                     <ScrollReveal animation="slideUp">
                         <h1 className="text-5xl md:text-7xl font-display font-black mb-6">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">

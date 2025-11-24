@@ -28,17 +28,30 @@ export default function PartiesPage() {
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
                         {[
-                            { icon: <Cake className="w-8 h-8 text-primary" />, title: "Private Party Rooms", desc: "Exclusive space for your celebration" },
-                            { icon: <Gift className="w-8 h-8 text-secondary" />, title: "Custom Packages", desc: "Tailored to your needs" },
-                            { icon: <Music className="w-8 h-8 text-accent" />, title: "Party Feast", desc: "Delicious food & drinks included" },
+                            { icon: <Cake className="w-8 h-8 text-primary" />, title: "Private Party Rooms", desc: "Exclusive space for your celebration", image: "/images/uploads/img-3.jpg" },
+                            { icon: <Gift className="w-8 h-8 text-secondary" />, title: "Custom Packages", desc: "Tailored to your needs", image: "/images/uploads/img-4.jpg" },
+                            { icon: <Music className="w-8 h-8 text-accent" />, title: "Party Feast", desc: "Delicious food & drinks included", image: "/images/uploads/img-5.jpg" },
                         ].map((feature, index) => (
                             <ScrollReveal key={index} animation="fade" delay={index * 0.1}>
-                                <div className="bg-surface-800 p-8 rounded-3xl border border-white/10 text-center">
-                                    <div className="bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                                        {feature.icon}
+                                <div className="bg-surface-800 rounded-3xl border border-white/10 overflow-hidden group h-full">
+                                    <div className="h-48 overflow-hidden relative">
+                                        <img
+                                            src={feature.image}
+                                            alt={feature.title}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            onError={(e) => {
+                                                e.currentTarget.src = "/images/hero-background.jpg";
+                                            }}
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-surface-800 to-transparent opacity-60" />
+                                        <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-md p-2 rounded-xl">
+                                            {feature.icon}
+                                        </div>
                                     </div>
-                                    <h3 className="text-xl font-display font-bold mb-2">{feature.title}</h3>
-                                    <p className="text-white/60">{feature.desc}</p>
+                                    <div className="p-6 text-center">
+                                        <h3 className="text-xl font-display font-bold mb-2">{feature.title}</h3>
+                                        <p className="text-white/60">{feature.desc}</p>
+                                    </div>
                                 </div>
                             </ScrollReveal>
                         ))}
