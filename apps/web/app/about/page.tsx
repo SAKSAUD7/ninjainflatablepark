@@ -92,8 +92,8 @@ export default function About() {
                     >
                         <div className="absolute inset-0 bg-gradient-fun rounded-[3rem] transform rotate-3 opacity-20" />
                         <img
-                            src="https://images.unsplash.com/photo-1533240332313-0db49b459ad6?auto=format&fit=crop&q=80&w=1000"
-                            alt="Ninja Park"
+                            src="/park-slides-action.jpg"
+                            alt="Kids having fun at Ninja Inflatable Park"
                             className="relative rounded-[3rem] shadow-2xl w-full h-[500px] object-cover border-8 border-white"
                         />
                     </motion.div>

@@ -11,7 +11,7 @@ export default function Attractions() {
         {
             title: "Ninja Obstacle Course",
             description: "The ultimate test of agility! Race through tunnels, over barriers, and across shaky bridges in our signature obstacle course. Perfect for competitive spirits.",
-            image: "https://images.unsplash.com/photo-1574906636733-455b804564e6?auto=format&fit=crop&q=80&w=1000",
+            image: "/obstacle-course.jpg",
             category: "High Energy",
             duration: "Unlimited",
             difficulty: "Medium",
@@ -20,7 +20,7 @@ export default function Attractions() {
         {
             title: "Giant Slides",
             description: "Feel the adrenaline as you slide down our massive inflatable slides. Safe, fast, and incredibly fun for all ages. Multiple lanes for racing!",
-            image: "https://images.unsplash.com/photo-1596464716127-f9a827423bc8?auto=format&fit=crop&q=80&w=1000",
+            image: "/giant-slides.jpg",
             category: "Thrilling",
             duration: "Unlimited",
             difficulty: "Easy",
@@ -29,7 +29,7 @@ export default function Attractions() {
         {
             title: "Wipe-Out Challenge",
             description: "Can you survive the sweeping arm? Jump and duck to stay on your podium in this hilarious last-person-standing game inspired by the TV show!",
-            image: "https://images.unsplash.com/photo-1517164850305-99a3e65bb47e?auto=format&fit=crop&q=80&w=1000",
+            image: "/park-group-fun.jpg",
             category: "Action",
             duration: "5 mins/round",
             difficulty: "Hard",
@@ -147,8 +147,8 @@ export default function Attractions() {
                             key={category}
                             onClick={() => setActiveCategory(category)}
                             className={`px-6 py-3 rounded-full font-bold text-sm uppercase tracking-wide transition-all transform hover:scale-105 ${activeCategory === category
-                                    ? "bg-primary text-white shadow-lg"
-                                    : "bg-white text-gray-700 hover:bg-gray-50 shadow-md"
+                                ? "bg-primary text-white shadow-lg"
+                                : "bg-white text-gray-700 hover:bg-gray-50 shadow-md"
                                 }`}
                         >
                             {category}

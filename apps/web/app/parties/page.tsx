@@ -43,8 +43,8 @@ export default function Parties() {
                     >
                         <div className="absolute inset-0 bg-accent rounded-[3rem] transform rotate-3 opacity-20" />
                         <img
-                            src="https://images.unsplash.com/photo-1530103862676-de3c9da59af7?auto=format&fit=crop&q=80&w=1000"
-                            alt="Birthday Party"
+                            src="/party-kids-venue.jpg"
+                            alt="Birthday Party at Ninja Inflatable Park"
                             className="relative rounded-[3rem] shadow-2xl w-full h-[500px] object-cover border-8 border-white"
                         />
                     </motion.div>

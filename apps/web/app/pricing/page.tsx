@@ -68,6 +68,20 @@ export default function Pricing() {
                     </motion.div>
                 </div>
 
+                {/* Promotional Banner */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    className="mb-16 max-w-4xl mx-auto"
+                >
+                    <img
+                        src="/promo-pricing.jpg"
+                        alt="90 Minutes of Non-Stop Thrills - One Entry Price, Access to All Attractions"
+                        className="w-full rounded-3xl shadow-2xl border-4 border-white"
+                    />
+                </motion.div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
                     {prices.map((plan, index) => (
                         <motion.div

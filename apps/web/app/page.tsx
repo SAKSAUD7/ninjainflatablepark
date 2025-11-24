@@ -36,19 +36,19 @@ export default function Home() {
         {
             title: "Ninja Obstacle Course",
             description: "Race through our epic obstacle course with tunnels, barriers, and challenges!",
-            image: "https://images.unsplash.com/photo-1574906636733-455b804564e6?auto=format&fit=crop&q=80&w=800",
+            image: "/obstacle-course.jpg",
             badge: "Most Popular"
         },
         {
             title: "Giant Slides",
             description: "Experience the thrill of our towering slides with multiple lanes for racing!",
-            image: "https://images.unsplash.com/photo-1596464716127-f9a827423bc8?auto=format&fit=crop&q=80&w=800",
+            image: "/giant-slides.jpg",
             badge: "Thrilling"
         },
         {
             title: "Wipe-Out Challenge",
             description: "Can you survive the spinning arms? Last person standing wins!",
-            image: "https://images.unsplash.com/photo-1517164850305-99a3e65bb47e?auto=format&fit=crop&q=80&w=800",
+            image: "/park-group-fun.jpg",
             badge: "Action Packed"
         },
     ];
@@ -229,6 +229,59 @@ export default function Home() {
                                     <div>
                                         <p className="font-bold text-white">{testimonial.name}</p>
                                         <p className="text-white/60 text-sm">{testimonial.role}</p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Photo Gallery Section */}
+            <section className="section-padding bg-white">
+                <div className="container-custom">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-16"
+                    >
+                        <h2 className="section-title">
+                            See the <span className="gradient-text">Action</span>
+                        </h2>
+                        <p className="section-subtitle">
+                            Real moments from our amazing park
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[
+                            { src: "/park-birthday-party.jpg", alt: "Birthday celebrations at Ninja Park", title: "Birthday Parties" },
+                            { src: "/park-slides-action.jpg", alt: "Kids sliding down giant slides", title: "Giant Slides" },
+                            { src: "/park-group-fun.jpg", alt: "Group activities and fun", title: "Group Fun" },
+                            { src: "/obstacle-course.jpg", alt: "Ninja obstacle course action", title: "Obstacle Course" },
+                            { src: "/giant-slides.jpg", alt: "Thrilling slide experience", title: "Slide Thrills" },
+                            { src: "/party-kids-venue.jpg", alt: "Party venue with kids", title: "Party Venue" }
+                        ].map((photo, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                                whileHover={{ scale: 1.05 }}
+                                className="relative group overflow-hidden rounded-2xl shadow-soft cursor-pointer h-64"
+                            >
+                                <img
+                                    src={photo.src}
+                                    alt={photo.alt}
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div className="absolute bottom-0 left-0 p-6">
+                                        <h3 className="text-2xl font-display font-bold text-white">
+                                            {photo.title}
+                                        </h3>
                                     </div>
                                 </div>
                             </motion.div>
