@@ -7,7 +7,6 @@ export default function DashboardClient({ bookings }: { bookings: any[] }) {
     const [activeTab, setActiveTab] = useState("bookings");
 
     // Calculate stats
-<<<<<<< HEAD
     const totalRevenue = bookings.reduce((sum: number, b: any) => sum + b.amount, 0);
     const totalBookings = bookings.length;
     const activeGuests = bookings
@@ -16,50 +15,6 @@ export default function DashboardClient({ bookings }: { bookings: any[] }) {
 
     return (
         <>
-=======
-    const totalRevenue = bookings.reduce((sum, b) => sum + b.amount, 0);
-    const totalBookings = bookings.length;
-    const activeGuests = bookings
-        .filter(b => b.status === "CONFIRMED") // Simplified logic
-        .reduce((sum, b) => sum + b.adults + b.kids, 0);
-
-    return (
-        <div className="min-h-screen bg-gray-100 flex">
-            {/* Sidebar */}
-            <aside className="w-64 bg-gray-900 text-white p-6 fixed h-full">
-                <div className="flex items-center space-x-2 mb-10">
-                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                        <span className="text-primary font-bold">N</span>
-                    </div>
-                    <span className="text-xl font-bold">Admin Panel</span>
-                </div>
-
-                <nav className="space-y-2">
-                    <button
-                        onClick={() => setActiveTab("bookings")}
-                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeTab === "bookings" ? "bg-primary text-white" : "text-gray-400 hover:bg-gray-800"}`}
-                    >
-                        <Calendar size={20} />
-                        <span>Bookings</span>
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("users")}
-                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeTab === "users" ? "bg-primary text-white" : "text-gray-400 hover:bg-gray-800"}`}
-                    >
-                        <Users size={20} />
-                        <span>Customers</span>
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("finance")}
-                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${activeTab === "finance" ? "bg-primary text-white" : "text-gray-400 hover:bg-gray-800"}`}
-                    >
-                        <DollarSign size={20} />
-                        <span>Finance</span>
-                    </button>
-                </nav>
-            </aside>
-
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
             {/* Main Content */}
             <main className="flex-1 p-8 overflow-y-auto ml-64">
                 <header className="flex justify-between items-center mb-8">
@@ -121,19 +76,11 @@ export default function DashboardClient({ bookings }: { bookings: any[] }) {
                         <div className="flex space-x-3">
                             <button className="flex items-center space-x-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50">
                                 <Filter size={16} />
-<<<<<<< HEAD
                                 <span className="hidden md:inline">Filter</span>
                             </button>
                             <button className="flex items-center space-x-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800">
                                 <Download size={16} />
                                 <span className="hidden md:inline">Export CSV</span>
-=======
-                                <span>Filter</span>
-                            </button>
-                            <button className="flex items-center space-x-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800">
-                                <Download size={16} />
-                                <span>Export CSV</span>
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             </button>
                         </div>
                     </div>
@@ -151,11 +98,7 @@ export default function DashboardClient({ bookings }: { bookings: any[] }) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-<<<<<<< HEAD
                                 {bookings.map((booking: any) => (
-=======
-                                {bookings.map((booking) => (
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                                     <tr key={booking.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4 whitespace-nowrap font-mono text-sm font-bold text-gray-900">
                                             {booking.id.slice(-8).toUpperCase()}
@@ -175,13 +118,8 @@ export default function DashboardClient({ bookings }: { bookings: any[] }) {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${booking.status === "CONFIRMED" ? "bg-green-100 text-green-800" :
-<<<<<<< HEAD
                                                 booking.status === "PENDING" ? "bg-yellow-100 text-yellow-800" :
                                                     "bg-red-100 text-red-800"
-=======
-                                                    booking.status === "PENDING" ? "bg-yellow-100 text-yellow-800" :
-                                                        "bg-red-100 text-red-800"
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                                                 }`}>
                                                 {booking.status}
                                             </span>
@@ -193,10 +131,6 @@ export default function DashboardClient({ bookings }: { bookings: any[] }) {
                     </div>
                 </div>
             </main>
-<<<<<<< HEAD
         </>
-=======
-        </div>
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
     );
 }
