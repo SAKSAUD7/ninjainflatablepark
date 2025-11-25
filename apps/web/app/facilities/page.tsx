@@ -1,11 +1,9 @@
-<<<<<<< HEAD
 "use client";
 
-import { AttractionsGrid } from "../../features/attractions/components/AttractionsGrid";
 import { ScrollReveal, SectionDivider } from "@repo/ui";
-import { Coffee, Car, Shield, Wifi, Utensils, Users } from "lucide-react";
+import { Coffee, Car, Shield, Wifi, ShoppingBag, Utensils, Users, Baby, Lock } from "lucide-react";
 
-export default function AttractionsPage() {
+export default function FacilitiesPage() {
     const facilities = [
         {
             title: "Play Zones",
@@ -46,68 +44,26 @@ export default function AttractionsPage() {
     ];
 
     return (
-        <main className="min-h-screen bg-background text-white">
+        <main className="bg-background text-white min-h-screen pt-24">
             {/* Header */}
-            <section className="relative pt-24 md:pt-32 pb-12 md:pb-20 px-4 bg-gradient-to-b from-background-dark to-background">
-=======
-import { AttractionsGrid } from "../../features/attractions/components/AttractionsGrid";
-import { ScrollReveal, SectionDivider } from "@repo/ui";
-
-export default function AttractionsPage() {
-    return (
-        <main className="min-h-screen bg-background text-white">
-            {/* Header */}
-            <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-background-dark to-background">
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
+            <section className="relative py-20 px-4">
                 <div className="max-w-7xl mx-auto text-center">
-                    <ScrollReveal animation="fade">
-                        <span className="inline-block py-1 px-3 rounded-full bg-accent text-white font-bold text-sm mb-6 tracking-wider uppercase">
-                            11+ Unique Zones
-                        </span>
-                    </ScrollReveal>
-                    <ScrollReveal animation="slideUp" delay={0.2}>
-<<<<<<< HEAD
-                        <h1 className="text-5xl md:text-6xl lg:text-8xl font-display font-black mb-6 leading-tight">
-=======
-                        <h1 className="text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
+                    <ScrollReveal animation="slideUp">
+                        <h1 className="text-5xl md:text-7xl font-display font-black mb-6">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
-                                Our Attractions
+                                Park Facilities
                             </span>
                         </h1>
-<<<<<<< HEAD
-                        <p className="text-base md:text-xl lg:text-2xl text-white/70 max-w-3xl mx-auto">
-=======
-                        <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto">
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
-                            From ninja obstacle courses to giant slides, we've got something for everyone.
-                            Choose your adventure!
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto">
+                            More than just bouncing! Explore our world-class facilities designed for your comfort and enjoyment.
                         </p>
                     </ScrollReveal>
                 </div>
-                <SectionDivider position="bottom" variant="curve" color="fill-background" />
             </section>
 
-            {/* Attractions Grid */}
-            <AttractionsGrid />
-<<<<<<< HEAD
-
-            {/* Park Facilities Section */}
-            <section className="relative py-12 md:py-20 px-4 bg-background-light">
+            {/* Facilities Grid */}
+            <section className="relative px-4 pb-20">
                 <div className="max-w-7xl mx-auto">
-                    <ScrollReveal animation="slideUp">
-                        <div className="text-center mb-16">
-                            <h2 className="text-4xl md:text-5xl lg:text-7xl font-display font-black mb-6">
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
-                                    Park Facilities
-                                </span>
-                            </h2>
-                            <p className="text-base md:text-xl text-white/70 max-w-2xl mx-auto">
-                                More than just bouncing! Explore our world-class facilities designed for your comfort and enjoyment.
-                            </p>
-                        </div>
-                    </ScrollReveal>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {facilities.map((facility, index) => (
                             <ScrollReveal key={index} animation="fade" delay={index * 0.1}>
@@ -118,7 +74,7 @@ export default function AttractionsPage() {
                                             alt={facility.title}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             onError={(e) => {
-                                                e.currentTarget.src = "/images/hero-background.jpg";
+                                                e.currentTarget.src = "/images/hero-background.jpg"; // Fallback
                                             }}
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-surface-800 to-transparent opacity-60" />
@@ -149,8 +105,6 @@ export default function AttractionsPage() {
                 </div>
                 <SectionDivider position="bottom" variant="wave" color="fill-background" />
             </section>
-=======
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
         </main>
     );
 }

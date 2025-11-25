@@ -23,6 +23,7 @@ model Booking {
   spectators Int
   amount    Float
   status    String   @default("CONFIRMED") // CONFIRMED, CANCELLED, PENDING
+<<<<<<< HEAD
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -71,3 +72,8 @@ model AuditLog {
   details     String?
   createdAt   DateTime @default(now())
 }
+=======
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb

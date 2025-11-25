@@ -52,7 +52,11 @@ export default function ContactPage() {
     return (
         <main className="min-h-screen bg-background text-white">
             {/* Header */}
+<<<<<<< HEAD
             <section className="relative pt-24 md:pt-32 pb-12 md:pb-20 px-4 overflow-hidden">
+=======
+            <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                 <div className="absolute inset-0">
                     <img
                         src="/park-group-fun.jpg"
@@ -69,12 +73,20 @@ export default function ContactPage() {
                         </span>
                     </ScrollReveal>
                     <ScrollReveal animation="slideUp" delay={0.2}>
+<<<<<<< HEAD
                         <h1 className="text-5xl md:text-6xl lg:text-8xl font-display font-black mb-6 leading-tight">
+=======
+                        <h1 className="text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
                                 Contact Us
                             </span>
                         </h1>
+<<<<<<< HEAD
                         <p className="text-base md:text-xl lg:text-2xl text-white/70 max-w-3xl mx-auto">
+=======
+                        <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible!
                         </p>
                     </ScrollReveal>
@@ -83,7 +95,11 @@ export default function ContactPage() {
             </section>
 
             {/* Contact Info Cards */}
+<<<<<<< HEAD
             <section className="py-12 md:py-20 px-4 bg-background">
+=======
+            <section className="py-20 px-4 bg-background">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
                         {contactInfo.map((info, index) => (
@@ -109,7 +125,11 @@ export default function ContactPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {/* Contact Form */}
                         <ScrollReveal animation="slideLeft">
+<<<<<<< HEAD
                             <div id="contactForm" className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-primary/30">
+=======
+                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-primary/30">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                                 <h2 className="text-3xl font-display font-black mb-6 text-primary">
                                     Send us a Message
                                 </h2>
@@ -225,6 +245,7 @@ export default function ContactPage() {
             </section>
 
             {/* CTA */}
+<<<<<<< HEAD
             <section className="relative py-16 md:py-32 px-4 bg-background-light">
                 <div className="max-w-4xl mx-auto text-center">
                     <ScrollReveal animation="scale">
@@ -232,6 +253,15 @@ export default function ContactPage() {
                             Ready to Visit?
                         </h2>
                         <p className="text-base md:text-xl text-white/70 mb-10">
+=======
+            <section className="relative py-32 px-4 bg-background-light">
+                <div className="max-w-4xl mx-auto text-center">
+                    <ScrollReveal animation="scale">
+                        <h2 className="text-5xl md:text-7xl font-display font-black mb-6">
+                            Ready to Visit?
+                        </h2>
+                        <p className="text-xl text-white/70 mb-10">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             Book your tickets online and skip the queue!
                         </p>
                         <BouncyButton size="lg" variant="accent">

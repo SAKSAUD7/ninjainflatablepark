@@ -2,7 +2,11 @@
 
 import { ScrollReveal, BouncyButton, SectionDivider } from "@repo/ui";
 import { motion } from "framer-motion";
+<<<<<<< HEAD
 import { Clock, AlertCircle, Check, Users, Mail } from "lucide-react";
+=======
+import { Clock, AlertCircle, Check } from "lucide-react";
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
 import Link from "next/link";
 
 export default function PricingPage() {
@@ -52,7 +56,11 @@ export default function PricingPage() {
     return (
         <main className="bg-background text-white min-h-screen pt-24">
             {/* Header */}
+<<<<<<< HEAD
             <section className="relative py-16 md:py-32 px-4 overflow-hidden">
+=======
+            <section className="relative py-32 px-4 overflow-hidden">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                 <div className="absolute inset-0">
                     <img
                         src="/images/uploads/img-5.jpg"
@@ -66,21 +74,34 @@ export default function PricingPage() {
                 </div>
                 <div className="max-w-7xl mx-auto text-center relative z-10">
                     <ScrollReveal animation="slideUp">
+<<<<<<< HEAD
                         <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-black mb-6">
+=======
+                        <h1 className="text-5xl md:text-7xl font-display font-black mb-6">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
                                 Choose Your Adventure
                             </span>
                         </h1>
+<<<<<<< HEAD
                         <p className="text-base md:text-xl text-white/70 max-w-2xl mx-auto">
+=======
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             Affordable fun for everyone! Pick the perfect pass and get ready to bounce.
                         </p>
                     </ScrollReveal>
                 </div>
             </section>
 
+<<<<<<< HEAD
 
             {/* Pricing Cards */}
             <section className="relative px-4 pb-12">
+=======
+            {/* Pricing Cards */}
+            <section className="relative px-4 pb-20">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {prices.map((plan, index) => (
@@ -122,6 +143,7 @@ export default function PricingPage() {
                 </div>
             </section>
 
+<<<<<<< HEAD
             {/* Group Booking - Compact Card */}
             <section className="relative px-4 pb-20">
                 <div className="max-w-4xl mx-auto">
@@ -191,6 +213,10 @@ export default function PricingPage() {
 
             {/* Additional Info */}
             <section className="relative py-12 md:py-20 px-4 bg-background-light">
+=======
+            {/* Additional Info */}
+            <section className="relative py-20 px-4 bg-background-light">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                 <div className="max-w-4xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <ScrollReveal animation="slideRight">

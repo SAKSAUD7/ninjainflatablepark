@@ -2,7 +2,10 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+<<<<<<< HEAD
 import Link from "next/link";
+=======
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
 import { BouncyButton } from "./BouncyButton";
 import { SectionDivider } from "./SectionDivider";
 
@@ -80,6 +83,7 @@ export const AnimatedHero = () => {
                     transition={{ duration: 0.8, delay: 0.8 }}
                     className="flex flex-col md:flex-row gap-6"
                 >
+<<<<<<< HEAD
                     <Link href="/pricing">
                         <BouncyButton size="lg" variant="accent" className="shadow-neon-pink">
                             Book Tickets Now
@@ -90,6 +94,14 @@ export const AnimatedHero = () => {
                             View Attractions
                         </BouncyButton>
                     </Link>
+=======
+                    <BouncyButton size="lg" variant="accent" className="shadow-neon-pink">
+                        Book Tickets Now
+                    </BouncyButton>
+                    <BouncyButton size="lg" variant="outline" className="text-white border-white hover:bg-white/10 backdrop-blur-sm">
+                        View Attractions
+                    </BouncyButton>
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                 </motion.div>
             </div>
 

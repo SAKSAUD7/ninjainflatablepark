@@ -1,6 +1,10 @@
 "use client";
 
+<<<<<<< HEAD
 import { AnimatedHero, ScrollReveal, BouncyButton, SectionDivider, Marquee } from "@repo/ui";
+=======
+import { AnimatedHero, ScrollReveal, BouncyButton, SectionDivider } from "@repo/ui";
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
 import { motion } from "framer-motion";
 import { Zap, Shield, Users, Trophy, Star, ArrowRight, Heart, Play, Instagram } from "lucide-react";
 import Link from "next/link";
@@ -21,7 +25,11 @@ export default function Home() {
             <AnimatedHero />
 
             {/* Stats Section */}
+<<<<<<< HEAD
             <section className="relative pt-12 md:pt-20 pb-16 md:pb-32 px-4 bg-background-light">
+=======
+            <section className="relative pt-20 pb-32 px-4 bg-background-light">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade">
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -50,7 +58,11 @@ export default function Home() {
             </section>
 
             {/* About Section */}
+<<<<<<< HEAD
             <section className="relative py-12 md:py-20 px-4 bg-background">
+=======
+            <section className="relative py-20 px-4 bg-background">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <ScrollReveal animation="slideLeft">
@@ -93,14 +105,22 @@ export default function Home() {
             </section>
 
             {/* Featured Attractions */}
+<<<<<<< HEAD
             <section className="relative py-12 md:py-20 px-4 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="slideUp" className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl lg:text-7xl font-display font-black mb-4">
+=======
+            <section className="relative py-20 px-4 bg-background">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal animation="slideUp" className="text-center mb-16">
+                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
                                 Epic Attractions
                             </span>
                         </h2>
+<<<<<<< HEAD
                         <p className="text-base md:text-xl text-white/70 max-w-2xl mx-auto mb-8">
                             Step into India’s ultimate inflatable adventure! Packed with giant slides, wipe-out challenges, ninja obstacle courses, climbing walls, jumping balls, and more.
                         </p>
@@ -112,6 +132,17 @@ export default function Home() {
                                     </span>
                                 ))}
                             </Marquee>
+=======
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto mb-8">
+                            Step into India’s ultimate inflatable adventure! Packed with giant slides, wipe-out challenges, ninja obstacle courses, climbing walls, jumping balls, and more.
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto mb-8">
+                            {["Ninja Obstacle Course", "High Slides", "Wipe-Out Challenge", "Maze Adventure", "Giant Jumping Balls", "Balance Beam", "Dinosaur Guard", "Jelly Bead Zone", "Climbing Wall", "Wave Bed & Spider Wall"].map((item) => (
+                                <span key={item} className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-bold text-secondary">
+                                    {item}
+                                </span>
+                            ))}
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                         </div>
                         <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 max-w-xl mx-auto">
                             <p className="text-primary font-bold mb-1">⚠️ Risk Acknowledgement</p>
@@ -130,15 +161,26 @@ export default function Home() {
             </section>
 
             {/* Photo Gallery Section */}
+<<<<<<< HEAD
             <section className="relative pt-12 md:pt-20 pb-16 md:pb-32 px-4 bg-background-light">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="slideUp" className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl lg:text-7xl font-display font-black mb-4">
+=======
+            <section className="relative pt-20 pb-32 px-4 bg-background-light">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal animation="slideUp" className="text-center mb-16">
+                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
                                 See The Action
                             </span>
                         </h2>
+<<<<<<< HEAD
                         <p className="text-base md:text-xl text-white/70 max-w-2xl mx-auto">
+=======
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             Real moments, real fun! Check out what awaits you at Ninja Inflatable Park.
                         </p>
                     </ScrollReveal>
@@ -183,15 +225,26 @@ export default function Home() {
 
 
             {/* People Reviews Section */}
+<<<<<<< HEAD
             <section className="relative py-12 md:py-20 px-4 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade" className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl lg:text-7xl font-display font-black mb-4">
+=======
+            <section className="relative py-20 px-4 bg-background">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal animation="fade" className="text-center mb-16">
+                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
                                 People Reviews on Ninja
                             </span>
                         </h2>
+<<<<<<< HEAD
                         <p className="text-base md:text-xl text-white/70 max-w-2xl mx-auto mb-8">
+=======
+                        <p className="text-xl text-white/70 max-w-2xl mx-auto mb-8">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             Check out these amazing reviews from our visitors!
                         </p>
                     </ScrollReveal>
@@ -235,21 +288,36 @@ export default function Home() {
             </section>
 
             {/* CTA Section */}
+<<<<<<< HEAD
             < section className="relative py-16 md:py-32 px-4 bg-background" >
                 <div className="max-w-4xl mx-auto text-center">
                     <ScrollReveal animation="scale">
                         <h2 className="text-5xl md:text-6xl lg:text-8xl font-display font-black mb-6 leading-tight">
+=======
+            < section className="relative py-32 px-4 bg-background" >
+                <div className="max-w-4xl mx-auto text-center">
+                    <ScrollReveal animation="scale">
+                        <h2 className="text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             Ready to
                             <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
                                 BOUNCE?
                             </span>
                         </h2>
+<<<<<<< HEAD
                         <p className="text-base md:text-xl text-white/70 mb-10 max-w-2xl mx-auto">
                             Book your tickets now and experience the ultimate inflatable adventure!
                         </p>
                         <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
                             <Link href="/pricing">
+=======
+                        <p className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
+                            Book your tickets now and experience the ultimate inflatable adventure!
+                        </p>
+                        <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+                            <Link href="/book">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                                 <BouncyButton size="lg" variant="accent">
                                     Book Tickets Now
                                 </BouncyButton>
@@ -259,7 +327,11 @@ export default function Home() {
                                     Plan a Party
                                 </BouncyButton>
                             </Link>
+<<<<<<< HEAD
                             <div className="w-full md:w-auto mt-4 md:mt-0 md:ml-4 text-center md:text-left">
+=======
+                            <div className="mt-4 md:mt-0 md:ml-4">
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                                 <p className="text-sm text-white/60 mb-1">Questions?</p>
                                 <a href="tel:9845471611" className="text-xl font-bold text-white hover:text-primary transition-colors">
                                     📞 9845471611

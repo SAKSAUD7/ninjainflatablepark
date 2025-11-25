@@ -21,6 +21,10 @@ export const navLinks = [
     { title: "Attractions", href: "/attractions" },
     { title: "Pricing", href: "/pricing" },
     { title: "Parties", href: "/parties" },
+<<<<<<< HEAD
+=======
+    { title: "Facilities", href: "/facilities" },
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
     { title: "Guidelines", href: "/guidelines" },
     { title: "Contact", href: "/contact" },
 ];
@@ -32,7 +36,11 @@ export const footerLinks = [
             { title: "Attractions", href: "/attractions" },
             { title: "Pricing", href: "/pricing" },
             { title: "Guidelines & Safety", href: "/guidelines" },
+<<<<<<< HEAD
             { title: "Facilities", href: "/attractions" },
+=======
+            { title: "Facilities", href: "/facilities" },
+>>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
             { title: "About Us", href: "/about" },
         ],
     },
