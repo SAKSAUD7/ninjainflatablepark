@@ -256,9 +256,9 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
 
     return (
         <form onSubmit={handleSubmit(handlePayment)}>
-            <div className="bg-surface-800/50 backdrop-blur-md rounded-[2rem] shadow-glass overflow-hidden max-w-5xl mx-auto border border-white/10">
+            <div className="bg-surface-800/50 backdrop-blur-md rounded-2xl md:rounded-[2rem] shadow-glass overflow-hidden max-w-5xl mx-auto border border-white/10">
                 {/* Progress Bar */}
-                <div className="bg-background-dark/30 p-6 border-b border-white/5">
+                <div className="bg-background-dark/30 p-4 md:p-6 border-b border-white/5">
                     <div className="flex justify-between items-center max-w-3xl mx-auto relative">
                         {/* Progress Line */}
                         <div className="absolute top-1/2 left-0 w-full h-1 bg-white/10 -z-0 transform -translate-y-1/2 hidden md:block">
@@ -271,19 +271,19 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                         </div>
 
                         {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="flex flex-col items-center relative z-10 px-2">
+                            <div key={i} className="flex flex-col items-center relative z-10 px-1 md:px-2">
                                 <motion.div
                                     initial={false}
                                     animate={{
-                                        scale: step === i ? 1.2 : 1,
+                                        scale: step === i ? 1.1 : 1,
                                         backgroundColor: step >= i ? "#00F0FF" : "#1f2937",
                                         color: step >= i ? "#000000" : "#9ca3af"
                                     }}
-                                    className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg transition-all duration-300 border-2 ${step >= i ? 'border-primary shadow-neon-blue' : 'border-white/10'}`}
+                                    className={`w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-bold text-sm md:text-base lg:text-lg shadow-lg transition-all duration-300 border-2 ${step >= i ? 'border-primary shadow-neon-blue' : 'border-white/10'}`}
                                 >
                                     {step > i ? <Check size={20} /> : i}
                                 </motion.div>
-                                <span className={`text-[10px] md:text-xs mt-3 font-bold uppercase tracking-wide transition-colors ${step >= i ? "text-primary" : "text-white/30"}`}>
+                                <span className={`text-[9px] md:text-[10px] lg:text-xs mt-2 md:mt-3 font-bold uppercase tracking-wide transition-colors ${step >= i ? "text-primary" : "text-white/30"}`}>
                                     {i === 1 ? "Session" : i === 2 ? "Guests" : i === 3 ? "Details" : "Payment"}
                                 </span>
                             </div>
@@ -291,7 +291,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                     </div>
                 </div>
 
-                <div className="p-6 md:p-12 min-h-[500px]">
+                <div className="p-4 sm:p-6 md:p-8 lg:p-12">
                     <AnimatePresence mode="wait">
                         {/* Step 1: Session Selection */}
                         {step === 1 && (
@@ -302,19 +302,19 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                 exit={{ opacity: 0, x: -20 }}
                                 className="space-y-8"
                             >
-                                <div className="flex items-center gap-4 mb-8">
-                                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                                        <Calendar className="text-primary h-6 w-6" />
+                                <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+                                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                        <Calendar className="text-primary h-5 w-5 md:h-6 md:w-6" />
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl md:text-3xl font-display font-black text-white">Select Session</h2>
-                                        <p className="text-white/50 text-sm">Choose your preferred date, time and duration</p>
+                                        <h2 className="text-xl md:text-2xl lg:text-3xl font-display font-black text-white">Select Session</h2>
+                                        <p className="text-white/50 text-xs md:text-sm">Choose your preferred date, time and duration</p>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div>
-                                        <label className="block text-sm font-bold text-white/70 mb-3 uppercase tracking-wide">
+                                        <label className="block text-xs md:text-sm font-bold text-white/70 mb-2 md:mb-3 uppercase tracking-wide">
                                             Date <span className="text-red-400">*</span>
                                         </label>
                                         <div className="relative">
@@ -323,12 +323,12 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                 {...register("date")}
                                                 min={new Date().toISOString().split('T')[0]}
                                                 max={new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
-                                                className={`w-full px-6 py-4 rounded-xl border-2 ${errors.date
+                                                className={`w-full px-4 py-3 md:px-6 md:py-4 rounded-xl border-2 ${errors.date
                                                     ? 'border-red-500 focus:border-red-500'
                                                     : touchedFields.date && !errors.date
                                                         ? 'border-green-500 focus:border-green-500'
                                                         : 'border-white/10 focus:border-primary'
-                                                    } focus:ring-0 outline-none text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
+                                                    } focus:ring-0 outline-none text-base md:text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
                                                 style={{ colorScheme: 'dark' }}
                                             />
                                             <SuccessIndicator show={touchedFields.date && !errors.date && !!formData.date} />
@@ -337,7 +337,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-bold text-white/70 mb-3 uppercase tracking-wide">
+                                        <label className="block text-xs md:text-sm font-bold text-white/70 mb-2 md:mb-3 uppercase tracking-wide">
                                             Time Slot <span className="text-red-400">*</span>
                                         </label>
                                         <div className="relative">
