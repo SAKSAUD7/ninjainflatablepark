@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 "use client";
 
 import { AttractionsGrid } from "../../features/attractions/components/AttractionsGrid";
@@ -49,16 +48,6 @@ export default function AttractionsPage() {
         <main className="min-h-screen bg-background text-white">
             {/* Header */}
             <section className="relative pt-24 md:pt-32 pb-12 md:pb-20 px-4 bg-gradient-to-b from-background-dark to-background">
-=======
-import { AttractionsGrid } from "../../features/attractions/components/AttractionsGrid";
-import { ScrollReveal, SectionDivider } from "@repo/ui";
-
-export default function AttractionsPage() {
-    return (
-        <main className="min-h-screen bg-background text-white">
-            {/* Header */}
-            <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-background-dark to-background">
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                 <div className="max-w-7xl mx-auto text-center">
                     <ScrollReveal animation="fade">
                         <span className="inline-block py-1 px-3 rounded-full bg-accent text-white font-bold text-sm mb-6 tracking-wider uppercase">
@@ -66,20 +55,12 @@ export default function AttractionsPage() {
                         </span>
                     </ScrollReveal>
                     <ScrollReveal animation="slideUp" delay={0.2}>
-<<<<<<< HEAD
                         <h1 className="text-5xl md:text-6xl lg:text-8xl font-display font-black mb-6 leading-tight">
-=======
-                        <h1 className="text-6xl md:text-8xl font-display font-black mb-6 leading-tight">
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
                                 Our Attractions
                             </span>
                         </h1>
-<<<<<<< HEAD
                         <p className="text-base md:text-xl lg:text-2xl text-white/70 max-w-3xl mx-auto">
-=======
-                        <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto">
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
                             From ninja obstacle courses to giant slides, we've got something for everyone.
                             Choose your adventure!
                         </p>
@@ -90,7 +71,6 @@ export default function AttractionsPage() {
 
             {/* Attractions Grid */}
             <AttractionsGrid />
-<<<<<<< HEAD
 
             {/* Park Facilities Section */}
             <section className="relative py-12 md:py-20 px-4 bg-background-light">
@@ -149,8 +129,6 @@ export default function AttractionsPage() {
                 </div>
                 <SectionDivider position="bottom" variant="wave" color="fill-background" />
             </section>
-=======
->>>>>>> ae298bdb839d28f6b8769d78d13513cb682514bb
         </main>
     );
 }
