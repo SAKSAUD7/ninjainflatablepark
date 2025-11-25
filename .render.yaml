@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ninja-inflatable-park
+    env: node
+    buildCommand: |
+      # Install only production dependencies
+      npm ci --omit=dev
+      # Build only the web app, using Turbo cache
+      npx turbo run build --filter=apps/web...
+    startCommand: npx turbo run dev --filter=apps/web...
+    cache:
+      - node_modules
+      - .turbo

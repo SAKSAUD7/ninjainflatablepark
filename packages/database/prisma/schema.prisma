@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Booking {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  date      String
+  time      String
+  duration  String
+  adults    Int
+  kids      Int
+  spectators Int
+  amount    Float
+  status    String   @default("CONFIRMED") // CONFIRMED, CANCELLED, PENDING
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Waiver {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  fileUrl     String?
+  signedAt    DateTime @default(now())
+  version     String
+}
+
+model ContactInquiry {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  subject     String?
+  message     String
+  status      String   @default("NEW") // NEW, RESPONDED, CLOSED
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminUser {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  password    String   // Hashed
+  role        String   @default("EDITOR") // SUPER_ADMIN, EDITOR, SUPPORT
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  adminId     String
+  action      String
+  entity      String
+  entityId    String?
+  details     String?
+  createdAt   DateTime @default(now())
+}

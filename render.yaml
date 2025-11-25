@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: ninja-inflatable-park
+    env: node
+    plan: free
+    buildCommand: npm install && npx turbo run build --filter=web...
+    startCommand: cd apps/web && npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.9.0
