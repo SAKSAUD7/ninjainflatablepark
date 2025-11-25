@@ -15,7 +15,7 @@ export { SectionDivider } from "./components/SectionDivider";
 export { VideoSection } from "./components/VideoSection";
 export { ImageCarousel } from "./components/ImageCarousel";
 export { Marquee } from "./components/Marquee";
-
+export { ToastProvider, useToast } from "./components/ToastProvider";
 
 // Utilities
 export { cn } from "./lib/utils";
