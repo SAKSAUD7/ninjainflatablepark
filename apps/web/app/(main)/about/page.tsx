@@ -67,7 +67,7 @@ export default function AboutPage() {
                         </span>
                     </ScrollReveal>
                     <ScrollReveal animation="slideUp" delay={0.2}>
-                        <h1 className="text-5xl md:text-7xl font-display font-black mb-6 leading-tight">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-black mb-6 leading-tight">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
                                 India's Biggest Inflatable Adventure Park
                             </span>
@@ -146,7 +146,7 @@ export default function AboutPage() {
             <section className="py-20 px-4 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade" className="text-center mb-16">
-                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-black mb-4">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
                                 Our Journey
                             </span>
@@ -182,7 +182,7 @@ export default function AboutPage() {
             <section className="py-20 px-4 bg-background-light">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade" className="text-center mb-16">
-                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-black mb-4">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
                                 Our Values
                             </span>
@@ -216,7 +216,7 @@ export default function AboutPage() {
             <section className="relative py-20 px-4 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade" className="text-center mb-16">
-                        <h2 className="text-5xl md:text-7xl font-display font-black mb-4">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-black mb-4">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
                                 People Reviews on Ninja
                             </span>
@@ -296,7 +296,7 @@ export default function AboutPage() {
             <section className="relative py-32 px-4 pb-32 md:pb-40 bg-background">
                 <div className="max-w-4xl mx-auto text-center">
                     <ScrollReveal animation="scale">
-                        <h2 className="text-5xl md:text-7xl font-display font-black mb-6">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-black mb-6">
                             Join the
                             <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">

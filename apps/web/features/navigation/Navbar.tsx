@@ -24,11 +24,14 @@ export function Navbar() {
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-white/10">
             <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-                {/* Logo */}
-                <Link href="/" className="relative z-50">
-                    <span className="text-2xl font-display font-black text-white">
-                        NINJA<span className="text-primary">PARK</span>
-                    </span>
+                {/* Logo - Clean & Transparent */}
+                <Link href="/" className="relative z-50 block">
+                    <img
+                        src="/logo_transparent.png"
+                        alt="Ninja Inflatable Park"
+                        className="h-14 md:h-16 w-auto object-contain transition-transform duration-300 hover:scale-105"
+                        style={{ background: 'transparent' }}
+                    />
                 </Link>
 
                 {/* Desktop Nav */}
@@ -62,13 +65,26 @@ export function Navbar() {
                     </Link>
                 </nav>
 
-                {/* Mobile Menu Toggle */}
-                <button
-                    className="md:hidden relative z-50 text-white"
-                    onClick={() => dispatch({ type: "TOGGLE_MOBILE_MENU" })}
-                >
-                    {isMobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
-                </button>
+                {/* Mobile Header Actions */}
+                <div className="md:hidden flex items-center gap-2 relative z-50">
+                    <a
+                        href="tel:+919876543210"
+                        className="w-9 h-9 flex items-center justify-center bg-[#2D1B4E] hover:bg-[#3D2B5E] rounded-lg transition-colors"
+                    >
+                        <Phone className="w-4 h-4 text-white" />
+                    </a>
+                    <Link href="/book">
+                        <BouncyButton size="sm" variant="accent" className="text-xs px-3 py-1.5">
+                            Book
+                        </BouncyButton>
+                    </Link>
+                    <button
+                        className="text-white"
+                        onClick={() => dispatch({ type: "TOGGLE_MOBILE_MENU" })}
+                    >
+                        {isMobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+                    </button>
+                </div>
 
                 {/* Mobile Menu Overlay */}
                 <AnimatePresence>

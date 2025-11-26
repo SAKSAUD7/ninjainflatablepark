@@ -22,14 +22,14 @@ export const AnimatedHero = () => {
     const { currentText, isAnimating } = useTextCarousel(carouselTexts, 3000);
 
     return (
-        <div ref={ref} className="relative min-h-screen w-full overflow-hidden bg-background-dark pt-20">
+        <div ref={ref} className="relative min-h-[100vh] md:min-h-screen w-full overflow-hidden bg-background-dark pt-20">
             {/* Background Video/Image Parallax */}
             <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-background-dark/90 z-10" />
                 <img
                     src="/hero-background.jpg"
                     alt="Ninja Inflatable Park - Epic Adventure Awaits"
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover object-center"
                 />
                 {/* Floating Shapes Layer */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
@@ -62,7 +62,7 @@ export const AnimatedHero = () => {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.8, delay: 0.4, type: "spring" }}
-                    className="text-6xl md:text-9xl font-display font-black text-white mb-8 leading-none drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]"
+                    className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-display font-black text-white mb-8 leading-none drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]"
                 >
                     ARE YOU A <br />
                     <AnimatePresence mode="wait">
@@ -83,7 +83,7 @@ export const AnimatedHero = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.6 }}
-                    className="text-xl md:text-2xl text-white/90 max-w-2xl mb-12 font-body font-medium drop-shadow-md"
+                    className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 max-w-2xl mb-12 font-body font-medium drop-shadow-md"
                 >
                     Get ready to jump, climb, bounce, and conquer the ultimate inflatable adventure! Experience thrills, laughter, and challenges that push your limits in the most exciting way.
                 </motion.p>
@@ -92,15 +92,15 @@ export const AnimatedHero = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.8 }}
-                    className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full max-w-md mx-auto"
+                    className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full max-w-md mx-auto px-4"
                 >
                     <Link href="/pricing" className="w-full sm:w-auto">
-                        <BouncyButton size="lg" variant="accent" className="shadow-neon-pink w-full sm:w-auto justify-center">
+                        <BouncyButton size="md" variant="accent" className="shadow-neon-pink w-full sm:w-auto justify-center text-sm sm:text-base">
                             Book Tickets Now
                         </BouncyButton>
                     </Link>
                     <Link href="/attractions" className="w-full sm:w-auto">
-                        <BouncyButton size="lg" variant="outline" className="text-white border-white hover:bg-white/10 backdrop-blur-sm w-full sm:w-auto justify-center">
+                        <BouncyButton size="md" variant="outline" className="text-white border-white hover:bg-white/10 backdrop-blur-sm w-full sm:w-auto justify-center text-sm sm:text-base">
                             View Attractions
                         </BouncyButton>
                     </Link>

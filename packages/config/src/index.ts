@@ -43,7 +43,6 @@ export const footerLinks = [
             { title: "Book Tickets", href: "/book" },
             { title: "Birthday Parties", href: "/parties" },
             { title: "Group Bookings", href: "/groups" },
-            { title: "School Trips", href: "/schools" },
         ],
     },
     {
@@ -52,7 +51,7 @@ export const footerLinks = [
             { title: "Contact Us", href: "/contact" },
             { title: "FAQs", href: "/faq" },
             { title: "Privacy Policy", href: "/privacy" },
-            { title: "Terms of Service", href: "/terms" },
+            { title: "Terms of Service", href: "/guidelines" },
         ],
     },
 ];
