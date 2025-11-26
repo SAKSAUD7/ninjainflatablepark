@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -199,7 +199,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                     transition={{ delay: 0.4 }}
                     className="text-xl text-white/70 mb-8"
                 >
-                    Thank you for booking with Ninja Inflatable Park. Your tickets have been sent to{" "}
+                    Thank you for booking with Ninja Inflatable Park. Your tickets have been sent to {" "}
                     <span className="font-bold text-primary">{formData.email}</span>.
                 </motion.p>
 
@@ -232,7 +232,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                         </div>
                         <div className="col-span-2">
                             <span className="block text-xs text-white/50 uppercase font-bold mb-1">Amount Paid</span>
-                            <span className="font-bold text-primary text-2xl">₹ {Math.round(calculateTotal().total).toLocaleString('en-IN')}</span>
+                            <span className="font-bold text-primary text-2xl">â‚¹ {Math.round(calculateTotal().total).toLocaleString('en-IN')}</span>
                         </div>
                     </div>
                 </motion.div>
@@ -247,7 +247,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                 >
                     <Download className="mr-2 w-5 h-5" /> Download Ticket PDF
                 </motion.button>
-            </motion.div>
+            </motion.div >
         );
     }
 
@@ -277,13 +277,14 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                     animate={{
                                         scale: step === i ? 1.1 : 1,
                                         backgroundColor: step >= i ? "#00F0FF" : "#1f2937",
-                                        color: step >= i ? "#000000" : "#9ca3af"
+                                        color: step >= i ? "#000000" : "#9ca3af",
                                     }}
                                     className={`w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-bold text-sm md:text-base lg:text-lg shadow-lg transition-all duration-300 border-2 ${step >= i ? 'border-primary shadow-neon-blue' : 'border-white/10'}`}
                                 >
                                     {step > i ? <Check size={20} /> : i}
                                 </motion.div>
-                                <span className={`text-[9px] md:text-[10px] lg:text-xs mt-2 md:mt-3 font-bold uppercase tracking-wide transition-colors ${step >= i ? "text-primary" : "text-white/30"}`}>
+                                <span className={`text-[9px] md:text-[10px] lg:text-xs mt-2 md:mt-3 font-bold uppercase tracking-wide transition-colors ${step >= i ? "text-primary" : "text-white/30"}`}
+                                >
                                     {i === 1 ? "Session" : i === 2 ? "Guests" : i === 3 ? "Details" : "Payment"}
                                 </span>
                             </div>
@@ -327,11 +328,10 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                     ? 'border-red-500 focus:border-red-500'
                                                     : touchedFields.date && !errors.date
                                                         ? 'border-green-500 focus:border-green-500'
-                                                        : 'border-white/10 focus:border-primary'
-                                                    } focus:ring-0 outline-none text-base md:text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
+                                                        : 'border-white/10 focus:border-primary'} focus:ring-0 outline-none text-base md:text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
                                                 style={{ colorScheme: 'dark' }}
                                             />
-                                            <SuccessIndicator show={touchedFields.date && !errors.date && !!formData.date} />
+                                            <SuccessIndicator show={!!touchedFields.date && !errors.date && !!formData.date} />
                                         </div>
                                         <ErrorMessage message={errors.date?.message} />
                                     </div>
@@ -348,8 +348,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                     ? 'border-red-500 focus:border-red-500'
                                                     : touchedFields.time && !errors.time
                                                         ? 'border-green-500 focus:border-green-500'
-                                                        : 'border-white/10 focus:border-primary'
-                                                    } focus:ring-0 outline-none text-lg font-medium transition-all bg-surface-900 text-white focus:bg-surface-800 disabled:opacity-50 disabled:cursor-not-allowed`}
+                                                        : 'border-white/10 focus:border-primary'} focus:ring-0 outline-none text-lg font-medium transition-all bg-surface-900 text-white focus:bg-surface-800 disabled:opacity-50 disabled:cursor-not-allowed`}
                                             >
                                                 <option value="" className="bg-surface-900">
                                                     {formData.date ? "Select Time" : "Select date first"}
@@ -360,7 +359,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                     </option>
                                                 ))}
                                             </select>
-                                            <SuccessIndicator show={touchedFields.time && !errors.time && !!formData.time} />
+                                            <SuccessIndicator show={!!touchedFields.time && !errors.time && !!formData.time} />
                                         </div>
                                         <ErrorMessage message={errors.time?.message} />
                                         {formData.date && availableSlots.length === 0 && (
@@ -372,57 +371,50 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-bold text-white/70 mb-4 uppercase tracking-wide">
-                                        Duration <span className="text-red-400">*</span>
-                                    </label>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <motion.button
-                                            type="button"
-                                            onClick={() => setValue("duration", "60", { shouldValidate: true })}
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            className={`p-6 rounded-2xl border-2 font-bold text-lg transition-all relative overflow-hidden ${formData.duration === "60"
-                                                ? "border-primary bg-primary/20 text-white shadow-neon-blue"
-                                                : "border-white/10 hover:border-primary/50 text-white/60 bg-surface-900"
-                                                }`}
-                                        >
-                                            {formData.duration === "60" && (
-                                                <motion.div
-                                                    layoutId="duration-indicator"
-                                                    className="absolute top-2 right-2"
-                                                >
-                                                    <Sparkles className="w-5 h-5 text-primary" />
-                                                </motion.div>
-                                            )}
-                                            <div>60 Minutes</div>
-                                            <div className="text-sm font-normal text-white/40 mt-1">Standard Session</div>
-                                        </motion.button>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                    <motion.button
+                                        type="button"
+                                        onClick={() => setValue("duration", "60", { shouldValidate: true })}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className={`p-6 rounded-2xl border-2 font-bold text-lg transition-all relative overflow-hidden ${formData.duration === "60"
+                                            ? "border-primary bg-primary/20 text-white shadow-neon-blue"
+                                            : "border-white/10 hover:border-primary/50 text-white/60 bg-surface-900"}`}
+                                    >
+                                        {formData.duration === "60" && (
+                                            <motion.div
+                                                layoutId="duration-indicator"
+                                                className="absolute top-2 right-2"
+                                            >
+                                                <Sparkles className="w-5 h-5 text-primary" />
+                                            </motion.div>
+                                        )}
+                                        <div>60 Minutes</div>
+                                        <div className="text-sm font-normal text-white/40 mt-1">Standard Session</div>
+                                    </motion.button>
 
-                                        <motion.button
-                                            type="button"
-                                            onClick={() => setValue("duration", "120", { shouldValidate: true })}
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            className={`p-6 rounded-2xl border-2 font-bold text-lg transition-all relative overflow-hidden ${formData.duration === "120"
-                                                ? "border-primary bg-primary/20 text-white shadow-neon-blue"
-                                                : "border-white/10 hover:border-primary/50 text-white/60 bg-surface-900"
-                                                }`}
-                                        >
-                                            {formData.duration === "120" && (
-                                                <motion.div
-                                                    layoutId="duration-indicator"
-                                                    className="absolute top-2 right-2"
-                                                >
-                                                    <Sparkles className="w-5 h-5 text-primary" />
-                                                </motion.div>
-                                            )}
-                                            <div>120 Minutes</div>
-                                            <div className="text-sm font-normal text-white/40 mt-1">+₹500/person</div>
-                                        </motion.button>
-                                    </div>
-                                    <ErrorMessage message={errors.duration?.message} />
+                                    <motion.button
+                                        type="button"
+                                        onClick={() => setValue("duration", "120", { shouldValidate: true })}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className={`p-6 rounded-2xl border-2 font-bold text-lg transition-all relative overflow-hidden ${formData.duration === "120"
+                                            ? "border-primary bg-primary/20 text-white shadow-neon-blue"
+                                            : "border-white/10 hover:border-primary/50 text-white/60 bg-surface-900"}`}
+                                    >
+                                        {formData.duration === "120" && (
+                                            <motion.div
+                                                layoutId="duration-indicator"
+                                                className="absolute top-2 right-2"
+                                            >
+                                                <Sparkles className="w-5 h-5 text-primary" />
+                                            </motion.div>
+                                        )}
+                                        <div>120 Minutes</div>
+                                        <div className="text-sm font-normal text-white/40 mt-1">+â‚¹500/person</div>
+                                    </motion.button>
                                 </div>
+                                <ErrorMessage message={errors.duration?.message} />
                             </motion.div>
                         )}
 
@@ -465,15 +457,14 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                         whileHover={{ scale: 1.01 }}
                                         className={`flex flex-col md:flex-row items-center justify-between p-6 bg-surface-900/50 border-2 ${errors.adults && formData.adults === 0 && formData.kids === 0
                                             ? 'border-red-500/50'
-                                            : 'border-white/10 hover:border-primary/30'
-                                            } rounded-2xl transition-all gap-4`}
+                                            : 'border-white/10 hover:border-primary/30'} rounded-2xl transition-all gap-4`}
                                     >
                                         <div className="text-center md:text-left flex-1">
                                             <h3 className="text-xl font-bold text-white flex items-center gap-2">
                                                 Ninja Warrior (7+ Years)
                                                 {formData.adults > 0 && <Check className="w-5 h-5 text-green-400" />}
                                             </h3>
-                                            <p className="text-white/50 font-medium">₹ 899 + GST per person</p>
+                                            <p className="text-white/50 font-medium">â‚¹ 899 + GST per person</p>
                                         </div>
                                         <div className="flex items-center space-x-6">
                                             <motion.button
@@ -509,7 +500,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                 Little Ninjas (1-7 Years)
                                                 {formData.kids > 0 && <Check className="w-5 h-5 text-green-400" />}
                                             </h3>
-                                            <p className="text-white/50 font-medium">₹ 500 + GST per person</p>
+                                            <p className="text-white/50 font-medium">â‚¹ 500 + GST per person</p>
                                         </div>
                                         <div className="flex items-center space-x-6">
                                             <motion.button
@@ -545,7 +536,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                 Spectators
                                                 {formData.spectators > 0 && <Check className="w-5 h-5 text-green-400" />}
                                             </h3>
-                                            <p className="text-white/50 font-medium">₹ 150 + GST per person</p>
+                                            <p className="text-white/50 font-medium">â‚¹ 150 + GST per person</p>
                                         </div>
                                         <div className="flex items-center space-x-6">
                                             <motion.button
@@ -620,10 +611,9 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                     ? 'border-red-500 focus:border-red-500'
                                                     : touchedFields.name && !errors.name
                                                         ? 'border-green-500 focus:border-green-500'
-                                                        : 'border-white/10 focus:border-primary'
-                                                    } focus:ring-0 outline-none text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
+                                                        : 'border-white/10 focus:border-primary'} focus:ring-0 outline-none text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
                                             />
-                                            <SuccessIndicator show={touchedFields.name && !errors.name && !!formData.name} />
+                                            <SuccessIndicator show={!!touchedFields.name && !errors.name && !!formData.name} />
                                         </div>
                                         <ErrorMessage message={errors.name?.message} />
                                     </div>
@@ -642,10 +632,9 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                     ? 'border-red-500 focus:border-red-500'
                                                     : touchedFields.email && !errors.email
                                                         ? 'border-green-500 focus:border-green-500'
-                                                        : 'border-white/10 focus:border-primary'
-                                                    } focus:ring-0 outline-none text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
+                                                        : 'border-white/10 focus:border-primary'} focus:ring-0 outline-none text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
                                             />
-                                            <SuccessIndicator show={touchedFields.email && !errors.email && !!formData.email} />
+                                            <SuccessIndicator show={!!touchedFields.email && !errors.email && !!formData.email} />
                                         </div>
                                         <ErrorMessage message={errors.email?.message} />
                                     </div>
@@ -665,18 +654,16 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                     ? 'border-red-500 focus:border-red-500'
                                                     : touchedFields.phone && !errors.phone
                                                         ? 'border-green-500 focus:border-green-500'
-                                                        : 'border-white/10 focus:border-primary'
-                                                    } focus:ring-0 outline-none text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
+                                                        : 'border-white/10 focus:border-primary'} focus:ring-0 outline-none text-lg font-medium transition-all bg-surface-900 text-white placeholder-white/30 focus:bg-surface-800`}
                                             />
-                                            <SuccessIndicator show={touchedFields.phone && !errors.phone && !!formData.phone} />
+                                            <SuccessIndicator show={!!touchedFields.phone && !errors.phone && !!formData.phone} />
                                         </div>
                                         <ErrorMessage message={errors.phone?.message} />
                                         <p className="text-white/40 text-xs mt-2">Indian mobile numbers only (10 digits)</p>
                                     </div>
                                 </div>
 
-                                <div className={`bg-warning/10 p-6 rounded-2xl border-2 ${errors.waiverAccepted ? 'border-red-500/50' : 'border-warning/20'
-                                    }`}>
+                                <div className={`bg-warning/10 p-6 rounded-2xl border-2 ${errors.waiverAccepted ? 'border-red-500/50' : 'border-warning/20'}`}>
                                     <label className="flex items-start cursor-pointer group">
                                         <div className="relative flex items-center mt-1">
                                             <input
@@ -688,13 +675,9 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                         </div>
                                         <span className="ml-4 text-white/80 font-medium leading-relaxed text-sm md:text-base">
                                             I acknowledge that I have read and agree to the{" "}
-                                            <a href="/safety" target="_blank" className="text-primary hover:underline font-bold">
-                                                Safety Guidelines
-                                            </a>{" "}
+                                            <a href="/safety" target="_blank" className="text-primary hover:underline font-bold">Safety Guidelines</a>{" "}
                                             and{" "}
-                                            <a href="/terms" target="_blank" className="text-primary hover:underline font-bold">
-                                                Terms & Conditions
-                                            </a>
+                                            <a href="/terms" target="_blank" className="text-primary hover:underline font-bold">Terms & Conditions</a>
                                             . I understand the risks involved in participating in inflatable activities. <span className="text-red-400">*</span>
                                         </span>
                                     </label>
@@ -745,26 +728,26 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                     <div className="border-t border-white/10 pt-6 space-y-3 text-white/80">
                                         {formData.adults > 0 && (
                                             <div className="flex justify-between">
-                                                <span>Ninja Warrior × {formData.adults}</span>
-                                                <span className="font-medium">₹ {(formData.adults * 899).toLocaleString('en-IN')}</span>
+                                                <span>Ninja Warrior Ã— {formData.adults}</span>
+                                                <span className="font-medium">â‚¹ {(formData.adults * 899).toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
                                         {formData.kids > 0 && (
                                             <div className="flex justify-between">
-                                                <span>Little Ninjas × {formData.kids}</span>
-                                                <span className="font-medium">₹ {(formData.kids * 500).toLocaleString('en-IN')}</span>
+                                                <span>Little Ninjas Ã— {formData.kids}</span>
+                                                <span className="font-medium">â‚¹ {(formData.kids * 500).toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
                                         {formData.spectators > 0 && (
                                             <div className="flex justify-between">
-                                                <span>Spectators × {formData.spectators}</span>
-                                                <span className="font-medium">₹ {(formData.spectators * 150).toLocaleString('en-IN')}</span>
+                                                <span>Spectators Ã— {formData.spectators}</span>
+                                                <span className="font-medium">â‚¹ {(formData.spectators * 150).toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
                                         {formData.duration === "120" && (
                                             <div className="flex justify-between text-primary">
-                                                <span>Extra Hour × {formData.adults + formData.kids}</span>
-                                                <span className="font-medium">₹ {((formData.adults + formData.kids) * 500).toLocaleString('en-IN')}</span>
+                                                <span>Extra Hour Ã— {formData.adults + formData.kids}</span>
+                                                <span className="font-medium">â‚¹ {((formData.adults + formData.kids) * 500).toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
                                     </div>
@@ -773,16 +756,16 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                     <div className="border-t border-white/10 pt-6">
                                         <div className="flex justify-between mb-2 text-white/50">
                                             <span>Subtotal</span>
-                                            <span>₹ {totals.subtotal.toLocaleString('en-IN')}</span>
+                                            <span>â‚¹ {totals.subtotal.toLocaleString('en-IN')}</span>
                                         </div>
                                         <div className="flex justify-between mb-4 text-white/50">
                                             <span>GST (18%)</span>
-                                            <span>₹ {Math.round(totals.gst).toLocaleString('en-IN')}</span>
+                                            <span>â‚¹ {Math.round(totals.gst).toLocaleString('en-IN')}</span>
                                         </div>
                                         <div className="flex justify-between items-center pt-4 border-t border-white/10">
                                             <span className="text-2xl font-black text-white">Total Amount</span>
                                             <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
-                                                ₹ {Math.round(totals.total).toLocaleString('en-IN')}
+                                                â‚¹ {Math.round(totals.total).toLocaleString('en-IN')}
                                             </span>
                                         </div>
                                     </div>
@@ -809,7 +792,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                 </motion.button>
 
                                 <p className="text-center text-white/40 text-sm">
-                                    🔒 Secure payment powered by industry-standard encryption
+                                    ðŸ”’ Secure payment powered by industry-standard encryption
                                 </p>
                             </motion.div>
                         )}

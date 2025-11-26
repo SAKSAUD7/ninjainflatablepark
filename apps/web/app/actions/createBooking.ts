@@ -41,8 +41,8 @@ export async function createBooking(formData: any) {
         const validationResult = bookingSchema.safeParse(formData);
 
         if (!validationResult.success) {
-            console.error("Validation failed:", validationResult.error.errors);
-            const firstError = validationResult.error.errors[0];
+            console.error("Validation failed:", validationResult.error.issues);
+            const firstError = validationResult.error.issues[0];
             return {
                 success: false,
                 error: firstError.message || "Invalid form data. Please check your inputs."

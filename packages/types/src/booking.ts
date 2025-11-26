@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isAfter, isBefore, startOfDay, parse, addHours } from "date-fns";
+import { isAfter, isBefore, startOfDay, addHours } from "date-fns";
 
 // Phone number validation for India (+91 format)
 const phoneRegex = /^(\+91|91)?[6-9]\d{9}$/;
@@ -33,9 +33,7 @@ export const bookingSchema = z.object({
     time: z.string()
         .min(1, "Please select a time slot"),
 
-    duration: z.enum(["60", "120"], {
-        errorMap: () => ({ message: "Please select a duration" })
-    }),
+    duration: z.enum(["60", "120"]),
 
     // Guest Details
     adults: z.number()
