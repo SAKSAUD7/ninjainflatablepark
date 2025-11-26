@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useState, useEffect } from "react";
-import { Menu, X, Phone, Zap } from "lucide-react";
+import { Menu, X, Phone, Zap, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { navLinks } from "@repo/config";
 import Link from "next/link";
@@ -73,6 +73,18 @@ export const Navbar = () => {
                                 Book Now
                             </motion.button>
                         </Link>
+
+                        {/* Admin Login Button */}
+                        <Link href="/admin/login">
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-4 py-2 text-sm text-white/60 hover:text-white border border-white/20 hover:border-white/40 rounded-lg transition-all flex items-center gap-2"
+                            >
+                                <Lock className="w-4 h-4" />
+                                Admin
+                            </motion.button>
+                        </Link>
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -120,7 +132,7 @@ export const Navbar = () => {
                                     </Link>
                                 </motion.div>
                             ))}
-                            <div className="pt-4">
+                            <div className="pt-4 space-y-3">
                                 <Link
                                     href="/book"
                                     className="block w-full text-center px-6 py-3 bg-accent text-white font-bold rounded-full shadow-neon-pink"
@@ -128,6 +140,14 @@ export const Navbar = () => {
                                 >
                                     <Zap className="w-4 h-4 inline mr-2" />
                                     Book Your Session
+                                </Link>
+                                <Link
+                                    href="/admin/login"
+                                    className="block w-full text-center px-6 py-3 text-white/60 hover:text-white border border-white/20 hover:border-white/40 rounded-lg transition-all"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    <Lock className="w-4 h-4 inline mr-2" />
+                                    Admin Login
                                 </Link>
                             </div>
                         </div>
