@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { submitWaiver } from "../actions/waiver";
 
-export default function WaiverPage() {
+function WaiverForm() {
     const searchParams = useSearchParams();
     const bookingId = searchParams.get("bookingId");
 
@@ -133,5 +133,20 @@ export default function WaiverPage() {
                 </form>
             </div>
         </div>
+    );
+}
+
+export default function WaiverPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neon-blue mx-auto"></div>
+                    <p className="mt-4 text-slate-600">Loading waiver form...</p>
+                </div>
+            </div>
+        }>
+            <WaiverForm />
+        </Suspense>
     );
 }
