@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { BookingWizard, BouncyButton } from "@repo/ui";
-import { createBooking } from "../actions/createBooking";
+import { createBooking } from "../../actions/createBooking";
 import Link from "next/link";
 
 // Simple hardcoded voucher list for demo purposes
