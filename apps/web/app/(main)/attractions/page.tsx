@@ -1,6 +1,6 @@
 "use client";
 
-import { AttractionsGrid } from "../../features/attractions/components/AttractionsGrid";
+import { AttractionsGrid } from "../../../features/attractions/components/AttractionsGrid";
 import { ScrollReveal, SectionDivider } from "@repo/ui";
 import { Coffee, Car, Shield, Wifi, Utensils, Users } from "lucide-react";
 

@@ -11,30 +11,69 @@ datasource db {
 }
 
 model Booking {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  phone     String
-  date      String
-  time      String
-  duration  String
-  adults    Int
-  kids      Int
-  spectators Int
-  amount    Float
-  status    String   @default("CONFIRMED") // CONFIRMED, CANCELLED, PENDING
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String        @id @default(cuid())
+  name          String
+  email         String
+  phone         String
+  date          String
+  time          String
+  duration      String
+  adults        Int
+  kids          Int
+  spectators    Int
+  amount        Float
+  status        String        @default("CONFIRMED") // Legacy support
+  bookingStatus String        @default("PENDING")   // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  waiverStatus  String        @default("PENDING")   // PENDING, SIGNED
+  paymentStatus String        @default("PENDING")   // PENDING, PAID, REFUNDED, FAILED
+  qrCode        String?       @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  customerId    String?
+  customer      Customer?     @relation(fields: [customerId], references: [id])
+  waivers       Waiver[]
+  transactions  Transaction[]
 }
 
 model Waiver {
-  id          String   @id @default(cuid())
-  name        String
-  email       String
-  phone       String?
-  fileUrl     String?
-  signedAt    DateTime @default(now())
-  version     String
+  id             String       @id @default(cuid())
+  name           String
+  email          String
+  phone          String?
+  fileUrl        String?
+  signedAt       DateTime     @default(now())
+  version        String
+  emergencyContact String?
+  
+  // Relations
+  bookingId      String?
+  booking        Booking?     @relation(fields: [bookingId], references: [id])
+  customerId     String?
+  customer       Customer?    @relation(fields: [customerId], references: [id])
+}
+
+model Customer {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  phone     String?
+  notes     String?
+  bookings  Booking[]
+  waivers   Waiver[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Transaction {
+  id        String        @id @default(cuid())
+  amount    Float
+  method    String        // STRIPE, CASH, RAZORPAY
+  status    String        @default("PENDING") // PENDING, PAID, REFUNDED, FAILED
+  bookingId String
+  booking   Booking       @relation(fields: [bookingId], references: [id])
+  createdAt DateTime      @default(now())
 }
 
 model ContactInquiry {

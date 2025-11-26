@@ -3,6 +3,7 @@
 import { prisma } from "@repo/database";
 import { revalidatePath } from "next/cache";
 import { bookingSchema, formatPhoneNumber } from "@repo/types";
+import QRCode from "qrcode";
 
 // Generate unique booking number: NIP-YYYYMMDD-XXXX
 function generateBookingNumber(): string {
@@ -136,7 +137,32 @@ export async function createBooking(formData: any) {
                 spectators: data.spectators,
                 amount: totalAmount,
                 status: "CONFIRMED",
+                bookingStatus: "CONFIRMED",
+                paymentStatus: "PENDING",
+                waiverStatus: "PENDING",
             },
+        });
+
+        // Generate QR Code for the booking
+        const qrData = JSON.stringify({
+            id: booking.id,
+            name: booking.name,
+            date: booking.date,
+            time: booking.time,
+            guests: booking.adults + booking.kids + booking.spectators
+        });
+
+        const qrCode = await QRCode.toDataURL(qrData, {
+            errorCorrectionLevel: 'H',
+            type: 'image/png',
+            width: 300,
+            margin: 2,
+        });
+
+        // Update booking with QR code
+        await prisma.booking.update({
+            where: { id: booking.id },
+            data: { qrCode }
         });
 
         console.log("Booking created successfully:", {
@@ -163,6 +189,7 @@ export async function createBooking(formData: any) {
         // });
 
         revalidatePath("/admin");
+        revalidatePath("/admin/bookings");
 
         return {
             success: true,

@@ -21,7 +21,7 @@ export default function Book() {
     };
 
     return (
-        <main className="min-h-screen bg-background py-6 md:py-12 lg:py-20">
+        <main className="min-h-screen bg-background pt-24 pb-6 md:pb-12 lg:pb-20">
             <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
                 {/* Header */}
                 <div className="text-center mb-6 md:mb-8 lg:mb-12">

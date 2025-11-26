@@ -4,6 +4,11 @@ declare global {
     var prisma: PrismaClient | undefined;
 }
 
+// Set DATABASE_URL if not already set (workaround for monorepo env loading)
+if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = "file:C:/Users/saksa/OneDrive/Desktop/ninja/ninjainflatablepark/packages/database/dev.db";
+}
+
 export const prisma = global.prisma || new PrismaClient();
 
 if (process.env.NODE_ENV !== "production") global.prisma = prisma;
