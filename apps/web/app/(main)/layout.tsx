@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import { Navbar, Footer, ToastProvider } from "@repo/ui";
+import { Footer, ToastProvider } from "@repo/ui";
+import { Navbar } from "../../features/navigation/Navbar";
 
 export const metadata: Metadata = {
     title: "Ninja Inflatable Park | India's Biggest Inflatable Park",

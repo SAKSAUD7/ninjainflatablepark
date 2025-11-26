@@ -1,10 +1,11 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
 import { BouncyButton } from "./BouncyButton";
 import { SectionDivider } from "./SectionDivider";
+import { useTextCarousel } from "@repo/hooks";
 
 export const AnimatedHero = () => {
     const ref = useRef(null);
@@ -16,8 +17,12 @@ export const AnimatedHero = () => {
     const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
     const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
+    // Text carousel for the hero heading
+    const carouselTexts = ["NINJA !!", "WARRIOR !!", "CHAMPION !!", "HERO !!"];
+    const { currentText, isAnimating } = useTextCarousel(carouselTexts, 3000);
+
     return (
-        <div ref={ref} className="relative h-screen w-full overflow-hidden bg-background-dark">
+        <div ref={ref} className="relative min-h-screen w-full overflow-hidden bg-background-dark pt-20">
             {/* Background Video/Image Parallax */}
             <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-background-dark/90 z-10" />
@@ -60,9 +65,18 @@ export const AnimatedHero = () => {
                     className="text-6xl md:text-9xl font-display font-black text-white mb-8 leading-none drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]"
                 >
                     ARE YOU A <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-dark via-secondary-dark to-accent-dark filter drop-shadow-lg">
-                        NINJA !!
-                    </span>
+                    <AnimatePresence mode="wait">
+                        <motion.span
+                            key={currentText}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.5 }}
+                            className="text-transparent bg-clip-text bg-gradient-to-r from-primary-dark via-secondary-dark to-accent-dark filter drop-shadow-lg inline-block"
+                        >
+                            {currentText}
+                        </motion.span>
+                    </AnimatePresence>
                 </motion.h1>
 
                 <motion.p
@@ -78,15 +92,15 @@ export const AnimatedHero = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.8 }}
-                    className="flex flex-col md:flex-row gap-6"
+                    className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full max-w-md mx-auto"
                 >
-                    <Link href="/pricing">
-                        <BouncyButton size="lg" variant="accent" className="shadow-neon-pink">
+                    <Link href="/pricing" className="w-full sm:w-auto">
+                        <BouncyButton size="lg" variant="accent" className="shadow-neon-pink w-full sm:w-auto justify-center">
                             Book Tickets Now
                         </BouncyButton>
                     </Link>
-                    <Link href="/attractions">
-                        <BouncyButton size="lg" variant="outline" className="text-white border-white hover:bg-white/10 backdrop-blur-sm">
+                    <Link href="/attractions" className="w-full sm:w-auto">
+                        <BouncyButton size="lg" variant="outline" className="text-white border-white hover:bg-white/10 backdrop-blur-sm w-full sm:w-auto justify-center">
                             View Attractions
                         </BouncyButton>
                     </Link>

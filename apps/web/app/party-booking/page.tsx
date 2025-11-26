@@ -23,9 +23,18 @@ export default function PartyBookingPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [bookingDetails, setBookingDetails] = useState<any>(null);
+    const [participantError, setParticipantError] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Validate minimum participants
+        if (formData.participants < 10) {
+            setParticipantError("Minimum 10 participants required.");
+            return;
+        }
+
+        setParticipantError("");
         setIsSubmitting(true);
 
         try {
@@ -248,10 +257,23 @@ export default function PartyBookingPage() {
                                             type="number"
                                             required
                                             min="10"
+                                            step="1"
                                             value={formData.participants}
-                                            onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) || 10 })}
-                                            className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white"
+                                            onChange={(e) => {
+                                                const value = parseInt(e.target.value) || 10;
+                                                setFormData({ ...formData, participants: value });
+                                                if (value < 10) {
+                                                    setParticipantError("Minimum 10 participants required.");
+                                                } else {
+                                                    setParticipantError("");
+                                                }
+                                            }}
+                                            className={`w-full px-4 py-3 bg-background-dark border-2 ${participantError ? 'border-red-500' : 'border-surface-700'
+                                                } rounded-xl focus:border-primary focus:outline-none transition-colors text-white`}
                                         />
+                                        {participantError && (
+                                            <p className="text-red-500 text-sm mt-1">{participantError}</p>
+                                        )}
                                     </div>
 
                                     <div>

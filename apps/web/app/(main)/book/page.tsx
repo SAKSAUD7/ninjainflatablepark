@@ -47,25 +47,6 @@ export default function Book() {
                             <p className="text-white/70 mb-6 flex-grow">
                                 Perfect for schools, corporate teams, or friends. Enjoy exclusive rates, dedicated support, and flexible scheduling.
                             </p>
-                            {/* Voucher Claim Section */}
-                            <div className="mb-4">
-                                <input
-                                    type="text"
-                                    placeholder="Enter voucher code"
-                                    value={voucher}
-                                    onChange={(e) => setVoucher(e.target.value)}
-                                    className="w-full px-4 py-2 rounded bg-surface-800/30 text-white placeholder-white/50 focus:outline-none"
-                                />
-                                <button
-                                    onClick={applyVoucher}
-                                    className="mt-2 w-full bg-primary text-primary-foreground py-2 rounded hover:bg-primary-light transition"
-                                >
-                                    Apply Voucher
-                                </button>
-                                {voucherMessage && (
-                                    <p className="mt-2 text-sm text-center text-white/80">{voucherMessage}</p>
-                                )}
-                            </div>
                             <Link href="/contact#contactForm" className="w-full">
                                 <BouncyButton size="lg" variant="primary">Enquire Now</BouncyButton>
                             </Link>

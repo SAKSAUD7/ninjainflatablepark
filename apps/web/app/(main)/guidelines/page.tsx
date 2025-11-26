@@ -95,7 +95,7 @@ export default function GuidelinesPage() {
             </section>
 
             {/* Rules Grid */}
-            <section className="relative px-4 pb-20">
+            <section className="relative px-4 pb-32 md:pb-40">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {rules.map((rule, index) => (

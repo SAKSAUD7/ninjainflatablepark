@@ -1,5 +1,5 @@
 // Legacy Components (root level)
-export { Navbar } from "./Navbar";
+// export { Navbar } from "./Navbar"; // DEPRECATED: Use features/navigation/Navbar instead
 export { Footer } from "./Footer";
 export { Hero } from "./Hero";
 export { Button } from "./Button";

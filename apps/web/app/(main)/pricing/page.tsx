@@ -4,13 +4,14 @@ import Link from "next/link";
 import { ScrollReveal, BouncyButton, SectionDivider } from "@repo/ui";
 import { motion } from "framer-motion";
 import { Check, Clock, AlertCircle, Users, Mail } from "lucide-react";
+import { formatCurrency } from "@repo/utils";
 
 export default function Pricing() {
     const prices = [
         {
             title: "Little Ninjas",
             age: "Ages 1 - 7 Years",
-            price: "₹500",
+            price: 500,
             period: "/ 60 Mins",
             features: [
                 "Full Access to Kids Zones",
@@ -23,7 +24,7 @@ export default function Pricing() {
         {
             title: "Ninja Warriors",
             age: "Ages 7+ Years",
-            price: "₹899",
+            price: 899,
             period: "/ 60 Mins",
             features: [
                 "Access to All Attractions",
@@ -37,7 +38,7 @@ export default function Pricing() {
         {
             title: "Spectator",
             age: "Guardians / Parents",
-            price: "₹150",
+            price: 150,
             period: "/ Session",
             features: [
                 "Entry to Park Premises",
@@ -79,9 +80,9 @@ export default function Pricing() {
             </section>
 
             {/* Pricing Cards */}
-            <section className="relative px-4 pb-12">
+            <section className="relative px-4 pb-32 md:pb-40">
                 <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {prices.map((plan, index) => (
                             <ScrollReveal key={index} animation="scale" delay={index * 0.1}>
                                 <motion.div
@@ -98,7 +99,7 @@ export default function Pricing() {
                                     </h3>
                                     <p className="text-white/60 mb-6">{plan.age}</p>
                                     <div className="mb-8">
-                                        <span className="text-5xl font-black text-white">{plan.price}</span>
+                                        <span className="text-5xl font-black text-white">{formatCurrency(plan.price)}</span>
                                         <span className="text-white/60 text-sm">{plan.period}</span>
                                     </div>
                                     <ul className="space-y-4 mb-8 flex-grow">
@@ -117,12 +118,52 @@ export default function Pricing() {
                                 </motion.div>
                             </ScrollReveal>
                         ))}
+
+                        {/* Party Packages Card */}
+                        <ScrollReveal animation="scale" delay={0.3}>
+                            <motion.div
+                                whileHover={{ y: -10 }}
+                                className="relative p-8 rounded-3xl border-2 border-accent bg-surface-800/50 backdrop-blur-sm h-full flex flex-col"
+                            >
+                                <h3 className="text-2xl font-display font-bold mb-2 text-accent">
+                                    Party Packages
+                                </h3>
+                                <p className="text-white/60 mb-6">Birthday & Events</p>
+                                <div className="mb-8">
+                                    <span className="text-5xl font-black text-white">{formatCurrency(1500)}</span>
+                                    <span className="text-white/60 text-sm">/ Person</span>
+                                </div>
+                                <ul className="space-y-4 mb-8 flex-grow">
+                                    <li className="flex items-start gap-3 text-white/80">
+                                        <Check className="w-5 h-5 text-accent shrink-0" />
+                                        <span className="text-sm">Min. 10 Participants</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-white/80">
+                                        <Check className="w-5 h-5 text-accent shrink-0" />
+                                        <span className="text-sm">Private Party Room</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-white/80">
+                                        <Check className="w-5 h-5 text-accent shrink-0" />
+                                        <span className="text-sm">Party Feast Included</span>
+                                    </li>
+                                    <li className="flex items-start gap-3 text-white/80">
+                                        <Check className="w-5 h-5 text-accent shrink-0" />
+                                        <span className="text-sm">+ GST Applicable</span>
+                                    </li>
+                                </ul>
+                                <Link href="/party-booking" className="w-full">
+                                    <BouncyButton size="lg" variant="accent" className="w-full">
+                                        Book Party
+                                    </BouncyButton>
+                                </Link>
+                            </motion.div>
+                        </ScrollReveal>
                     </div>
                 </div>
             </section>
 
             {/* Group Booking - Compact Card */}
-            <section className="relative px-4 pb-20">
+            <section className="relative px-4 pb-32 md:pb-40">
                 <div className="max-w-4xl mx-auto">
                     <ScrollReveal animation="scale">
                         <motion.div

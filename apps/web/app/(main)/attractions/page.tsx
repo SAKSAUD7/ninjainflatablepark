@@ -73,7 +73,7 @@ export default function AttractionsPage() {
             <AttractionsGrid />
 
             {/* Park Facilities Section */}
-            <section className="relative py-12 md:py-20 px-4 bg-background-light">
+            <section className="relative py-12 md:py-20 px-4 pb-32 md:pb-40 bg-background-light">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="slideUp">
                         <div className="text-center mb-16">
@@ -91,8 +91,8 @@ export default function AttractionsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {facilities.map((facility, index) => (
                             <ScrollReveal key={index} animation="fade" delay={index * 0.1}>
-                                <div className="bg-surface-800 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors h-full overflow-hidden group">
-                                    <div className="h-48 overflow-hidden relative">
+                                <div className="bg-surface-800 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors flex flex-col overflow-hidden group">
+                                    <div className="h-48 overflow-hidden relative flex-shrink-0">
                                         <img
                                             src={`/images/uploads/img-${(index % 10) + 1}.jpg`}
                                             alt={facility.title}
@@ -106,17 +106,17 @@ export default function AttractionsPage() {
                                             {facility.icon}
                                         </div>
                                     </div>
-                                    <div className="p-6">
+                                    <div className="p-6 flex-grow flex flex-col">
                                         <h3 className="text-2xl font-display font-bold mb-3 text-white">
                                             {facility.title}
                                         </h3>
-                                        <p className="text-white/70 mb-6 min-h-[3rem]">
+                                        <p className="text-white/70 mb-6">
                                             {facility.description}
                                         </p>
-                                        <ul className="space-y-2">
+                                        <ul className="space-y-2 mt-auto">
                                             {facility.items.map((item, i) => (
                                                 <li key={i} className="flex items-center gap-2 text-sm text-white/60">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                                                     {item}
                                                 </li>
                                             ))}

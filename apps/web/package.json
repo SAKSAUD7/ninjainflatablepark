@@ -13,6 +13,8 @@
         "@repo/config": "*",
         "@repo/database": "*",
         "@repo/ui": "*",
+        "@repo/hooks": "*",
+        "@repo/utils": "*",
         "bcryptjs": "^3.0.3",
         "clsx": "^2.1.0",
         "date-fns": "^4.1.0",
@@ -29,14 +31,19 @@
         "zod": "^4.1.13"
     },
     "devDependencies": {
+        "@testing-library/jest-dom": "^6.9.1",
+        "@testing-library/react": "^16.3.0",
         "@types/bcryptjs": "^3.0.0",
         "@types/node": "^20",
         "@types/qrcode": "^1.5.6",
         "@types/react": "^18",
         "@types/react-dom": "^18",
+        "@vitejs/plugin-react": "^5.1.1",
         "autoprefixer": "^10.0.1",
+        "jsdom": "^27.2.0",
         "postcss": "^8",
         "tailwindcss": "^3.3.0",
-        "typescript": "^5"
+        "typescript": "^5",
+        "vitest": "^4.0.14"
     }
 }

@@ -225,7 +225,7 @@ export default function ContactPage() {
             </section>
 
             {/* CTA */}
-            <section className="relative py-16 md:py-32 px-4 bg-background-light">
+            <section className="relative py-16 md:py-32 px-4 pb-32 md:pb-40 bg-background-light">
                 <div className="max-w-4xl mx-auto text-center">
                     <ScrollReveal animation="scale">
                         <h2 className="text-4xl md:text-5xl lg:text-7xl font-display font-black mb-6">
@@ -234,9 +234,11 @@ export default function ContactPage() {
                         <p className="text-base md:text-xl text-white/70 mb-10">
                             Book your tickets online and skip the queue!
                         </p>
-                        <BouncyButton size="lg" variant="accent">
-                            Book Now
-                        </BouncyButton>
+                        <div className="flex justify-center">
+                            <BouncyButton size="lg" variant="accent">
+                                Book Now
+                            </BouncyButton>
+                        </div>
                     </ScrollReveal>
                 </div>
             </section>

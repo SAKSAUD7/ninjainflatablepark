@@ -2,6 +2,7 @@ import { getBookings } from "../../../actions/admin";
 import { getAdminSession } from "../../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import BookingEditModal from "../components/BookingEditModal";
+import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import {
     Search,
     Download,
@@ -86,7 +87,7 @@ export default async function AdminBookings() {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">
-                                                {(booking.customerName || 'U').charAt(0)}
+                                                {getInitials(booking.customerName || 'U')}
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-slate-900">{booking.customerName || 'Unknown'}</p>
@@ -103,7 +104,7 @@ export default async function AdminBookings() {
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-2 text-sm font-medium text-slate-900">
                                                 <Calendar size={14} className="text-slate-400" />
-                                                {new Date(booking.date).toLocaleDateString()}
+                                                {formatDate(booking.date)}
                                             </div>
                                             <div className="flex items-center gap-2 text-xs text-slate-500">
                                                 <Clock size={12} />
@@ -117,7 +118,7 @@ export default async function AdminBookings() {
                                     <td className="px-6 py-4">
                                         <p className="text-sm font-medium text-slate-900">{booking.packageId}</p>
                                         <p className="text-xs text-slate-500">{booking.guests || 1} Guests</p>
-                                        <p className="text-sm font-bold text-slate-900 mt-1">₹{booking.totalAmount}</p>
+                                        <p className="text-sm font-bold text-slate-900 mt-1">{formatCurrency(booking.totalAmount)}</p>
                                     </td>
                                     <td className="px-6 py-4">
                                         <StatusBadge status={booking.status} />

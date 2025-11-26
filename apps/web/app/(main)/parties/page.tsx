@@ -255,7 +255,7 @@ export default function Parties() {
             </section>
 
             {/* CTA - Compact */}
-            <section className="relative py-16 px-4 bg-background">
+            <section className="relative py-16 px-4 pb-32 md:pb-40 bg-background">
                 <div className="max-w-3xl mx-auto text-center">
                     <ScrollReveal animation="scale">
                         <h2 className="text-4xl md:text-5xl font-display font-black mb-4">
@@ -264,12 +264,14 @@ export default function Parties() {
                         <p className="text-lg text-white/70 mb-6">
                             Book now and make it unforgettable!
                         </p>
-                        <Link href="/party-booking">
-                            <BouncyButton size="lg" variant="accent">
-                                <PartyPopper className="w-5 h-5 mr-2" />
-                                Book Your Party
-                            </BouncyButton>
-                        </Link>
+                        <div className="flex justify-center">
+                            <Link href="/party-booking">
+                                <BouncyButton size="lg" variant="accent">
+                                    <PartyPopper className="w-5 h-5 mr-2" />
+                                    Book Your Party
+                                </BouncyButton>
+                            </Link>
+                        </div>
                     </ScrollReveal>
                 </div>
             </section>

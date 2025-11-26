@@ -4,6 +4,10 @@
     "private": true,
     "main": "./src/index.tsx",
     "types": "./src/index.tsx",
+    "exports": {
+        ".": "./src/index.tsx",
+        "./styles.css": "./src/styles.css"
+    },
     "scripts": {
         "lint": "eslint .",
         "build": "tsc"

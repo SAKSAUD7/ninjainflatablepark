@@ -1,23 +1,28 @@
-import type { Metadata } from "next";
+import "@repo/ui/styles.css";
 import "./globals.css";
+import type { Metadata } from "next";
+import { Inter, Outfit } from "next/font/google";
+import { UIProvider } from "../state/ui/uiContext";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-    title: "Ninja Inflatable Park | India's Biggest Inflatable Park",
-    description: "Experience the ultimate fun at Ninja Inflatable Park. Bounce, slide, and conquer the ultimate inflatable adventure!",
+    title: "Ninja Inflatable Park",
+    description: "India's Biggest Inflatable Park",
 };
 
 export default function RootLayout({
     children,
 }: {
     children: React.ReactNode;
-}) {
+}): JSX.Element {
     return (
         <html lang="en">
-            <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-            </head>
-            <body className="font-body antialiased flex flex-col min-h-screen bg-background" suppressHydrationWarning>
-                {children}
+            <body className={`${inter.variable} ${outfit.variable} font-sans bg-background text-white`}>
+                <UIProvider>
+                    {children}
+                </UIProvider>
             </body>
         </html>
     );

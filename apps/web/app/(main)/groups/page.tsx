@@ -139,7 +139,7 @@ export default function GroupsPage() {
             </section>
 
             {/* Group Packages */}
-            <section className="relative px-4 pb-20 bg-background">
+            <section className="relative px-4 pb-32 md:pb-40 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade" className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl lg:text-6xl font-display font-black mb-4">

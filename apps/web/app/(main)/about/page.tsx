@@ -293,7 +293,7 @@ export default function AboutPage() {
             </section>
 
             {/* CTA */}
-            <section className="relative py-32 px-4 bg-background">
+            <section className="relative py-32 px-4 pb-32 md:pb-40 bg-background">
                 <div className="max-w-4xl mx-auto text-center">
                     <ScrollReveal animation="scale">
                         <h2 className="text-5xl md:text-7xl font-display font-black mb-6">
