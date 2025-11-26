@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Ticket } from "lucide-react";
+import { Menu, X, Ticket, Phone } from "lucide-react";
 import { useUI } from "../../state/ui/uiContext";
 import { BouncyButton } from "@repo/ui";
 
@@ -43,6 +43,13 @@ export function Navbar() {
                             {link.label}
                         </Link>
                     ))}
+                    <a
+                        href="tel:+919876543210"
+                        className="hidden lg:flex items-center gap-2 bg-[#2D1B4E] hover:bg-[#3D2B5E] px-4 py-2 rounded-lg transition-colors"
+                    >
+                        <Phone className="w-4 h-4 text-white" />
+                        <span className="text-white font-semibold">98765 43210</span>
+                    </a>
                     <Link href="/book">
                         <BouncyButton size="sm" variant="accent">
                             Book Now <Ticket className="w-4 h-4 ml-2" />
@@ -84,6 +91,10 @@ export function Navbar() {
                                         {link.label}
                                     </Link>
                                 ))}
+                                <a href="tel:+919876543210" className="flex items-center justify-center gap-2 text-white hover:text-primary font-semibold transition-colors text-xl py-2">
+                                    <Phone className="w-5 h-5" />
+                                    <span>+91 98765 43210</span>
+                                </a>
                                 <div className="mt-4 space-y-3">
                                     <Link href="/book" onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}>
                                         <BouncyButton size="lg" variant="accent" className="w-full justify-center">
