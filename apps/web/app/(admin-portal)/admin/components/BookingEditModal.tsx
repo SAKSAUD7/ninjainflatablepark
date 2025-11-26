@@ -6,10 +6,11 @@ import { updateBookingDetails, updateBookingStatus } from "../../../actions/admi
 
 interface BookingEditModalProps {
     booking: any;
+    onClose?: () => void;
 }
 
-export default function BookingEditModal({ booking }: BookingEditModalProps) {
-    const [isOpen, setIsOpen] = useState(false);
+export default function BookingEditModal({ booking, onClose }: BookingEditModalProps) {
+    const [isOpen, setIsOpen] = useState(onClose ? true : false);
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         date: booking.date,
@@ -62,11 +63,11 @@ export default function BookingEditModal({ booking }: BookingEditModalProps) {
             </button>
 
             {isOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setIsOpen(false)}>
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => { setIsOpen(false); onClose?.(); }}>
                     <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
                         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                             <h3 className="font-bold text-lg">Edit Booking</h3>
-                            <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600">
+                            <button onClick={() => { setIsOpen(false); onClose?.(); }} className="text-gray-400 hover:text-gray-600">
                                 <X size={20} />
                             </button>
                         </div>
