@@ -29,6 +29,7 @@ model Booking {
   bookingStatus String        @default("PENDING")   // PENDING, CONFIRMED, CANCELLED, COMPLETED
   waiverStatus  String        @default("PENDING")   // PENDING, SIGNED
   paymentStatus String        @default("PENDING")   // PENDING, PAID, REFUNDED, FAILED
+  type          String        @default("SESSION")   // SESSION, PARTY, MANUAL
   qrCode        String?       @unique
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
@@ -51,6 +52,8 @@ model Waiver {
   signedAt       DateTime     @default(now())
   version        String
   emergencyContact String?
+  dob            String?
+  minors         String?      // JSON string of minors [{name, age}]
   
   // Relations
   bookingId      String?
@@ -131,4 +134,15 @@ model AuditLog {
   entityId    String?
   details     String?
   createdAt   DateTime @default(now())
+}
+
+model BookingBlock {
+  id          String   @id @default(cuid())
+  startDate   DateTime
+  endDate     DateTime
+  reason      String
+  type        String   // MAINTENANCE, PRIVATE_EVENT, CLOSED
+  recurring   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

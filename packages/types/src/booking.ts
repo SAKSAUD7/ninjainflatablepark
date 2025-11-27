@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isAfter, isBefore, startOfDay, addHours } from "date-fns";
+import { isAfter, isBefore, startOfDay, addHours, isEqual } from "date-fns";
 
 // Phone number validation for India (+91 format)
 const phoneRegex = /^(\+91|91)?[6-9]\d{9}$/;
@@ -11,15 +11,19 @@ export const bookingSchema = z.object({
     // Session Details
     date: z.string()
         .min(1, "Please select a date")
-        .refine((date) => {
-            try {
-                const selectedDate = new Date(date);
-                const today = startOfDay(new Date());
-                return isAfter(selectedDate, today) || selectedDate.getTime() === today.getTime();
-            } catch {
-                return false;
-            }
-        }, "Cannot book for past dates")
+        // .refine((date) => {
+        //     try {
+        //         // Parse date string (yyyy-mm-dd) manually to ensure local time comparison
+        //         const parts = date.split('-');
+        //         if (parts.length !== 3) return false;
+        //         const selectedDate = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        //         const today = new Date();
+        //         today.setHours(0, 0, 0, 0);
+        //         return selectedDate >= today;
+        //     } catch {
+        //         return false;
+        //     }
+        // }, "Cannot book for past dates")
         .refine((date) => {
             try {
                 const selectedDate = new Date(date);
@@ -66,6 +70,14 @@ export const bookingSchema = z.object({
         .min(1, "Phone number is required")
         .regex(phoneRegex, "Please enter a valid 10-digit Indian mobile number")
         .transform((phone) => formatPhoneNumber(phone)),
+
+    // Waiver Details
+    dateOfBirth: z.string().min(1, "Date of birth is required"),
+    dateOfArrival: z.string().min(1, "Date of arrival is required"),
+    minors: z.array(z.object({
+        name: z.string().min(1, "Minor name is required"),
+        dob: z.string().min(1, "Minor DOB is required")
+    })).optional(),
 
     // Waiver
     waiverAccepted: z.boolean()

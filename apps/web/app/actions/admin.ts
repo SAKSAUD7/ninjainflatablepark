@@ -143,6 +143,50 @@ export async function getBookings(filter?: { status?: string; date?: string; sea
     });
 }
 
+export async function getPartyBookings(filter?: { status?: string; date?: string; search?: string }) {
+    const session = await getAdminSession();
+    if (!session) throw new Error("Unauthorized");
+
+    const where: any = { type: "PARTY" };
+    if (filter?.status) where.status = filter.status;
+    if (filter?.date) where.date = filter.date;
+    if (filter?.search) {
+        where.OR = [
+            { name: { contains: filter.search } },
+            { email: { contains: filter.search } },
+            { id: { contains: filter.search } }
+        ];
+    }
+
+    return await prisma.booking.findMany({
+        where,
+        orderBy: { date: 'asc' },
+        include: { waivers: true }
+    });
+}
+
+export async function getSessionBookings(filter?: { status?: string; date?: string; search?: string }) {
+    const session = await getAdminSession();
+    if (!session) throw new Error("Unauthorized");
+
+    const where: any = { type: "SESSION" };
+    if (filter?.status) where.status = filter.status;
+    if (filter?.date) where.date = filter.date;
+    if (filter?.search) {
+        where.OR = [
+            { name: { contains: filter.search } },
+            { email: { contains: filter.search } },
+            { id: { contains: filter.search } }
+        ];
+    }
+
+    return await prisma.booking.findMany({
+        where,
+        orderBy: { date: 'asc' },
+        include: { waivers: true }
+    });
+}
+
 export async function updateBookingStatus(id: string, status: string) {
     const session = await getAdminSession();
     if (!session) throw new Error("Unauthorized");
@@ -221,4 +265,37 @@ export async function getCustomers(search?: string) {
         orderBy: { createdAt: 'desc' },
         include: { _count: { select: { bookings: true } } }
     });
+}
+
+// --- Booking Block Actions ---
+
+export async function getBookingBlocks() {
+    const session = await getAdminSession();
+    if (!session) throw new Error("Unauthorized");
+
+    return await prisma.bookingBlock.findMany({
+        orderBy: { startDate: 'asc' }
+    });
+}
+
+export async function createBookingBlock(data: { startDate: Date; endDate: Date; reason: string; type: string; recurring: boolean }) {
+    const session = await getAdminSession();
+    if (!session) throw new Error("Unauthorized");
+
+    await prisma.bookingBlock.create({
+        data
+    });
+
+    revalidatePath("/admin/booking-blocks");
+}
+
+export async function deleteBookingBlock(id: string) {
+    const session = await getAdminSession();
+    if (!session) throw new Error("Unauthorized");
+
+    await prisma.bookingBlock.delete({
+        where: { id }
+    });
+
+    revalidatePath("/admin/booking-blocks");
 }

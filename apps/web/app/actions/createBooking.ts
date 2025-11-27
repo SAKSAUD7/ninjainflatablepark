@@ -140,6 +140,17 @@ export async function createBooking(formData: any) {
                 bookingStatus: "CONFIRMED",
                 paymentStatus: "PENDING",
                 waiverStatus: "PENDING",
+                type: "SESSION",
+                waivers: {
+                    create: {
+                        name: sanitizedName,
+                        email: sanitizedEmail,
+                        phone: sanitizedPhone,
+                        dob: data.dateOfBirth,
+                        version: "1.0",
+                        minors: JSON.stringify(data.minors || []),
+                    }
+                }
             },
         });
 

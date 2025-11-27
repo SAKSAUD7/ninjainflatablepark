@@ -46,7 +46,9 @@ export async function createPartyBooking(formData: any) {
                 kids: participants,
                 spectators,
                 amount: totalAmount,
+                amount: totalAmount,
                 status: "PENDING", // Requires 50% deposit
+                type: "PARTY",
             },
         });
 
