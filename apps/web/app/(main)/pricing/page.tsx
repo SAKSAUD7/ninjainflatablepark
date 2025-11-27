@@ -111,7 +111,7 @@ export default function Pricing() {
                                         ))}
                                     </ul>
                                     <Link href="/book" className="w-full">
-                                        <BouncyButton size="lg" variant={plan.variant as any} className="w-full">
+                                        <BouncyButton size="lg" variant={plan.variant as any} className="w-full" as="div">
                                             Book Now
                                         </BouncyButton>
                                     </Link>
@@ -152,7 +152,7 @@ export default function Pricing() {
                                     </li>
                                 </ul>
                                 <Link href="/party-booking" className="w-full">
-                                    <BouncyButton size="lg" variant="accent" className="w-full">
+                                    <BouncyButton size="lg" variant="accent" className="w-full" as="div">
                                         Book Party
                                     </BouncyButton>
                                 </Link>
@@ -211,13 +211,13 @@ export default function Pricing() {
 
                             <div className="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row gap-3">
                                 <Link href="/groups" className="flex-1">
-                                    <BouncyButton size="md" variant="accent" className="w-full">
+                                    <BouncyButton size="md" variant="accent" className="w-full" as="div">
                                         <Users className="w-4 h-4 mr-2" />
                                         Book Now
                                     </BouncyButton>
                                 </Link>
                                 <Link href="/contact#contactForm" className="flex-1">
-                                    <BouncyButton size="md" variant="outline" className="w-full text-white border-white">
+                                    <BouncyButton size="md" variant="outline" className="w-full text-white border-white" as="div">
                                         <Mail className="w-4 h-4 mr-2" />
                                         Enroll Now
                                     </BouncyButton>

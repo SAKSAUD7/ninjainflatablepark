@@ -19,7 +19,7 @@ export const AnimatedHero = () => {
 
     // Text carousel for the hero heading
     const carouselTexts = ["NINJA !!", "WARRIOR !!", "CHAMPION !!", "HERO !!"];
-    const { currentText, isAnimating } = useTextCarousel(carouselTexts, 3000);
+    const { currentText } = useTextCarousel(carouselTexts, 3000);
 
     return (
         <div ref={ref} className="relative min-h-[100vh] md:min-h-screen w-full overflow-hidden bg-background-dark pt-20">
@@ -95,12 +95,12 @@ export const AnimatedHero = () => {
                     className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full max-w-md mx-auto px-4"
                 >
                     <Link href="/pricing" className="w-full sm:w-auto">
-                        <BouncyButton size="md" variant="accent" className="shadow-neon-pink w-full sm:w-auto justify-center text-sm sm:text-base">
+                        <BouncyButton size="md" variant="accent" className="shadow-neon-pink w-full sm:w-auto justify-center text-sm sm:text-base" as="div">
                             Book Tickets Now
                         </BouncyButton>
                     </Link>
                     <Link href="/attractions" className="w-full sm:w-auto">
-                        <BouncyButton size="md" variant="outline" className="text-white border-white hover:bg-white/10 backdrop-blur-sm w-full sm:w-auto justify-center text-sm sm:text-base">
+                        <BouncyButton size="md" variant="outline" className="text-white border-white hover:bg-white/10 backdrop-blur-sm w-full sm:w-auto justify-center text-sm sm:text-base" as="div">
                             View Attractions
                         </BouncyButton>
                     </Link>

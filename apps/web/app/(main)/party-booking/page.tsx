@@ -4,7 +4,10 @@ import { useState } from "react";
 import { ScrollReveal, BouncyButton } from "@repo/ui";
 import { motion } from "framer-motion";
 import { Calendar, Clock, Users, Mail, Phone, User, Cake, MessageSquare, PartyPopper, CheckCircle } from "lucide-react";
-import { createPartyBooking } from "../actions/createPartyBooking";
+import { createPartyBooking } from "../../actions/createPartyBooking";
+
+// Dynamic minimum requirement as requested
+const MIN_PARTICIPANTS = 10;
 
 export default function PartyBookingPage() {
     const [formData, setFormData] = useState({
@@ -15,8 +18,8 @@ export default function PartyBookingPage() {
         childAge: "",
         date: "",
         time: "",
-        participants: 10,
-        spectators: 10,
+        participants: MIN_PARTICIPANTS,
+        spectators: 0,
         specialRequests: "",
     });
 
@@ -28,9 +31,9 @@ export default function PartyBookingPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate minimum participants
-        if (formData.participants < 10) {
-            setParticipantError("Minimum 10 participants required.");
+        // Validate minimum participants on submit
+        if (formData.participants < MIN_PARTICIPANTS) {
+            setParticipantError(`Minimum ${MIN_PARTICIPANTS} participants required.`);
             return;
         }
 
@@ -251,21 +254,31 @@ export default function PartyBookingPage() {
                                     <div>
                                         <label className="block text-sm font-bold mb-2 text-white/80">
                                             <Users className="w-4 h-4 inline mr-2" />
-                                            Number of Participants * (Min. 10)
+                                            Number of Participants * (Min. {MIN_PARTICIPANTS})
                                         </label>
                                         <input
                                             type="number"
                                             required
-                                            min="10"
-                                            step="1"
+                                            min="0" // Allow typing small numbers, validate on blur/submit
                                             value={formData.participants}
                                             onChange={(e) => {
-                                                const value = parseInt(e.target.value) || 10;
-                                                setFormData({ ...formData, participants: value });
-                                                if (value < 10) {
-                                                    setParticipantError("Minimum 10 participants required.");
-                                                } else {
+                                                // Allow any number input, don't force min immediately
+                                                const val = e.target.value;
+                                                const intVal = parseInt(val);
+                                                setFormData({
+                                                    ...formData,
+                                                    participants: isNaN(intVal) ? 0 : intVal
+                                                });
+
+                                                // Clear error if valid
+                                                if (!isNaN(intVal) && intVal >= MIN_PARTICIPANTS) {
                                                     setParticipantError("");
+                                                }
+                                            }}
+                                            onBlur={() => {
+                                                // Validate on blur
+                                                if (formData.participants < MIN_PARTICIPANTS) {
+                                                    setParticipantError(`Minimum ${MIN_PARTICIPANTS} participants required.`);
                                                 }
                                             }}
                                             className={`w-full px-4 py-3 bg-background-dark border-2 ${participantError ? 'border-red-500' : 'border-surface-700'

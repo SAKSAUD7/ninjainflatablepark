@@ -15,9 +15,10 @@ export const BouncyButton = ({
     className,
     variant = "primary",
     size = "md",
+    as = "button",
     ...props
-}: BouncyButtonProps) => {
-    const baseStyles = "relative font-bold rounded-full transition-colors flex items-center justify-center gap-2 overflow-hidden";
+}: BouncyButtonProps & { as?: "button" | "div" | "a" }) => {
+    const baseStyles = "relative font-bold rounded-full transition-colors flex items-center justify-center gap-2 overflow-hidden cursor-pointer";
 
     const variants = {
         primary: "bg-primary text-primary-foreground hover:bg-primary-light shadow-neon-blue",
@@ -32,8 +33,10 @@ export const BouncyButton = ({
         lg: "px-8 py-4 text-lg",
     };
 
+    const Component = motion[as] as any;
+
     return (
-        <motion.button
+        <Component
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={cn(baseStyles, variants[variant], sizes[size], className)}
@@ -46,6 +49,6 @@ export const BouncyButton = ({
                 whileHover={{ x: "100%" }}
                 transition={{ duration: 0.5 }}
             />
-        </motion.button>
+        </Component>
     );
 };

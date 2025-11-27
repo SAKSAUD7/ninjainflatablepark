@@ -202,7 +202,7 @@ async function main() {
             data: {
                 name: data.customer.name,
                 email: data.customer.email,
-                phone: data.customer.phone,
+                phone: data.customer.phone ?? "",
                 date: data.date,
                 time: data.time,
                 duration: data.duration,

@@ -78,7 +78,7 @@ export default function HomeContent({ stats, gallery, reviews }: HomeContentProp
                                     Spanning over 20,000 square feet, we've created India's largest inflatable adventure park with 11+ unique zones designed to thrill, challenge, and entertain.
                                 </p>
                                 <Link href="/about">
-                                    <BouncyButton size="lg" variant="outline" className="text-white border-white">
+                                    <BouncyButton size="lg" variant="outline" className="text-white border-white" as="div">
                                         Read Our Story <ArrowRight className="w-5 h-5 ml-2" />
                                     </BouncyButton>
                                 </Link>
@@ -130,7 +130,7 @@ export default function HomeContent({ stats, gallery, reviews }: HomeContentProp
 
                     <div className="text-center mt-12">
                         <Link href="/attractions">
-                            <BouncyButton size="lg" variant="primary">
+                            <BouncyButton size="lg" variant="primary" as="div">
                                 View All Attractions <ArrowRight className="w-5 h-5" />
                             </BouncyButton>
                         </Link>
@@ -249,12 +249,12 @@ export default function HomeContent({ stats, gallery, reviews }: HomeContentProp
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
                             <Link href="/pricing">
-                                <BouncyButton size="lg" variant="accent">
+                                <BouncyButton size="lg" variant="accent" as="div">
                                     Book Tickets Now
                                 </BouncyButton>
                             </Link>
                             <Link href="/parties">
-                                <BouncyButton size="lg" variant="secondary">
+                                <BouncyButton size="lg" variant="secondary" as="div">
                                     Plan a Party
                                 </BouncyButton>
                             </Link>
