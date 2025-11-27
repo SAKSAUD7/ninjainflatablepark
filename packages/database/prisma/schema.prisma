@@ -98,14 +98,28 @@ model ContactInquiry {
 }
 
 model AdminUser {
-  id          String   @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
-  email       String   @unique
-  password    String   // Hashed
-  role        String   @default("EDITOR") // SUPER_ADMIN, EDITOR, SUPPORT
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  email       String      @unique
+  password    String      // Hashed
+  roleId      String?
+  role        Role?       @relation(fields: [roleId], references: [id])
+  isActive    Boolean     @default(true)
+  lastLoginAt DateTime?
+  profilePic  String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  auditLogs   AuditLog[]
+}
+
+model Role {
+  id          String      @id @default(cuid())
+  name        String      @unique // SUPER_ADMIN, MANAGER, STAFF, CONTENT_EDITOR, VIEWER
+  description String?
+  permissions String      // JSON array: ["bookings:read", "bookings:write", etc.]
+  users       AdminUser[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Voucher {
@@ -127,13 +141,20 @@ model Voucher {
 }
 
 model AuditLog {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   adminId     String
-  action      String
-  entity      String
+  admin       AdminUser @relation(fields: [adminId], references: [id])
+  action      String    // LOGIN, LOGOUT, CREATE, UPDATE, DELETE, APPROVE, REJECT
+  entity      String    // BOOKING, VOUCHER, BANNER, USER, etc.
   entityId    String?
-  details     String?
-  createdAt   DateTime @default(now())
+  details     String?   // JSON: {before: {...}, after: {...}, changes: [...]}
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+  
+  @@index([adminId])
+  @@index([entity])
+  @@index([createdAt])
 }
 
 model BookingBlock {

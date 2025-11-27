@@ -20,12 +20,18 @@ export async function loginAdmin(formData: FormData) {
     const adminCount = await prisma.adminUser.count();
     if (adminCount === 0) {
         const hashedPassword = await hashPassword("admin123");
+
+        // Get SUPER_ADMIN role
+        const superAdminRole = await prisma.role.findUnique({
+            where: { name: "SUPER_ADMIN" }
+        });
+
         await prisma.adminUser.create({
             data: {
                 name: "Super Admin",
                 email: "admin@ninja.com",
                 password: hashedPassword,
-                role: "SUPER_ADMIN",
+                roleId: superAdminRole?.id
             },
         });
         console.log("Created default admin: admin@ninja.com / admin123");
@@ -33,6 +39,7 @@ export async function loginAdmin(formData: FormData) {
 
     const admin = await prisma.adminUser.findUnique({
         where: { email },
+        include: { role: true }
     });
 
     if (!admin || !admin.isActive) {
@@ -44,7 +51,18 @@ export async function loginAdmin(formData: FormData) {
         return { error: "Invalid credentials" };
     }
 
-    const token = await signToken({ id: admin.id, email: admin.email, role: admin.role });
+    // Update last login time
+    await prisma.adminUser.update({
+        where: { id: admin.id },
+        data: { lastLoginAt: new Date() }
+    });
+
+    const token = await signToken({
+        id: admin.id,
+        email: admin.email,
+        role: admin.role?.name || 'VIEWER',
+        roleId: admin.roleId
+    });
 
     cookies().set("admin_token", token, {
         httpOnly: true,
