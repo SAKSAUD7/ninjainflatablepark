@@ -134,7 +134,7 @@ export function ActivityForm({ initialData, isEditing = false }: ActivityFormPro
                             <label className="block text-sm font-medium text-slate-700 mb-1">Order</label>
                             <input
                                 type="number"
-                                {...form.register("order")}
+                                {...form.register("order", { valueAsNumber: true })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                             />
                         </div>

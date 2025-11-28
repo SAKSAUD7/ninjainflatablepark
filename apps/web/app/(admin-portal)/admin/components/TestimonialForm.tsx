@@ -7,6 +7,19 @@ import { z } from "zod";
 import { Loader2, Save, Trash, ArrowLeft, Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { createTestimonial, updateTestimonial, deleteTestimonial } from "../../../actions/testimonials";
+
+const testimonialSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    role: z.string().optional(),
+    content: z.string().min(1, "Content is required"),
+    rating: z.number().min(1).max(5),
+    imageUrl: z.string().optional(),
+    active: z.boolean(),
+});
+
+type TestimonialFormData = z.infer<typeof testimonialSchema>;
+
 interface TestimonialFormProps {
     initialData?: any;
     isEditing?: boolean;
@@ -122,7 +135,7 @@ export function TestimonialForm({ initialData, isEditing = false }: TestimonialF
                                 type="number"
                                 min="1"
                                 max="5"
-                                {...form.register("rating")}
+                                {...form.register("rating", { valueAsNumber: true })}
                                 className="w-24 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                             />
                             <div className="flex text-yellow-400">

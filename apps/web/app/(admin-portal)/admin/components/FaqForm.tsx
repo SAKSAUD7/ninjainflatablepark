@@ -14,7 +14,7 @@ const faqSchema = z.object({
     answer: z.string().min(1, "Answer is required"),
     category: z.string().optional(),
     active: z.boolean(),
-    order: z.coerce.number(),
+    order: z.number(),
 });
 
 type FaqFormData = z.infer<typeof faqSchema>;
@@ -135,7 +135,7 @@ export function FaqForm({ initialData, isEditing = false }: FaqFormProps) {
                             <label className="block text-sm font-medium text-slate-700 mb-1">Order</label>
                             <input
                                 type="number"
-                                {...form.register("order")}
+                                {...form.register("order", { valueAsNumber: true })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                             />
                         </div>

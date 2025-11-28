@@ -14,7 +14,7 @@ const bannerSchema = z.object({
     imageUrl: z.string().min(1, "Image URL is required"),
     link: z.string().optional(),
     active: z.boolean(),
-    order: z.coerce.number(),
+    order: z.number(),
 });
 
 type BannerFormData = z.infer<typeof bannerSchema>;
@@ -130,7 +130,7 @@ export function BannerForm({ initialData, isEditing = false }: BannerFormProps) 
                             <label className="block text-sm font-medium text-slate-700 mb-1">Order</label>
                             <input
                                 type="number"
-                                {...form.register("order")}
+                                {...form.register("order", { valueAsNumber: true })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                             />
                         </div>
