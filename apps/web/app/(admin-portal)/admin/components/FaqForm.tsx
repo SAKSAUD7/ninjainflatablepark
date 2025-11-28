@@ -13,8 +13,8 @@ const faqSchema = z.object({
     question: z.string().min(1, "Question is required"),
     answer: z.string().min(1, "Answer is required"),
     category: z.string().optional(),
-    active: z.boolean().default(true),
-    order: z.coerce.number().default(0),
+    active: z.boolean(),
+    order: z.coerce.number(),
 });
 
 type FaqFormData = z.infer<typeof faqSchema>;

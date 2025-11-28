@@ -13,8 +13,8 @@ const bannerSchema = z.object({
     title: z.string().min(1, "Title is required"),
     imageUrl: z.string().min(1, "Image URL is required"),
     link: z.string().optional(),
-    active: z.boolean().default(true),
-    order: z.coerce.number().default(0),
+    active: z.boolean(),
+    order: z.coerce.number(),
 });
 
 type BannerFormData = z.infer<typeof bannerSchema>;

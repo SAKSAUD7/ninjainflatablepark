@@ -14,7 +14,7 @@ const activitySchema = z.object({
     description: z.string().min(1, "Description is required"),
     imageUrl: z.string().min(1, "Image URL is required"),
     active: z.boolean(),
-    order: z.coerce.number(),
+    order: z.number(),
 });
 
 type ActivityFormData = z.infer<typeof activitySchema>;
