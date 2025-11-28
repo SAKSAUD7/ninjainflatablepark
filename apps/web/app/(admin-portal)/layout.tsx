@@ -42,7 +42,7 @@ export default async function AdminPortalLayout({
             <body className="font-body antialiased bg-slate-50" suppressHydrationWarning>
                 <div className="min-h-screen">
                     {/* Sidebar */}
-                    <AdminSidebar />
+                    <AdminSidebar permissions={session?.permissions} />
 
                     {/* Main Content Area */}
                     <div className="lg:pl-72">

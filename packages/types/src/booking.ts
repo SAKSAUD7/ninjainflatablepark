@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { isAfter, isBefore, startOfDay, addHours, isEqual } from "date-fns";
+import { isAfter, isBefore, startOfDay, addHours } from "date-fns";
 
 // Phone number validation for India (+91 format)
 const phoneRegex = /^(\+91|91)?[6-9]\d{9}$/;

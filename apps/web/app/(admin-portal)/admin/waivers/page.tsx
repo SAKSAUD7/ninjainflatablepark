@@ -124,9 +124,13 @@ export default async function AdminWaivers() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2">
-                                            <button className="p-2 text-slate-400 hover:text-neon-blue hover:bg-slate-100 rounded-lg transition-colors" title="View PDF">
+                                            <Link
+                                                href={`/admin/waivers/${waiver.id}`}
+                                                className="p-2 text-slate-400 hover:text-neon-blue hover:bg-slate-100 rounded-lg transition-colors"
+                                                title="View Details"
+                                            >
                                                 <Eye size={18} />
-                                            </button>
+                                            </Link>
                                             <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
                                                 <Download size={18} />
                                             </button>

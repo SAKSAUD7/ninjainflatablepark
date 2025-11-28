@@ -14,7 +14,8 @@ export default function SessionBookingsPage() {
                 const data = await getSessionBookings();
                 setBookings(data);
             } catch (error) {
-                console.error("Failed to fetch session bookings:", error);
+                // Error handled silently - bookings will remain empty array
+                setBookings([]);
             } finally {
                 setLoading(false);
             }

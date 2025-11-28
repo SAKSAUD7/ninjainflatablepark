@@ -1,10 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import { Save, Upload, Lock, Bell, Shield, Globe, Power } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Save, Upload, Lock, Bell, Shield, Globe, Power, Loader2 } from "lucide-react";
+import { getSettings, updateSettings, updatePassword } from "../../../actions/settings";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState("business");
+    const [settings, setSettings] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadSettings();
+    }, []);
+
+    async function loadSettings() {
+        try {
+            const data = await getSettings();
+            setSettings(data);
+        } catch (error) {
+            toast.error("Failed to load settings");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="h-8 w-8 animate-spin text-neon-blue" />
+            </div>
+        );
+    }
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
@@ -49,10 +76,10 @@ export default function SettingsPage() {
                 {/* Content Area */}
                 <div className="lg:col-span-3">
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
-                        {activeTab === "business" && <BusinessSettings />}
+                        {activeTab === "business" && <BusinessSettings settings={settings} onUpdate={setSettings} />}
                         {activeTab === "media" && <MediaSettings />}
                         {activeTab === "account" && <AccountSettings />}
-                        {activeTab === "features" && <FeatureSettings />}
+                        {activeTab === "features" && <FeatureSettings settings={settings} onUpdate={setSettings} />}
                     </div>
                 </div>
             </div>
@@ -75,28 +102,59 @@ function SettingsTab({ active, onClick, icon, label }: { active: boolean; onClic
     );
 }
 
-function BusinessSettings() {
+function BusinessSettings({ settings, onUpdate }: { settings: any; onUpdate: (s: any) => void }) {
+    const [loading, setLoading] = useState(false);
+
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setLoading(true);
+        const formData = new FormData(e.currentTarget);
+
+        const data = {
+            parkName: formData.get("parkName"),
+            contactPhone: formData.get("contactPhone"),
+            contactEmail: formData.get("contactEmail"),
+            gstNumber: formData.get("gstNumber"),
+            sessionDuration: parseInt(formData.get("sessionDuration") as string),
+            adultPrice: parseFloat(formData.get("adultPrice") as string),
+            childPrice: parseFloat(formData.get("childPrice") as string),
+        };
+
+        try {
+            const updated = await updateSettings(data);
+            onUpdate(updated);
+            toast.success("Settings saved successfully");
+        } catch (error) {
+            toast.error("Failed to save settings");
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
-        <div className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
             <h2 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4">Business Configuration</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InputGroup label="Park Name" defaultValue="Ninja Inflatable Park" />
-                <InputGroup label="Contact Phone" defaultValue="+91 98454 71611" />
-                <InputGroup label="Contact Email" defaultValue="info@ninjapark.com" />
-                <InputGroup label="GST Number" defaultValue="29AAAAA0000A1Z5" />
+                <InputGroup name="parkName" label="Park Name" defaultValue={settings.parkName} />
+                <InputGroup name="contactPhone" label="Contact Phone" defaultValue={settings.contactPhone} />
+                <InputGroup name="contactEmail" label="Contact Email" defaultValue={settings.contactEmail} />
+                <InputGroup name="gstNumber" label="GST Number" defaultValue={settings.gstNumber || ""} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <InputGroup label="Session Duration (mins)" defaultValue="60" type="number" />
-                <InputGroup label="Adult Price (₹)" defaultValue="899" type="number" />
-                <InputGroup label="Child Price (₹)" defaultValue="500" type="number" />
+                <InputGroup name="sessionDuration" label="Session Duration (mins)" defaultValue={settings.sessionDuration} type="number" />
+                <InputGroup name="adultPrice" label="Adult Price (₹)" defaultValue={settings.adultPrice} type="number" />
+                <InputGroup name="childPrice" label="Child Price (₹)" defaultValue={settings.childPrice} type="number" />
             </div>
             <div className="pt-4">
-                <button className="bg-slate-900 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2">
-                    <Save size={18} />
+                <button
+                    disabled={loading}
+                    className="bg-slate-900 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2 disabled:opacity-50"
+                >
+                    {loading ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                     Save Changes
                 </button>
             </div>
-        </div>
+        </form>
     );
 }
 
@@ -104,29 +162,13 @@ function MediaSettings() {
     return (
         <div className="space-y-6">
             <h2 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4">Media & Banners</h2>
-
+            <p className="text-slate-500">Media settings are managed via the Banners and Activities modules.</p>
             <div className="space-y-4">
-                <label className="block text-sm font-medium text-slate-700">Homepage Hero Banner</label>
-                <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-neon-blue hover:bg-slate-50 transition-colors cursor-pointer">
-                    <Upload className="mx-auto h-10 w-10 text-slate-400 mb-3" />
-                    <p className="text-sm text-slate-600 font-medium">Click to upload or drag and drop</p>
-                    <p className="text-xs text-slate-400 mt-1">SVG, PNG, JPG or GIF (max. 5MB)</p>
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                <label className="block text-sm font-medium text-slate-700">Attraction Gallery</label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="aspect-square bg-slate-100 rounded-lg flex items-center justify-center relative group overflow-hidden">
-                            <img src={`/images/gallery-${i > 2 ? 1 : i}.jpg`} alt="Gallery" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <button className="text-white text-xs bg-red-500 px-2 py-1 rounded">Remove</button>
-                            </div>
-                        </div>
-                    ))}
-                    <div className="aspect-square border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center hover:border-neon-blue hover:bg-slate-50 cursor-pointer transition-colors">
-                        <span className="text-2xl text-slate-400">+</span>
+                <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <h3 className="font-medium text-slate-900">Quick Links</h3>
+                    <div className="mt-2 flex gap-4">
+                        <a href="/admin/banners" className="text-neon-blue hover:underline">Manage Banners &rarr;</a>
+                        <a href="/admin/activities" className="text-neon-blue hover:underline">Manage Activities &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -135,27 +177,68 @@ function MediaSettings() {
 }
 
 function AccountSettings() {
+    const [loading, setLoading] = useState(false);
+
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setLoading(true);
+        const formData = new FormData(e.currentTarget);
+
+        const currentPass = formData.get("currentPass") as string;
+        const newPass = formData.get("newPass") as string;
+        const confirmPass = formData.get("confirmPass") as string;
+
+        if (newPass !== confirmPass) {
+            toast.error("New passwords do not match");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            await updatePassword(currentPass, newPass);
+            toast.success("Password updated successfully");
+            (e.target as HTMLFormElement).reset();
+        } catch (error) {
+            toast.error("Failed to update password");
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
-        <div className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
             <h2 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4">Account Security</h2>
 
             <div className="space-y-4 max-w-md">
-                <InputGroup label="Current Password" type="password" placeholder="••••••••" />
-                <InputGroup label="New Password" type="password" placeholder="••••••••" />
-                <InputGroup label="Confirm New Password" type="password" placeholder="••••••••" />
+                <InputGroup name="currentPass" label="Current Password" type="password" placeholder="••••••••" />
+                <InputGroup name="newPass" label="New Password" type="password" placeholder="••••••••" />
+                <InputGroup name="confirmPass" label="Confirm New Password" type="password" placeholder="••••••••" />
             </div>
 
             <div className="pt-4">
-                <button className="bg-slate-900 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2">
-                    <Shield size={18} />
+                <button
+                    disabled={loading}
+                    className="bg-slate-900 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-slate-800 transition-colors flex items-center gap-2 disabled:opacity-50"
+                >
+                    {loading ? <Loader2 className="animate-spin" size={18} /> : <Shield size={18} />}
                     Update Password
                 </button>
             </div>
-        </div>
+        </form>
     );
 }
 
-function FeatureSettings() {
+function FeatureSettings({ settings, onUpdate }: { settings: any; onUpdate: (s: any) => void }) {
+    async function handleToggle(key: string, value: boolean) {
+        try {
+            const updated = await updateSettings({ [key]: value });
+            onUpdate(updated);
+            toast.success("Setting updated");
+        } catch (error) {
+            toast.error("Failed to update setting");
+        }
+    }
+
     return (
         <div className="space-y-6">
             <h2 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4">Feature Toggles</h2>
@@ -164,34 +247,39 @@ function FeatureSettings() {
                 <ToggleItem
                     title="Online Booking System"
                     description="Enable or disable the public booking flow."
-                    enabled={true}
+                    enabled={settings.onlineBookingEnabled}
+                    onChange={(val) => handleToggle("onlineBookingEnabled", val)}
                 />
                 <ToggleItem
                     title="Party Bookings"
                     description="Allow customers to submit party inquiries."
-                    enabled={true}
+                    enabled={settings.partyBookingsEnabled}
+                    onChange={(val) => handleToggle("partyBookingsEnabled", val)}
                 />
                 <ToggleItem
                     title="Maintenance Mode"
                     description="Show maintenance page to all visitors."
-                    enabled={false}
+                    enabled={settings.maintenanceMode}
                     danger
+                    onChange={(val) => handleToggle("maintenanceMode", val)}
                 />
                 <ToggleItem
                     title="Waiver Requirement"
                     description="Force waiver signing before checkout."
-                    enabled={true}
+                    enabled={settings.waiverRequired}
+                    onChange={(val) => handleToggle("waiverRequired", val)}
                 />
             </div>
         </div>
     );
 }
 
-function InputGroup({ label, type = "text", defaultValue, placeholder }: { label: string; type?: string; defaultValue?: string; placeholder?: string }) {
+function InputGroup({ label, name, type = "text", defaultValue, placeholder }: { label: string; name: string; type?: string; defaultValue?: string | number; placeholder?: string }) {
     return (
         <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>
             <input
+                name={name}
                 type={type}
                 defaultValue={defaultValue}
                 placeholder={placeholder}
@@ -201,9 +289,7 @@ function InputGroup({ label, type = "text", defaultValue, placeholder }: { label
     );
 }
 
-function ToggleItem({ title, description, enabled, danger }: { title: string; description: string; enabled: boolean; danger?: boolean }) {
-    const [isOn, setIsOn] = useState(enabled);
-
+function ToggleItem({ title, description, enabled, danger, onChange }: { title: string; description: string; enabled: boolean; danger?: boolean; onChange: (val: boolean) => void }) {
     return (
         <div className="flex items-center justify-between p-4 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
             <div>
@@ -211,10 +297,10 @@ function ToggleItem({ title, description, enabled, danger }: { title: string; de
                 <p className="text-sm text-slate-500">{description}</p>
             </div>
             <button
-                onClick={() => setIsOn(!isOn)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-neon-blue focus:ring-offset-2 ${isOn ? (danger ? 'bg-red-500' : 'bg-green-500') : 'bg-slate-200'}`}
+                onClick={() => onChange(!enabled)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-neon-blue focus:ring-offset-2 ${enabled ? (danger ? 'bg-red-500' : 'bg-green-500') : 'bg-slate-200'}`}
             >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isOn ? 'translate-x-6' : 'translate-x-1'}`} />
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}`} />
             </button>
         </div>
     );

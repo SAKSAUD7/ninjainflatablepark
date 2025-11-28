@@ -28,6 +28,41 @@ async function main() {
         console.warn("⚠️  Error clearing data (might be empty), continuing...", error);
     }
 
+    // Create Roles
+    console.log("🛡️ Creating roles...");
+    const superAdminRole = await prisma.role.create({
+        data: {
+            name: "SUPER_ADMIN",
+            description: "Full access to everything",
+            permissions: JSON.stringify(["*:*"])
+        }
+    });
+
+    await prisma.role.createMany({
+        data: [
+            {
+                name: "MANAGER",
+                description: "Can manage bookings, content, and view users",
+                permissions: JSON.stringify(["bookings:*", "parties:*", "waivers:*", "holidays:*", "vouchers:*", "cms:*", "users:read", "logs:read"])
+            },
+            {
+                name: "STAFF",
+                description: "Can manage bookings and waivers",
+                permissions: JSON.stringify(["bookings:read", "bookings:write", "parties:read", "parties:write", "waivers:read", "waivers:write"])
+            },
+            {
+                name: "CONTENT_EDITOR",
+                description: "Can manage website content",
+                permissions: JSON.stringify(["cms:*"])
+            },
+            {
+                name: "VIEWER",
+                description: "Read-only access",
+                permissions: JSON.stringify(["bookings:read", "parties:read", "waivers:read"])
+            }
+        ]
+    });
+
     // Create Admin User
     console.log("👤 Creating admin user...");
     const hashedPassword = await bcrypt.hash("admin123", 10);
@@ -36,7 +71,7 @@ async function main() {
             name: "Super Admin",
             email: "admin@ninja.com",
             password: hashedPassword,
-            role: "SUPER_ADMIN",
+            roleId: superAdminRole.id,
             isActive: true,
         },
     });

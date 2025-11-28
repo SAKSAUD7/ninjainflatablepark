@@ -120,9 +120,12 @@ export default async function AdminCustomers() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
-                                            <MoreHorizontal size={18} />
-                                        </button>
+                                        <Link
+                                            href={`/admin/customers/${customer.id}`}
+                                            className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+                                        >
+                                            View Details
+                                        </Link>
                                     </td>
                                 </tr>
                             ))}

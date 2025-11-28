@@ -1,10 +1,11 @@
-"use client";
-
 import { AttractionsGrid } from "../../../features/attractions/components/AttractionsGrid";
 import { ScrollReveal, SectionDivider } from "@repo/ui";
 import { Coffee, Car, Shield, Wifi, Utensils, Users } from "lucide-react";
+import { getPublicActivities } from "../../../lib/public-api";
 
-export default function AttractionsPage() {
+export default async function AttractionsPage() {
+    const activities = await getPublicActivities();
+
     const facilities = [
         {
             title: "Play Zones",
@@ -51,7 +52,7 @@ export default function AttractionsPage() {
                 <div className="max-w-7xl mx-auto text-center">
                     <ScrollReveal animation="fade">
                         <span className="inline-block py-1 px-3 rounded-full bg-accent text-white font-bold text-sm mb-6 tracking-wider uppercase">
-                            11+ Unique Zones
+                            {activities.length}+ Unique Zones
                         </span>
                     </ScrollReveal>
                     <ScrollReveal animation="slideUp" delay={0.2}>
@@ -70,7 +71,7 @@ export default function AttractionsPage() {
             </section>
 
             {/* Attractions Grid */}
-            <AttractionsGrid />
+            <AttractionsGrid activities={activities} />
 
             {/* Park Facilities Section */}
             <section className="relative py-12 md:py-20 px-4 pb-32 md:pb-40 bg-background-light">

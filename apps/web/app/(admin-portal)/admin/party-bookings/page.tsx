@@ -14,7 +14,8 @@ export default function PartyBookingsPage() {
                 const data = await getPartyBookings();
                 setBookings(data);
             } catch (error) {
-                console.error("Failed to fetch party bookings:", error);
+                // Error handled silently - bookings will remain empty array
+                setBookings([]);
             } finally {
                 setLoading(false);
             }

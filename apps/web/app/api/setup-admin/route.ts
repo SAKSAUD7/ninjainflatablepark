@@ -8,6 +8,19 @@ export async function GET() {
         const adminCount = await prisma.adminUser.count();
         let message = "";
 
+        // Ensure SUPER_ADMIN role exists
+        let superAdminRole = await prisma.role.findUnique({ where: { name: "SUPER_ADMIN" } });
+
+        if (!superAdminRole) {
+            superAdminRole = await prisma.role.create({
+                data: {
+                    name: "SUPER_ADMIN",
+                    description: "Full access to everything",
+                    permissions: JSON.stringify(["*:*"])
+                }
+            });
+        }
+
         if (adminCount === 0) {
             // Create default admin
             const hashedPassword = await hashPassword("admin123");
@@ -16,7 +29,7 @@ export async function GET() {
                     name: "Super Admin",
                     email: "admin@ninja.com",
                     password: hashedPassword,
-                    role: "SUPER_ADMIN",
+                    roleId: superAdminRole.id,
                 },
             });
             message = "Created default admin: admin@ninja.com / admin123";
@@ -41,7 +54,7 @@ export async function GET() {
                         name: "Super Admin",
                         email: "admin@ninja.com",
                         password: hashedPassword,
-                        role: "SUPER_ADMIN",
+                        roleId: superAdminRole.id,
                     },
                 });
                 message = "Created admin@ninja.com (other admins existed)";

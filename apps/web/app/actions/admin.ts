@@ -307,6 +307,18 @@ export async function createBookingBlock(data: { startDate: Date; endDate: Date;
     revalidatePath("/admin/booking-blocks");
 }
 
+export async function updateBookingBlock(id: string, data: { startDate: Date; endDate: Date; reason: string; type: string; recurring: boolean }) {
+    const session = await getAdminSession();
+    if (!session) throw new Error("Unauthorized");
+
+    await prisma.bookingBlock.update({
+        where: { id },
+        data
+    });
+
+    revalidatePath("/admin/booking-blocks");
+}
+
 export async function deleteBookingBlock(id: string) {
     const session = await getAdminSession();
     if (!session) throw new Error("Unauthorized");

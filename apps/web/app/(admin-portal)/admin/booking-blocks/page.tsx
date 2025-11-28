@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { getBookingBlocks, deleteBookingBlock } from "../../../actions/admin";
 import Link from "next/link";
-import { Calendar, Trash2, Plus, AlertCircle } from "lucide-react";
+import { Calendar, Trash2, Plus, AlertCircle, Edit } from "lucide-react";
 import { format } from "date-fns";
 
 export default function BookingBlocksPage() {
@@ -19,7 +19,8 @@ export default function BookingBlocksPage() {
             const data = await getBookingBlocks();
             setBlocks(data);
         } catch (error) {
-            console.error("Failed to load blocks:", error);
+            // Error handled silently - could add toast notification here
+            setBlocks([]);
         } finally {
             setLoading(false);
         }
@@ -32,8 +33,7 @@ export default function BookingBlocksPage() {
             await deleteBookingBlock(id);
             loadBlocks(); // Reload list
         } catch (error) {
-            console.error("Failed to delete block:", error);
-            alert("Failed to delete block");
+            alert("Failed to delete block. Please try again.");
         }
     }
 
@@ -96,8 +96,8 @@ export default function BookingBlocksPage() {
                                     <td className="px-6 py-4 text-slate-700">{block.reason}</td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${block.type === 'CLOSED' ? 'bg-red-100 text-red-700' :
-                                                block.type === 'MAINTENANCE' ? 'bg-yellow-100 text-yellow-700' :
-                                                    'bg-blue-100 text-blue-700'
+                                            block.type === 'MAINTENANCE' ? 'bg-yellow-100 text-yellow-700' :
+                                                'bg-blue-100 text-blue-700'
                                             }`}>
                                             {block.type}
                                         </span>
@@ -106,13 +106,22 @@ export default function BookingBlocksPage() {
                                         {block.recurring ? "Yes" : "No"}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => handleDelete(block.id)}
-                                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            title="Delete Block"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Link
+                                                href={`/admin/booking-blocks/${block.id}`}
+                                                className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                title="Edit Block"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDelete(block.id)}
+                                                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Delete Block"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))

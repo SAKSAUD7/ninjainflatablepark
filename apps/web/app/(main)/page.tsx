@@ -1,10 +1,12 @@
-import { getStats, getGalleryItems, getReviews } from "../../lib/api";
+import { getStats, getGalleryItems } from "../../lib/api";
+import { getPublicBanners, getPublicTestimonials } from "../../lib/public-api";
 import HomeContent from "./components/HomeContent";
 
 export default async function Home() {
     const stats = await getStats();
     const gallery = await getGalleryItems();
-    const reviews = await getReviews();
+    const banners = await getPublicBanners();
+    const testimonials = await getPublicTestimonials();
 
-    return <HomeContent stats={stats} gallery={gallery} reviews={reviews} />;
+    return <HomeContent stats={stats} gallery={gallery} banners={banners} testimonials={testimonials} />;
 }

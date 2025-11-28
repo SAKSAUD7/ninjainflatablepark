@@ -52,7 +52,8 @@ export function Navbar() {
                     />
                 </Link>
 
-                <nav className="hidden md:flex items-center gap-8">
+
+                <nav className="hidden lg:flex items-center gap-8">
                     {navLinks.map((link) => (
                         <Link
                             key={link.href}
@@ -62,7 +63,7 @@ export function Navbar() {
                             {link.label}
                         </Link>
                     ))}
-                    <a href="tel:+919845471611" className="hidden lg:flex items-center gap-2 bg-[#2D1B4E] hover:bg-[#3D2B5E] px-4 py-2 rounded-lg transition-colors">
+                    <a href="tel:+919845471611" className="hidden xl:flex items-center gap-2 bg-[#2D1B4E] hover:bg-[#3D2B5E] px-4 py-2 rounded-lg transition-colors">
                         <Phone className="w-4 h-4 text-white" />
                         <span className="text-white font-semibold">98454 71611</span>
                     </a>
@@ -78,7 +79,7 @@ export function Navbar() {
                     </Link>
                 </nav>
 
-                <div className="md:hidden flex items-center gap-2 relative z-50">
+                <div className="lg:hidden flex items-center gap-2 relative z-50">
                     <a href="tel:+919845471611" className="w-9 h-9 flex items-center justify-center bg-[#2D1B4E] hover:bg-[#3D2B5E] rounded-lg transition-colors">
                         <Phone className="w-4 h-4 text-white" />
                     </a>
@@ -101,7 +102,7 @@ export function Navbar() {
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.2 }}
                                 onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}
-                                className="fixed inset-0 bg-black/90 z-[60] md:hidden"
+                                className="fixed inset-0 bg-black/90 z-[60] lg:hidden"
                             />
 
                             <motion.div
@@ -109,7 +110,7 @@ export function Navbar() {
                                 animate={{ x: 0 }}
                                 exit={{ x: "100%" }}
                                 transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                                className="fixed top-0 bottom-0 right-0 w-[280px] md:hidden z-[70] flex flex-col shadow-2xl"
+                                className="fixed top-0 bottom-0 right-0 w-[280px] lg:hidden z-[70] flex flex-col shadow-2xl"
                                 style={{
                                     background: 'linear-gradient(180deg, #1a0b2e 0%, #0f0519 50%, #000000 100%)'
                                 }}

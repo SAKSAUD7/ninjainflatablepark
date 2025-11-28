@@ -2,9 +2,9 @@
 
 import { AnimatedHero, ScrollReveal, BouncyButton, SectionDivider, Marquee } from "@repo/ui";
 import { motion } from "framer-motion";
-import { Zap, Shield, Users, Trophy, ArrowRight, Play, Instagram } from "lucide-react";
+import { Zap, Shield, Users, Trophy, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Stat, GalleryItem, Review } from "../../../lib/api/types";
+import { Stat, GalleryItem } from "../../../lib/api/types";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Zap,
@@ -16,10 +16,11 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 interface HomeContentProps {
     stats: Stat[];
     gallery: GalleryItem[];
-    reviews: Review[];
+    banners: any[];
+    testimonials: any[];
 }
 
-export default function HomeContent({ stats, gallery, reviews }: HomeContentProps) {
+export default function HomeContent({ stats, gallery, banners, testimonials }: HomeContentProps) {
     return (
         <main className="bg-background text-white">
             {/* Hero Section */}
@@ -182,59 +183,81 @@ export default function HomeContent({ stats, gallery, reviews }: HomeContentProp
                 <SectionDivider position="bottom" variant="wave" color="fill-background" />
             </section>
 
-            {/* People Reviews Section */}
+            {/* Testimonials Section */}
             <section className="relative py-12 md:py-20 px-4 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade" className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl lg:text-7xl font-display font-black mb-4">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
-                                People Reviews on Ninja
+                                What Our Visitors Say
                             </span>
                         </h2>
-                        <p className="text-base md:text-xl text-white/70 max-w-2xl mx-auto mb-8">
-                            Check out these amazing reviews from our visitors!
+                        <p className="text-base md:text-xl text-white/70 max-w-2xl mx-auto">
+                            Real experiences from real people who've bounced with us!
                         </p>
                     </ScrollReveal>
 
-                    <div className="flex flex-wrap justify-center gap-6">
-                        {reviews.map((item, index) => (
-                            <ScrollReveal
-                                key={item.id}
-                                animation="scale"
-                                delay={index * 0.1}
-                                className="w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]"
-                            >
-                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="block group">
+                    {testimonials.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {testimonials.map((testimonial, index) => (
+                                <ScrollReveal key={testimonial.id} animation="slideUp" delay={index * 0.1}>
                                     <motion.div
                                         whileHover={{ y: -10 }}
-                                        className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[9/16]"
+                                        className="bg-background-light rounded-3xl p-8 border border-white/10 hover:border-primary/50 transition-all duration-300 h-full flex flex-col"
                                     >
-                                        <img
-                                            src={item.img}
-                                            alt="Instagram Reel"
-                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-60"
-                                        />
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                                <Play className="w-8 h-8 text-white fill-white ml-1" />
-                                            </div>
-                                            <h3 className="text-2xl font-display font-bold text-white mb-2">Watch Review</h3>
-                                            <div className="flex items-center text-white/80 text-sm">
-                                                <Instagram className="w-4 h-4 mr-2" />
-                                                <span>View on Instagram</span>
+                                        {/* Rating Stars */}
+                                        <div className="flex gap-1 mb-4">
+                                            {[...Array(testimonial.rating || 5)].map((_, i) => (
+                                                <svg
+                                                    key={i}
+                                                    className="w-5 h-5 fill-secondary"
+                                                    viewBox="0 0 20 20"
+                                                >
+                                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                                                </svg>
+                                            ))}
+                                        </div>
+
+                                        {/* Content */}
+                                        <p className="text-white/80 text-base leading-relaxed mb-6 flex-grow">
+                                            "{testimonial.content}"
+                                        </p>
+
+                                        {/* Author */}
+                                        <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+                                            {testimonial.imageUrl ? (
+                                                <img
+                                                    src={testimonial.imageUrl}
+                                                    alt={testimonial.name}
+                                                    className="w-12 h-12 rounded-full object-cover border-2 border-primary/30"
+                                                />
+                                            ) : (
+                                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg">
+                                                    {testimonial.name.charAt(0).toUpperCase()}
+                                                </div>
+                                            )}
+                                            <div>
+                                                <p className="font-bold text-white">{testimonial.name}</p>
+                                                {testimonial.role && (
+                                                    <p className="text-sm text-white/60">{testimonial.role}</p>
+                                                )}
                                             </div>
                                         </div>
                                     </motion.div>
-                                </a>
-                            </ScrollReveal>
-                        ))}
-                    </div>
+                                </ScrollReveal>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-12">
+                            <p className="text-white/50 text-lg">No testimonials available yet.</p>
+                        </div>
+                    )}
                 </div>
-                <SectionDivider position="bottom" variant="diagonal" color="fill-background" />
+                <SectionDivider position="bottom" variant="diagonal" color="fill-background-light" />
             </section>
 
             {/* CTA Section */}
-            <section className="relative py-16 md:py-32 px-4 bg-background">
+            <section className="relative py-16 md:py-32 px-4 bg-background-light">
                 <div className="max-w-4xl mx-auto text-center">
                     <ScrollReveal animation="scale">
                         <h2 className="text-5xl md:text-6xl lg:text-8xl font-display font-black mb-6 leading-tight">

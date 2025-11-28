@@ -11,7 +11,6 @@ import {
     AlertCircle,
     Clock,
     CheckCircle,
-    XCircle,
     ArrowRight
 } from "lucide-react";
 
@@ -23,6 +22,9 @@ export default async function AdminDashboard() {
 
     const stats = await getDashboardStats();
 
+    // Calculate max revenue for chart scaling
+    const maxRevenue = Math.max(...stats.monthlyRevenue.map(d => d.total), 1000);
+
     return (
         <div className="p-8">
             {/* Header */}
@@ -32,11 +34,9 @@ export default async function AdminDashboard() {
                     <p className="text-slate-500 mt-1">Welcome back, {session.email}</p>
                 </div>
                 <div className="flex gap-3">
-                    <select className="bg-white border border-slate-300 text-slate-700 text-sm rounded-lg focus:ring-neon-blue focus:border-neon-blue block p-2.5 outline-none">
-                        <option>Today</option>
-                        <option>This Week</option>
-                        <option>This Month</option>
-                    </select>
+                    <div className="bg-white border border-slate-300 text-slate-700 text-sm rounded-lg px-3 py-2">
+                        {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    </div>
                 </div>
             </div>
 
@@ -46,7 +46,7 @@ export default async function AdminDashboard() {
                     title="Total Revenue"
                     value={`₹${stats.totalRevenue.toLocaleString()}`}
                     icon={<DollarSign className="text-emerald-600" />}
-                    trend="+12.5%"
+                    trend="Live"
                     trendUp={true}
                     color="emerald"
                 />
@@ -54,15 +54,15 @@ export default async function AdminDashboard() {
                     title="Bookings"
                     value={stats.bookingsToday.toString()}
                     icon={<CalendarCheck className="text-blue-600" />}
-                    trend="+4"
+                    trend="Today"
                     trendUp={true}
                     color="blue"
                 />
                 <StatCard
-                    title="Active Customers"
-                    value={stats.totalBookings.toString()} // Using total bookings as proxy for now
+                    title="Total Bookings"
+                    value={stats.totalBookings.toString()}
                     icon={<Users className="text-violet-600" />}
-                    trend="+18%"
+                    trend="All Time"
                     trendUp={true}
                     color="violet"
                 />
@@ -70,35 +70,42 @@ export default async function AdminDashboard() {
                     title="Pending Waivers"
                     value={stats.pendingWaivers.toString()}
                     icon={<FileSignature className="text-amber-600" />}
-                    trend="Action Needed"
-                    trendUp={false}
+                    trend={stats.pendingWaivers > 0 ? "Action Needed" : "All Clear"}
+                    trendUp={stats.pendingWaivers === 0}
                     color="amber"
                     alert={stats.pendingWaivers > 0}
                 />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                {/* Revenue Chart Placeholder */}
+                {/* Revenue Chart */}
                 <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                             <TrendingUp size={20} className="text-slate-400" />
-                            Revenue Overview
+                            Revenue Overview (Last 7 Days)
                         </h2>
-                        <button className="text-sm text-neon-blue font-medium hover:underline">View Report</button>
                     </div>
-                    <div className="h-64 bg-slate-50 rounded-lg border border-dashed border-slate-300 flex items-center justify-center relative overflow-hidden group">
-                        <div className="text-center">
-                            <TrendingUp size={48} className="text-slate-300 mx-auto mb-2" />
-                            <p className="text-slate-400 font-medium">Revenue Chart Visualization</p>
-                            <p className="text-xs text-slate-400 mt-1">(Data visualization placeholder)</p>
-                        </div>
-                        {/* Mock Chart Lines */}
-                        <div className="absolute bottom-0 left-0 right-0 h-32 flex items-end justify-between px-4 opacity-30 gap-2">
-                            {[40, 60, 45, 70, 50, 80, 65, 85, 75, 90, 60, 95].map((h, i) => (
-                                <div key={i} style={{ height: `${h}%` }} className="w-full bg-neon-blue rounded-t-sm" />
-                            ))}
-                        </div>
+                    <div className="h-64 bg-slate-50 rounded-lg border border-dashed border-slate-300 flex items-end justify-between px-4 pb-0 pt-4 relative overflow-hidden">
+                        {stats.monthlyRevenue.length > 0 ? (
+                            stats.monthlyRevenue.map((item, i) => (
+                                <div key={i} className="flex flex-col items-center gap-2 w-full group relative">
+                                    <div
+                                        style={{ height: `${(item.total / maxRevenue) * 100}%` }}
+                                        className="w-full max-w-[40px] bg-neon-blue rounded-t-sm transition-all duration-500 hover:bg-blue-600 relative"
+                                    >
+                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                            ₹{item.total.toLocaleString()}
+                                        </div>
+                                    </div>
+                                    <span className="text-xs text-slate-500 font-medium">{item.name}</span>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-slate-400">
+                                No revenue data for this period
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -167,38 +174,46 @@ export default async function AdminDashboard() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {stats.recentBookings.map((booking: any) => (
-                                <tr key={booking.id} className="hover:bg-slate-50 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
-                                                {booking.name.charAt(0)}
+                            {stats.recentBookings.length > 0 ? (
+                                stats.recentBookings.map((booking: any) => (
+                                    <tr key={booking.id} className="hover:bg-slate-50 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
+                                                    {booking.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-bold text-slate-900">{booking.name}</p>
+                                                    <p className="text-xs text-slate-500">{booking.email}</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-slate-900">{booking.name}</p>
-                                                <p className="text-xs text-slate-500">{booking.email}</p>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                                                <Clock size={14} className="text-slate-400" />
+                                                {booking.date} • {booking.time}
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                                            <Clock size={14} className="text-slate-400" />
-                                            {booking.date} • {booking.time}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm font-bold text-slate-900">
-                                        ₹{booking.amount}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <StatusBadge status={booking.status} />
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <Link href={`/admin/bookings/${booking.id}`} className="text-slate-400 hover:text-neon-blue transition-colors">
-                                            <ArrowRight size={18} />
-                                        </Link>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm font-bold text-slate-900">
+                                            ₹{booking.amount}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <StatusBadge status={booking.status} />
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <Link href={`/admin/bookings/${booking.id}`} className="text-slate-400 hover:text-neon-blue transition-colors">
+                                                <ArrowRight size={18} />
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-8 text-center text-slate-500">
+                                        No recent bookings found.
                                     </td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -223,7 +238,6 @@ function StatCard({ title, value, icon, trend, trendUp, color, alert }: { title:
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${trendUp ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
                     {trend}
                 </span>
-                <span className="text-xs text-slate-400">vs last month</span>
             </div>
         </div>
     );

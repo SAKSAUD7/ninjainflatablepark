@@ -29,14 +29,19 @@ import {
     ChevronDown,
     ChevronRight,
     Menu,
-    X
+    X,
+    Shield,
+    Activity
 } from "lucide-react";
+import { hasPermission, type PermissionCheck } from "../../../lib/permissions";
+import { logoutAdmin } from "../../../actions/admin";
 
 interface NavItem {
     name: string;
     href: string;
     icon: React.ComponentType<{ className?: string }>;
     badge?: string;
+    permission?: PermissionCheck;
 }
 
 interface NavGroup {
@@ -54,54 +59,61 @@ const navigation: NavGroup[] = [
     {
         name: "Booking Management",
         items: [
-            { name: "Booking Blocks", href: "/admin/booking-blocks", icon: Calendar },
-            { name: "Party Bookings", href: "/admin/party-bookings", icon: PartyPopper },
-            { name: "Manual Party Booking", href: "/admin/party-bookings/new", icon: PartyPopper },
-            { name: "Party Booking History", href: "/admin/party-bookings/history", icon: Clock },
-            { name: "Session Bookings", href: "/admin/session-bookings", icon: Users },
-            { name: "Manual Session Booking", href: "/admin/session-bookings/new", icon: Users },
-            { name: "Session Booking History", href: "/admin/session-bookings/history", icon: Clock },
+            { name: "Booking Blocks", href: "/admin/booking-blocks", icon: Calendar, permission: { entity: 'bookings', action: 'read' } },
+            { name: "Party Bookings", href: "/admin/party-bookings", icon: PartyPopper, permission: { entity: 'parties', action: 'read' } },
+            { name: "Manual Party Booking", href: "/admin/party-bookings/new", icon: PartyPopper, permission: { entity: 'parties', action: 'write' } },
+            { name: "Party Booking History", href: "/admin/party-bookings/history", icon: Clock, permission: { entity: 'parties', action: 'read' } },
+            { name: "Session Bookings", href: "/admin/session-bookings", icon: Users, permission: { entity: 'bookings', action: 'read' } },
+            { name: "Manual Session Booking", href: "/admin/session-bookings/new", icon: Users, permission: { entity: 'bookings', action: 'write' } },
+            { name: "Session Booking History", href: "/admin/session-bookings/history", icon: Clock, permission: { entity: 'bookings', action: 'read' } },
         ]
     },
     {
         name: "Waivers & Entries",
         items: [
-            { name: "Waiver Submissions", href: "/admin/waivers", icon: FileSignature },
-            { name: "Free Entry Submissions", href: "/admin/free-entries", icon: Gift },
+            { name: "Waiver Submissions", href: "/admin/waivers", icon: FileSignature, permission: { entity: 'waivers', action: 'read' } },
+            { name: "Free Entry Submissions", href: "/admin/free-entries", icon: Gift, permission: { entity: 'waivers', action: 'read' } },
         ]
     },
     {
         name: "Calendar & Availability",
         items: [
-            { name: "Holiday Open Dates", href: "/admin/holidays/open", icon: CalendarDays },
-            { name: "Holiday Closed Dates", href: "/admin/holidays/closed", icon: CalendarX },
+            { name: "Holiday Open Dates", href: "/admin/holidays/open", icon: CalendarDays, permission: { entity: 'holidays', action: 'read' } },
+            { name: "Holiday Closed Dates", href: "/admin/holidays/closed", icon: CalendarX, permission: { entity: 'holidays', action: 'read' } },
         ]
     },
     {
         name: "Promotions",
         items: [
-            { name: "Vouchers", href: "/admin/vouchers", icon: Ticket },
+            { name: "Vouchers", href: "/admin/vouchers", icon: Ticket, permission: { entity: 'vouchers', action: 'read' } },
         ]
     },
     {
         name: "Content Management",
         items: [
-            { name: "Activities", href: "/admin/activities", icon: Zap },
-            { name: "Banners", href: "/admin/banners", icon: Image },
-            { name: "FAQ's", href: "/admin/faqs", icon: HelpCircle },
-            { name: "Invitation Templates", href: "/admin/invitation-templates", icon: Mail },
-            { name: "Misc Contents", href: "/admin/misc-content", icon: FileText },
-            { name: "Static Pages", href: "/admin/static-pages", icon: Globe },
-            { name: "Social Media", href: "/admin/social-media", icon: MessageSquare },
-            { name: "Testimonies", href: "/admin/testimonies", icon: Star },
+            { name: "Activities", href: "/admin/activities", icon: Zap, permission: { entity: 'cms', action: 'read' } },
+            { name: "Banners", href: "/admin/banners", icon: Image, permission: { entity: 'cms', action: 'read' } },
+            { name: "FAQ's", href: "/admin/faqs", icon: HelpCircle, permission: { entity: 'cms', action: 'read' } },
+            { name: "Invitation Templates", href: "/admin/invitation-templates", icon: Mail, permission: { entity: 'cms', action: 'read' } },
+            { name: "Misc Contents", href: "/admin/misc-content", icon: FileText, permission: { entity: 'cms', action: 'read' } },
+            { name: "Static Pages", href: "/admin/static-pages", icon: Globe, permission: { entity: 'cms', action: 'read' } },
+            { name: "Social Media", href: "/admin/social-media", icon: MessageSquare, permission: { entity: 'cms', action: 'read' } },
+            { name: "Testimonies", href: "/admin/testimonials", icon: Star, permission: { entity: 'cms', action: 'read' } },
         ]
     },
     {
         name: "E-commerce",
         items: [
-            { name: "Shop", href: "/admin/shop", icon: ShoppingBag },
+            { name: "Shop", href: "/admin/shop", icon: ShoppingBag, permission: { entity: 'shop', action: 'read' } },
         ]
     },
+    {
+        name: "System",
+        items: [
+            { name: "Admin Users", href: "/admin/users", icon: Shield, permission: { entity: 'users', action: 'read' } },
+            { name: "Activity Logs", href: "/admin/activity-logs", icon: Activity, permission: { entity: 'logs', action: 'read' } },
+        ]
+    }
 ];
 
 const userMenu: NavItem[] = [
@@ -109,10 +121,14 @@ const userMenu: NavItem[] = [
     { name: "View Site", href: "/", icon: ExternalLink },
 ];
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+    permissions?: string[];
+}
+
+export function AdminSidebar({ permissions = [] }: AdminSidebarProps) {
     const pathname = usePathname();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const [expandedGroups, setExpandedGroups] = useState<string[]>(["Overview", "Booking Management"]);
+    const [expandedGroups, setExpandedGroups] = useState<string[]>(["Overview", "Booking Management", "System"]);
 
     const toggleGroup = (groupName: string) => {
         setExpandedGroups(prev =>
@@ -128,6 +144,15 @@ export function AdminSidebar() {
         }
         return pathname.startsWith(href);
     };
+
+    // Filter navigation based on permissions
+    const filteredNavigation = navigation.map(group => {
+        const filteredItems = group.items.filter(item => {
+            if (!item.permission) return true; // No permission required
+            return hasPermission(permissions, item.permission);
+        });
+        return { ...group, items: filteredItems };
+    }).filter(group => group.items.length > 0);
 
     const SidebarContent = () => (
         <div className="flex flex-col h-full">
@@ -146,7 +171,7 @@ export function AdminSidebar() {
 
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-                {navigation.map((group) => (
+                {filteredNavigation.map((group) => (
                     <div key={group.name} className="mb-4">
                         <button
                             onClick={() => toggleGroup(group.name)}
@@ -170,8 +195,8 @@ export function AdminSidebar() {
                                             href={item.href}
                                             onClick={() => setIsMobileOpen(false)}
                                             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${active
-                                                    ? "bg-primary text-white shadow-sm"
-                                                    : "text-slate-700 hover:bg-slate-100"
+                                                ? "bg-primary text-white shadow-sm"
+                                                : "text-slate-700 hover:bg-slate-100"
                                                 }`}
                                         >
                                             <item.icon className={`w-5 h-5 ${active ? "text-white" : "text-slate-400"}`} />
@@ -203,7 +228,10 @@ export function AdminSidebar() {
                         <span>{item.name}</span>
                     </Link>
                 ))}
-                <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
+                <button
+                    onClick={() => logoutAdmin()}
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+                >
                     <LogOut className="w-5 h-5" />
                     <span>Logout</span>
                 </button>

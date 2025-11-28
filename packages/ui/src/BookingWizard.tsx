@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Calendar, Users, FileText, CreditCard, Download, ChevronRight, ChevronLeft, AlertCircle, Loader2, Sparkles } from "lucide-react";
+import { Check, Calendar, Users, FileText, CreditCard, Download, ChevronRight, ChevronLeft, AlertCircle, Loader2, Sparkles, Printer } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { bookingSchema, type BookingFormData, getAvailableTimeSlots, isTimeInPast } from "@repo/types";
 import { useToast } from "./components/ToastProvider";
