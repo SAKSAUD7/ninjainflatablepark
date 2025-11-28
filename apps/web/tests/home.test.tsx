@@ -41,12 +41,10 @@ describe('Home Page', () => {
     const mockGallery = [
         { id: '1', src: '/test.jpg', title: 'Test Image', desc: 'Test Desc' }
     ]
-    const mockReviews = [
-        { id: '1', url: 'http://test.com', img: '/test.jpg' }
-    ]
+
 
     it('renders main sections', () => {
-        render(<HomeContent stats={mockStats} gallery={mockGallery} reviews={mockReviews} />)
+        render(<HomeContent stats={mockStats} gallery={mockGallery} banners={[]} testimonials={[]} />)
 
         expect(screen.getByTestId('hero')).toBeInTheDocument()
         expect(screen.getByText('Test Stat')).toBeInTheDocument()
