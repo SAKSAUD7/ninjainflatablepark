@@ -13,7 +13,7 @@ export default async function BannersPage() {
                     <h1 className="text-2xl font-bold text-slate-900">Banners</h1>
                     <p className="text-slate-500">Manage homepage banners</p>
                 </div>
-                <PermissionGate permission="cms:write">
+                <PermissionGate entity="cms" action="write">
                     <Link
                         href="/admin/banners/new"
                         className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
@@ -67,7 +67,7 @@ export default async function BannersPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <PermissionGate permission="cms:write">
+                                        <PermissionGate entity="cms" action="write">
                                             <Link
                                                 href={`/admin/banners/${banner.id}`}
                                                 className="inline-flex p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
