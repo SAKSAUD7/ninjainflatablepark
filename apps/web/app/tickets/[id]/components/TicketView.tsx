@@ -15,7 +15,7 @@ export const TicketView = ({ booking }: TicketViewProps) => {
     const componentRef = useRef<HTMLDivElement>(null);
 
     const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
+        contentRef: componentRef,
         documentTitle: `Ticket-${booking.id}`,
     });
 
