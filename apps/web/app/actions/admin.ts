@@ -60,6 +60,7 @@ export async function loginAdmin(formData: FormData) {
     const token = await signToken({
         id: admin.id,
         email: admin.email,
+        name: admin.name,
         role: admin.role?.name || 'VIEWER',
         roleId: admin.roleId
     });

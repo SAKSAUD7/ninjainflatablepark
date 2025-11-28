@@ -9,6 +9,7 @@ const key = new TextEncoder().encode(SECRET_KEY);
 export interface AdminSession {
     id: string;
     email: string;
+    name: string;
     role: string;
     roleId?: string;
     permissions?: Permission[];
@@ -54,6 +55,7 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     return {
         id: payload.id as string,
         email: payload.email as string,
+        name: payload.name as string,
         role: payload.role as string,
         roleId: payload.roleId as string | undefined,
         permissions
