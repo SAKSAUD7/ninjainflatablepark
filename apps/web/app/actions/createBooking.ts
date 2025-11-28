@@ -98,7 +98,58 @@ export async function createBooking(formData: any) {
         }
 
         const gst = subtotal * 0.18;
-        const totalAmount = subtotal + gst;
+        let totalAmount = subtotal + gst;
+        let discountAmount = 0;
+        let voucherId = null;
+
+        // Apply voucher if provided
+        if (data.voucherCode) {
+            // Re-validate voucher server-side
+            const voucher = await prisma.voucher.findUnique({
+                where: { code: data.voucherCode }
+            });
+
+            if (voucher && voucher.isActive) {
+                // Check expiry
+                if (!voucher.expiryDate || new Date(voucher.expiryDate) >= new Date()) {
+                    // Check usage limit
+                    if (!voucher.usageLimit || voucher.usedCount < voucher.usageLimit) {
+                        // Check min order amount
+                        if (!voucher.minOrderAmount || subtotal >= voucher.minOrderAmount) {
+                            // Calculate discount
+                            if (voucher.discountType === "PERCENTAGE") {
+                                discountAmount = (subtotal * voucher.discountValue) / 100;
+                            } else {
+                                discountAmount = voucher.discountValue;
+                            }
+
+                            // Cap discount at subtotal (or total?) - usually subtotal before tax, but let's apply to final amount logic if needed
+                            // Here we apply to totalAmount (which includes GST). 
+                            // Wait, usually discount is on subtotal, then GST is calculated on discounted amount OR GST is on full amount and discount is just payment reduction.
+                            // Let's stick to: Discount reduces the payable amount. 
+                            // If discount is on subtotal:
+                            // subtotal = subtotal - discount
+                            // gst = subtotal * 0.18
+                            // total = subtotal + gst
+
+                            // BUT, the previous logic in BookingWizard seemed to apply discount AFTER GST? 
+                            // "Total Amount ... - Discount"
+                            // Let's follow the BookingWizard logic: Total - Discount.
+
+                            discountAmount = Math.min(discountAmount, totalAmount);
+                            totalAmount -= discountAmount;
+                            voucherId = voucher.id;
+
+                            // Increment usage count
+                            await prisma.voucher.update({
+                                where: { id: voucher.id },
+                                data: { usedCount: { increment: 1 } }
+                            });
+                        }
+                    }
+                }
+            }
+        }
 
         // Generate unique booking number
         const bookingNumber = generateBookingNumber();
@@ -136,6 +187,9 @@ export async function createBooking(formData: any) {
                 kids: data.kids,
                 spectators: data.spectators,
                 amount: totalAmount,
+                discountAmount: discountAmount,
+                voucherCode: data.voucherCode,
+                voucherId: voucherId,
                 status: "CONFIRMED",
                 bookingStatus: "CONFIRMED",
                 paymentStatus: "PENDING",
@@ -149,6 +203,7 @@ export async function createBooking(formData: any) {
                         dob: data.dateOfBirth,
                         version: "1.0",
                         minors: JSON.stringify(data.minors || []),
+                        adults: JSON.stringify(data.adultGuests || []),
                     }
                 }
             },
@@ -223,7 +278,7 @@ export async function createBooking(formData: any) {
         // Don't expose internal errors to client
         return {
             success: false,
-            error: "An unexpected error occurred. Please try again or contact support if the problem persists."
+            error: `Error: ${error instanceof Error ? error.message : "Unknown error"}`
         };
     }
 }

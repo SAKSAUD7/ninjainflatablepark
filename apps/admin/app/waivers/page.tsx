@@ -35,6 +35,7 @@ export default async function WaiversPage() {
                         <tr>
                             <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Name</th>
                             <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Contact</th>
+                            <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Guests</th>
                             <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Signed Date</th>
                             <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Version</th>
                             <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
@@ -43,35 +44,61 @@ export default async function WaiversPage() {
                     <tbody className="divide-y divide-gray-100">
                         {waivers.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                                <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                                     No waivers found.
                                 </td>
                             </tr>
                         ) : (
-                            waivers.map((waiver: any) => (
-                                <tr key={waiver.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4">
-                                        <div className="font-bold text-gray-900">{waiver.name}</div>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
-                                        <div>{waiver.email}</div>
-                                        <div className="text-xs text-gray-400">{waiver.phone}</div>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
-                                        {new Date(waiver.signedAt).toLocaleDateString()}
-                                        <div className="text-xs text-gray-400">{new Date(waiver.signedAt).toLocaleTimeString()}</div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="px-2 py-1 text-xs font-bold bg-gray-100 text-gray-600 rounded-full">v{waiver.version}</span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center justify-end space-x-1 ml-auto">
-                                            <Download size={16} />
-                                            <span>PDF</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
+                            waivers.map((waiver: any) => {
+                                const minors = waiver.minors ? JSON.parse(waiver.minors) : [];
+                                const adults = waiver.adults ? JSON.parse(waiver.adults) : [];
+
+                                return (
+                                    <tr key={waiver.id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4">
+                                            <div className="font-bold text-gray-900">{waiver.name}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">
+                                            <div>{waiver.email}</div>
+                                            <div className="text-xs text-gray-400">{waiver.phone}</div>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">
+                                            {minors.length > 0 && (
+                                                <div className="mb-1">
+                                                    <span className="text-xs font-bold text-gray-500 uppercase">Minors ({minors.length})</span>
+                                                    <div className="text-xs text-gray-700 truncate max-w-[150px]" title={minors.map((m: any) => m.name).join(", ")}>
+                                                        {minors.map((m: any) => m.name).join(", ")}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {adults.length > 0 && (
+                                                <div>
+                                                    <span className="text-xs font-bold text-gray-500 uppercase">Adults ({adults.length})</span>
+                                                    <div className="text-xs text-gray-700 truncate max-w-[150px]" title={adults.map((a: any) => a.name).join(", ")}>
+                                                        {adults.map((a: any) => a.name).join(", ")}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {minors.length === 0 && adults.length === 0 && (
+                                                <span className="text-xs text-gray-400 italic">No additional guests</span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">
+                                            {new Date(waiver.signedAt).toLocaleDateString()}
+                                            <div className="text-xs text-gray-400">{new Date(waiver.signedAt).toLocaleTimeString()}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="px-2 py-1 text-xs font-bold bg-gray-100 text-gray-600 rounded-full">v{waiver.version}</span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center justify-end space-x-1 ml-auto">
+                                                <Download size={16} />
+                                                <span>PDF</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })
                         )}
                     </tbody>
                 </table>

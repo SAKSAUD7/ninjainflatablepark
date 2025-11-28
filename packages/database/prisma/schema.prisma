@@ -53,7 +53,8 @@ model Waiver {
   version        String
   emergencyContact String?
   dob            String?
-  minors         String?      // JSON string of minors [{name, age}]
+  minors         String?      // JSON string of minors [{name, dob}]
+  adults         String?      // JSON string of additional adults [{name, email, phone, dob}]
   
   // Relations
   bookingId      String?

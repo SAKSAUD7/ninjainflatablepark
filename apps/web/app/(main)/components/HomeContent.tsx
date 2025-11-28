@@ -17,10 +17,10 @@ interface HomeContentProps {
     stats: Stat[];
     gallery: GalleryItem[];
     banners: any[];
-    testimonials: any[];
+    reviews: Array<{ id: string; url: string; img: string }>;
 }
 
-export default function HomeContent({ stats, gallery, banners, testimonials }: HomeContentProps) {
+export default function HomeContent({ stats, gallery, banners, reviews }: HomeContentProps) {
     return (
         <main className="bg-background text-white">
             {/* Hero Section */}
@@ -183,7 +183,7 @@ export default function HomeContent({ stats, gallery, banners, testimonials }: H
                 <SectionDivider position="bottom" variant="wave" color="fill-background" />
             </section>
 
-            {/* Testimonials Section */}
+            {/* Instagram Reels Section */}
             <section className="relative py-12 md:py-20 px-4 bg-background">
                 <div className="max-w-7xl mx-auto">
                     <ScrollReveal animation="fade" className="text-center mb-16">
@@ -197,61 +197,36 @@ export default function HomeContent({ stats, gallery, banners, testimonials }: H
                         </p>
                     </ScrollReveal>
 
-                    {testimonials.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {testimonials.map((testimonial, index) => (
-                                <ScrollReveal key={testimonial.id} animation="slideUp" delay={index * 0.1}>
-                                    <motion.div
-                                        whileHover={{ y: -10 }}
-                                        className="bg-background-light rounded-3xl p-8 border border-white/10 hover:border-primary/50 transition-all duration-300 h-full flex flex-col"
-                                    >
-                                        {/* Rating Stars */}
-                                        <div className="flex gap-1 mb-4">
-                                            {[...Array(testimonial.rating || 5)].map((_, i) => (
-                                                <svg
-                                                    key={i}
-                                                    className="w-5 h-5 fill-secondary"
-                                                    viewBox="0 0 20 20"
-                                                >
-                                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                                                </svg>
-                                            ))}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                        {reviews.map((review, index) => (
+                            <ScrollReveal key={review.id} animation="scale" delay={index * 0.1}>
+                                <motion.a
+                                    href={review.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    whileHover={{ scale: 1.05, y: -5 }}
+                                    className="block relative aspect-[9/16] rounded-2xl overflow-hidden group cursor-pointer"
+                                >
+                                    <img
+                                        src={review.img}
+                                        alt={`Instagram reel ${index + 1}`}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        onError={(e) => {
+                                            e.currentTarget.src = "/images/hero-background.jpg";
+                                        }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg>
                                         </div>
-
-                                        {/* Content */}
-                                        <p className="text-white/80 text-base leading-relaxed mb-6 flex-grow">
-                                            "{testimonial.content}"
-                                        </p>
-
-                                        {/* Author */}
-                                        <div className="flex items-center gap-4 pt-4 border-t border-white/10">
-                                            {testimonial.imageUrl ? (
-                                                <img
-                                                    src={testimonial.imageUrl}
-                                                    alt={testimonial.name}
-                                                    className="w-12 h-12 rounded-full object-cover border-2 border-primary/30"
-                                                />
-                                            ) : (
-                                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg">
-                                                    {testimonial.name.charAt(0).toUpperCase()}
-                                                </div>
-                                            )}
-                                            <div>
-                                                <p className="font-bold text-white">{testimonial.name}</p>
-                                                {testimonial.role && (
-                                                    <p className="text-sm text-white/60">{testimonial.role}</p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                </ScrollReveal>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-12">
-                            <p className="text-white/50 text-lg">No testimonials available yet.</p>
-                        </div>
-                    )}
+                                    </div>
+                                </motion.a>
+                            </ScrollReveal>
+                        ))}
+                    </div>
                 </div>
                 <SectionDivider position="bottom" variant="diagonal" color="fill-background-light" />
             </section>

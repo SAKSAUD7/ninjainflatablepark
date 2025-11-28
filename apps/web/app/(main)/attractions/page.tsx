@@ -1,10 +1,12 @@
+"use client";
+
 import { AttractionsGrid } from "../../../features/attractions/components/AttractionsGrid";
 import { ScrollReveal, SectionDivider } from "@repo/ui";
 import { Coffee, Car, Shield, Wifi, Utensils, Users } from "lucide-react";
-import { getPublicActivities } from "../../../lib/public-api";
+import { activitiesData } from "../../../data/activities";
 
-export default async function AttractionsPage() {
-    const activities = await getPublicActivities();
+export default function AttractionsPage() {
+    const activities = activitiesData;
 
     const facilities = [
         {

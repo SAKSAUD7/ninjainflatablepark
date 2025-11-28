@@ -11,6 +11,10 @@ export const WaiverForm = () => {
         control,
         name: "minors"
     });
+    const { fields: adultFields, append: appendAdult, remove: removeAdult } = useFieldArray({
+        control,
+        name: "adultGuests"
+    });
 
     const waiverAccepted = watch("waiverAccepted");
 
@@ -193,6 +197,89 @@ export const WaiverForm = () => {
                         className="px-6 py-3 bg-primary text-black font-bold rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2"
                     >
                         <Plus size={20} /> Add a minor
+                    </button>
+                </div>
+
+                {/* Adults Section */}
+                <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                        <User className="w-5 h-5" /> Additional Adults
+                    </h3>
+                    <AnimatePresence>
+                        {adultFields.map((field, index) => (
+                            <motion.div
+                                key={field.id}
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-cyan-500/5 p-4 rounded-xl border border-cyan-500/20"
+                            >
+                                <div className="md:col-span-3">
+                                    <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                        Adult Name <span className="text-red-400">*</span>
+                                    </label>
+                                    <input
+                                        {...register(`adultGuests.${index}.name` as const)}
+                                        className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-cyan-500 outline-none"
+                                        placeholder="Full Name"
+                                    />
+                                    <ErrorMessage message={errors.adultGuests?.[index]?.name?.message} />
+                                </div>
+                                <div className="md:col-span-3">
+                                    <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                        Email <span className="text-red-400">*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        {...register(`adultGuests.${index}.email` as const)}
+                                        className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-cyan-500 outline-none"
+                                        placeholder="Email"
+                                    />
+                                    <ErrorMessage message={errors.adultGuests?.[index]?.email?.message} />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                        Phone <span className="text-red-400">*</span>
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        {...register(`adultGuests.${index}.phone` as const)}
+                                        className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-cyan-500 outline-none"
+                                        placeholder="Phone"
+                                    />
+                                    <ErrorMessage message={errors.adultGuests?.[index]?.phone?.message} />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                        DOB <span className="text-red-400">*</span>
+                                    </label>
+                                    <input
+                                        type="date"
+                                        {...register(`adultGuests.${index}.dob` as const)}
+                                        className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-cyan-500 outline-none"
+                                        style={{ colorScheme: 'dark' }}
+                                    />
+                                    <ErrorMessage message={errors.adultGuests?.[index]?.dob?.message} />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => removeAdult(index)}
+                                        className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium"
+                                    >
+                                        <Trash2 size={18} /> Remove
+                                    </button>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+
+                    <button
+                        type="button"
+                        onClick={() => appendAdult({ name: "", email: "", phone: "", dob: "" })}
+                        className="px-6 py-3 bg-cyan-500 text-black font-bold rounded-lg hover:bg-cyan-600 transition-colors flex items-center gap-2"
+                    >
+                        <Plus size={20} /> Add Adult
                     </button>
                 </div>
 

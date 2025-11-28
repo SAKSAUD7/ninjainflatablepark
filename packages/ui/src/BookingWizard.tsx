@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { bookingSchema, type BookingFormData, getAvailableTimeSlots, isTimeInPast } from "@repo/types";
 import { useToast } from "./components/ToastProvider";
 import { WaiverForm } from "./components/WaiverForm";
+import { validateVoucher } from "../../../apps/web/app/actions/validateVoucher";
 
 interface BookingWizardProps {
     onSubmit: (data: any) => Promise<{ success: boolean; bookingId?: string; bookingNumber?: string; error?: string }>;
@@ -21,6 +22,10 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [availableSlots, setAvailableSlots] = useState<string[]>([]);
     const { showToast } = useToast();
+    const [voucher, setVoucher] = useState("");
+    const [discount, setDiscount] = useState(0);
+    const [voucherMessage, setVoucherMessage] = useState("");
+    const [appliedVoucher, setAppliedVoucher] = useState<string | null>(null);
 
     const methods = useForm<BookingFormData>({
         resolver: zodResolver(bookingSchema),
@@ -74,17 +79,40 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
         if (step === 1) fieldsToValidate = ["date", "time", "duration"];
         if (step === 2) fieldsToValidate = ["adults", "kids", "spectators"];
         if (step === 3) fieldsToValidate = ["name", "email", "phone"];
-        if (step === 4) fieldsToValidate = ["dateOfBirth", "dateOfArrival", "minors", "waiverAccepted"];
+        if (step === 4) {
+            fieldsToValidate = ["dateOfBirth", "dateOfArrival", "minors", "adultGuests", "waiverAccepted"];
+            const isStepValid = await trigger(fieldsToValidate);
+
+            if (isStepValid) {
+                // Validate Minors Count
+                if ((formData.minors?.length || 0) !== formData.kids) {
+                    showToast("error", `Please add details for all ${formData.kids} minor(s). You have added ${formData.minors?.length || 0}.`);
+                    return;
+                }
+
+                // Validate Adults Count
+                // If adults > 0, we assume the main booker is one adult, so we need adults - 1 additional guests
+                const requiredAdditionalAdults = Math.max(0, formData.adults - 1);
+                if ((formData.adultGuests?.length || 0) !== requiredAdditionalAdults) {
+                    if (requiredAdditionalAdults === 0) {
+                        showToast("error", `You have selected ${formData.adults} adult(s). The main booker counts as one. Please remove additional adult entries.`);
+                    } else {
+                        showToast("error", `Please add details for the other ${requiredAdditionalAdults} adult(s). You have added ${formData.adultGuests?.length || 0}.`);
+                    }
+                    return;
+                }
+
+                setStep(step + 1);
+                showToast("success", `Step ${step} completed!`, 2000);
+            } else {
+                showToast("error", "Please fix the errors before proceeding.");
+            }
+            return;
+        }
 
         const isStepValid = await trigger(fieldsToValidate);
 
         if (isStepValid) {
-            // Check if time is in the past before proceeding
-            // if (step === 1 && isTimeInPast(formData.date, formData.time)) {
-            //     showToast("error", "Selected time has passed. Please choose a future time slot.");
-            //     return;
-            // }
-
             setStep(step + 1);
             showToast("success", `Step ${step} completed!`, 2000);
         } else {
@@ -103,12 +131,37 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
 
         let subtotal = (formData.kids * kidPrice) + (formData.adults * adultPrice) + (formData.spectators * spectatorPrice);
 
-        if (formData.duration === "120") {
-            subtotal += (formData.kids + formData.adults) * 500;
-        }
 
         const gst = subtotal * 0.18;
         return { subtotal, gst, total: subtotal + gst };
+    };
+
+    const applyVoucher = async () => {
+        if (!voucher) return;
+
+        setVoucherMessage("Validating...");
+        const totals = calculateTotal();
+
+        try {
+            const result = await validateVoucher(voucher, totals.subtotal); // Discount applies to subtotal
+
+            if (result.success && result.discount) {
+                setDiscount(result.discount);
+                setAppliedVoucher(result.code || voucher);
+                setVoucherMessage(`Success! Voucher applied: ₹${result.discount}`);
+                setValue("voucherCode", result.code);
+                setValue("discountAmount", result.discount);
+            } else {
+                setDiscount(0);
+                setAppliedVoucher(null);
+                setVoucherMessage(result.error || "Invalid voucher");
+                setValue("voucherCode", "");
+                setValue("discountAmount", 0);
+            }
+        } catch (error) {
+            console.error(error);
+            setVoucherMessage("Error validating voucher");
+        }
     };
 
     const handlePayment = async (data: BookingFormData) => {
@@ -385,7 +438,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                                    <div className="grid grid-cols-1 gap-6 md:gap-8">
                                         <motion.button
                                             type="button"
                                             onClick={() => setValue("duration", "60", { shouldValidate: true })}
@@ -405,27 +458,6 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                             )}
                                             <div>60 Minutes</div>
                                             <div className="text-sm font-normal text-white/40 mt-1">Standard Session</div>
-                                        </motion.button>
-
-                                        <motion.button
-                                            type="button"
-                                            onClick={() => setValue("duration", "120", { shouldValidate: true })}
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            className={`p-6 rounded-2xl border-2 font-bold text-lg transition-all relative overflow-hidden ${formData.duration === "120"
-                                                ? "border-primary bg-primary/20 text-white shadow-neon-blue"
-                                                : "border-white/10 hover:border-primary/50 text-white/60 bg-surface-900"}`}
-                                        >
-                                            {formData.duration === "120" && (
-                                                <motion.div
-                                                    layoutId="duration-indicator"
-                                                    className="absolute top-2 right-2"
-                                                >
-                                                    <Sparkles className="w-5 h-5 text-primary" />
-                                                </motion.div>
-                                            )}
-                                            <div>120 Minutes</div>
-                                            <div className="text-sm font-normal text-white/40 mt-1">+â‚¹500/person</div>
                                         </motion.button>
                                     </div>
                                     <ErrorMessage message={errors.duration?.message} />
@@ -757,6 +789,31 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                             )}
                                         </div>
 
+                                        {/* Voucher Code */}
+                                        <div className="border-t border-white/10 pt-6">
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={voucher}
+                                                    onChange={(e) => setVoucher(e.target.value)}
+                                                    placeholder="Enter voucher code"
+                                                    className="flex-1 px-4 py-3 rounded-xl border-2 border-white/10 bg-surface-800 text-white outline-none focus:border-primary transition-all uppercase"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={applyVoucher}
+                                                    className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl transition-colors"
+                                                >
+                                                    Apply
+                                                </button>
+                                            </div>
+                                            {voucherMessage && (
+                                                <p className={`text-sm mt-2 ${voucherMessage.includes("success") ? "text-green-400" : "text-red-400"}`}>
+                                                    {voucherMessage}
+                                                </p>
+                                            )}
+                                        </div>
+
                                         {/* Totals */}
                                         <div className="border-t border-white/10 pt-6">
                                             <div className="flex justify-between mb-2 text-white/50">
@@ -767,10 +824,19 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                 <span>GST (18%)</span>
                                                 <span>₹ {Math.round(totals.gst).toLocaleString('en-IN')}</span>
                                             </div>
+
+                                            {/* Discount Display */}
+                                            {discount > 0 && (
+                                                <div className="flex justify-between mb-4 text-green-400">
+                                                    <span>Discount Applied</span>
+                                                    <span>- ₹ {Math.round(discount).toLocaleString('en-IN')}</span>
+                                                </div>
+                                            )}
+
                                             <div className="flex justify-between items-center pt-4 border-t border-white/10">
                                                 <span className="text-2xl font-black text-white">Total Amount</span>
                                                 <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
-                                                    ₹ {Math.round(totals.total).toLocaleString('en-IN')}
+                                                    ₹ {Math.round(Math.max(0, totals.total - discount)).toLocaleString('en-IN')}
                                                 </span>
                                             </div>
                                         </div>
