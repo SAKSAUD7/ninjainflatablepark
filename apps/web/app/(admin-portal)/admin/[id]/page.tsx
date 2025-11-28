@@ -1,6 +1,6 @@
 import { prisma } from "@repo/database";
-import { getAdminSession } from "../../../../lib/admin-auth";
-import { updateBookingStatus } from "../../../../actions/admin";
+import { getAdminSession } from "../../../lib/admin-auth";
+import { updateBookingStatus } from "../../../actions/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Check, X, Printer, Mail } from "lucide-react";
