@@ -1,5 +1,5 @@
 import { prisma } from "@repo/database";
-import { getAdminSession } from "../../../lib/admin-auth";
+import { getAdminSession } from "../../../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, FileText, Download, Calendar, User, Mail, Phone, CheckCircle2 } from "lucide-react";
