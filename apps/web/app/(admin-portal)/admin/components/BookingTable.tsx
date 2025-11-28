@@ -35,9 +35,10 @@ interface BookingTableProps {
     bookings: Booking[];
     title: string;
     type: "party" | "session";
+    readOnly?: boolean;
 }
 
-export function BookingTable({ bookings, title, type }: BookingTableProps) {
+export function BookingTable({ bookings, title, type, readOnly = false }: BookingTableProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
 
@@ -61,12 +62,14 @@ export function BookingTable({ bookings, title, type }: BookingTableProps) {
                     <p className="text-sm text-slate-500">Manage your {type} bookings</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Link
-                        href={`/admin/${type}-bookings/new`}
-                        className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
-                    >
-                        New Booking
-                    </Link>
+                    {!readOnly && (
+                        <Link
+                            href={`/admin/${type}-bookings/new`}
+                            className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
+                        >
+                            New Booking
+                        </Link>
+                    )}
                     <button className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg border border-slate-200">
                         <Download className="w-5 h-5" />
                     </button>
@@ -169,18 +172,22 @@ export function BookingTable({ bookings, title, type }: BookingTableProps) {
                                             >
                                                 <Eye className="w-4 h-4" />
                                             </Link>
-                                            <button
-                                                className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                title="Edit"
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                title="Delete"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                            {!readOnly && (
+                                                <>
+                                                    <button
+                                                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                        title="Edit"
+                                                    >
+                                                        <Edit className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
