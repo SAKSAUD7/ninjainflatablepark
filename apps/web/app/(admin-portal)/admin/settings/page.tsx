@@ -283,7 +283,7 @@ function InputGroup({ label, name, type = "text", defaultValue, placeholder }: {
                 type={type}
                 defaultValue={defaultValue}
                 placeholder={placeholder}
-                className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none transition-all text-slate-900"
             />
         </div>
     );

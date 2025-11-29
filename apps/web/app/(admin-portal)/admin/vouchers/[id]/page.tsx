@@ -86,7 +86,7 @@ export default function EditVoucherPage() {
                         type="text"
                         required
                         defaultValue={voucher.code}
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none uppercase"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none uppercase text-slate-900"
                         placeholder="DISCOUNT20"
                     />
                 </div>
@@ -99,7 +99,7 @@ export default function EditVoucherPage() {
                             name="discountType"
                             required
                             defaultValue={voucher.discountType}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                         >
                             <option value="PERCENTAGE">Percentage (%)</option>
                             <option value="FLAT">Flat Amount (₹)</option>
@@ -117,7 +117,7 @@ export default function EditVoucherPage() {
                             min="0"
                             step="0.01"
                             defaultValue={voucher.discountValue}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                         />
                     </div>
                 </div>
@@ -134,7 +134,7 @@ export default function EditVoucherPage() {
                             type="number"
                             min="0"
                             defaultValue={voucher.minOrderAmount || ""}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                             placeholder="Optional"
                         />
                     </div>
@@ -148,7 +148,7 @@ export default function EditVoucherPage() {
                             type="number"
                             min="0"
                             defaultValue={voucher.usageLimit || ""}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                             placeholder="Unlimited"
                         />
                     </div>
@@ -164,7 +164,7 @@ export default function EditVoucherPage() {
                         name="expiryDate"
                         type="date"
                         defaultValue={voucher.expiryDate ? new Date(voucher.expiryDate).toISOString().split('T')[0] : ""}
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                     />
                 </div>
 
@@ -175,7 +175,7 @@ export default function EditVoucherPage() {
                         name="description"
                         rows={3}
                         defaultValue={voucher.description || ""}
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                         placeholder="Internal notes about this voucher"
                     ></textarea>
                 </div>

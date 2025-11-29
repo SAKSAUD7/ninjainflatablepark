@@ -96,7 +96,7 @@ export function BannerForm({ initialData, isEditing = false }: BannerFormProps) 
                         <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
                         <input
                             {...form.register("title")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="Summer Sale"
                         />
                         {form.formState.errors.title && (
@@ -108,7 +108,7 @@ export function BannerForm({ initialData, isEditing = false }: BannerFormProps) 
                         <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
                         <input
                             {...form.register("imageUrl")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="https://..."
                         />
                         {form.formState.errors.imageUrl && (
@@ -120,7 +120,7 @@ export function BannerForm({ initialData, isEditing = false }: BannerFormProps) 
                         <label className="block text-sm font-medium text-slate-700 mb-1">Link (Optional)</label>
                         <input
                             {...form.register("link")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="/book"
                         />
                     </div>
@@ -131,7 +131,7 @@ export function BannerForm({ initialData, isEditing = false }: BannerFormProps) 
                             <input
                                 type="number"
                                 {...form.register("order", { valueAsNumber: true })}
-                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             />
                         </div>
 

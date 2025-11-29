@@ -114,7 +114,7 @@ export function AdminPartyBookingForm() {
                             name="childName"
                             type="text"
                             required
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="Child's Name"
                         />
                     </div>
@@ -126,7 +126,7 @@ export function AdminPartyBookingForm() {
                             required
                             min="1"
                             max="18"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="Age"
                         />
                     </div>
@@ -187,7 +187,7 @@ export function AdminPartyBookingForm() {
                             type="number"
                             required
                             min="10"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="Min 10"
                         />
                         <p className="text-xs text-slate-500 mt-1">Minimum 10 participants required</p>
@@ -199,7 +199,7 @@ export function AdminPartyBookingForm() {
                             type="number"
                             required
                             min="0"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="0"
                         />
                         <p className="text-xs text-slate-500 mt-1">First 10 spectators are free</p>
@@ -218,7 +218,7 @@ export function AdminPartyBookingForm() {
                     <textarea
                         name="specialRequests"
                         rows={3}
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                         placeholder="Any dietary requirements, decorations, etc."
                     ></textarea>
                 </div>

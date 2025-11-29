@@ -54,7 +54,7 @@ export default function NewVoucherPage() {
                             type="text"
                             required
                             placeholder="e.g. SUMMER2024"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none uppercase"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none uppercase text-slate-900"
                         />
                     </div>
 
@@ -62,7 +62,7 @@ export default function NewVoucherPage() {
                         <label className="block text-sm font-bold text-slate-700 mb-2">Discount Type</label>
                         <select
                             name="discountType"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none text-slate-900"
                         >
                             <option value="PERCENTAGE">Percentage (%)</option>
                             <option value="FLAT">Flat Amount (₹)</option>
@@ -78,7 +78,7 @@ export default function NewVoucherPage() {
                             min="0"
                             step="0.01"
                             placeholder="e.g. 20"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none text-slate-900"
                         />
                     </div>
 
@@ -89,7 +89,7 @@ export default function NewVoucherPage() {
                             type="number"
                             min="0"
                             placeholder="e.g. 1000"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none text-slate-900"
                         />
                     </div>
 
@@ -100,7 +100,7 @@ export default function NewVoucherPage() {
                             type="number"
                             min="1"
                             placeholder="e.g. 100"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none text-slate-900"
                         />
                     </div>
 
@@ -110,7 +110,7 @@ export default function NewVoucherPage() {
                             name="description"
                             rows={3}
                             placeholder="Internal note about this voucher..."
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none resize-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none resize-none text-slate-900"
                         />
                     </div>
                 </div>

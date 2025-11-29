@@ -11,7 +11,15 @@ import {
     AlertCircle,
     Clock,
     CheckCircle,
-    ArrowRight
+    ArrowRight,
+    PartyPopper,
+    ShoppingBag,
+    MessageSquare,
+    HelpCircle,
+    Image,
+    Ticket,
+    UserCheck,
+    Repeat
 } from "lucide-react";
 
 export default async function AdminDashboard() {
@@ -75,6 +83,42 @@ export default async function AdminDashboard() {
                     color="amber"
                     alert={stats.pendingWaivers > 0}
                 />
+            </div>
+
+            {/* Website Summary Section */}
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-8 border border-slate-200 mb-8">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">Website Summary</h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {/* Booking Stats */}
+                    <SummaryCard category="Bookings Breakdown" icon={<CalendarCheck size={16} />} items={[
+                        { label: "Session Bookings", value: stats.sessionBookings },
+                        { label: "Party Bookings", value: stats.partyBookings },
+                        { label: "Avg Booking Value", value: `₹${stats.avgBookingValue}` }
+                    ]} />
+
+                    {/* Customer Stats */}
+                    <SummaryCard category="Customer Insights" icon={<Users size={16} />} items={[
+                        { label: "Total Customers", value: stats.totalCustomers },
+                        { label: "New This Month", value: stats.newCustomersMonth },
+                        { label: "Repeat Customers", value: stats.repeatCustomers }
+                    ]} />
+
+                    {/* Content Stats */}
+                    <SummaryCard category="Content Overview" icon={<Image size={16} />} items={[
+                        { label: "Activities", value: stats.totalActivities },
+                        { label: "Testimonials", value: stats.totalTestimonials },
+                        { label: "FAQs", value: stats.totalFaqs },
+                        { label: "Banners", value: stats.totalBanners }
+                    ]} />
+
+                    {/* Promotions & System */}
+                    <SummaryCard category="System Health" icon={<Ticket size={16} />} items={[
+                        { label: "Active Vouchers", value: stats.activeVouchers },
+                        { label: "Redeemed", value: stats.redeemedVouchers },
+                        { label: "Waiver Completion", value: `${stats.waiverCompletionRate}%` }
+                    ]} />
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
@@ -258,5 +302,30 @@ function StatusBadge({ status }: { status: string }) {
             <span className={`w-1.5 h-1.5 rounded-full ${status === 'CONFIRMED' ? 'bg-emerald-500' : status === 'PENDING' ? 'bg-amber-500' : 'bg-slate-400'}`} />
             {status}
         </span>
+    );
+}
+
+function SummaryCard({ category, icon, items }: {
+    category: string;
+    icon: React.ReactNode;
+    items: { label: string; value: string | number }[]
+}) {
+    return (
+        <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-4 text-slate-500">
+                {icon}
+                <h3 className="text-xs font-bold uppercase tracking-wider">
+                    {category}
+                </h3>
+            </div>
+            <div className="space-y-3">
+                {items.map((item, i) => (
+                    <div key={i} className="flex justify-between items-center border-b border-slate-50 last:border-0 pb-2 last:pb-0">
+                        <span className="text-sm text-slate-600">{item.label}</span>
+                        <span className="text-sm font-bold text-slate-900">{item.value}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 }

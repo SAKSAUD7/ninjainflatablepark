@@ -96,7 +96,7 @@ export function ActivityForm({ initialData, isEditing = false }: ActivityFormPro
                         <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
                         <input
                             {...form.register("name")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="Ninja Course"
                         />
                         {form.formState.errors.name && (
@@ -109,7 +109,7 @@ export function ActivityForm({ initialData, isEditing = false }: ActivityFormPro
                         <textarea
                             {...form.register("description")}
                             rows={4}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="A challenging obstacle course..."
                         />
                         {form.formState.errors.description && (
@@ -121,7 +121,7 @@ export function ActivityForm({ initialData, isEditing = false }: ActivityFormPro
                         <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
                         <input
                             {...form.register("imageUrl")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="https://..."
                         />
                         {form.formState.errors.imageUrl && (
@@ -135,7 +135,7 @@ export function ActivityForm({ initialData, isEditing = false }: ActivityFormPro
                             <input
                                 type="number"
                                 {...form.register("order", { valueAsNumber: true })}
-                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             />
                         </div>
 

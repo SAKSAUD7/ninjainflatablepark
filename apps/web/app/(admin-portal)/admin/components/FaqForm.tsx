@@ -96,7 +96,7 @@ export function FaqForm({ initialData, isEditing = false }: FaqFormProps) {
                         <label className="block text-sm font-medium text-slate-700 mb-1">Question</label>
                         <input
                             {...form.register("question")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="What are the opening hours?"
                         />
                         {form.formState.errors.question && (
@@ -109,7 +109,7 @@ export function FaqForm({ initialData, isEditing = false }: FaqFormProps) {
                         <textarea
                             {...form.register("answer")}
                             rows={4}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="We are open from 10 AM to 10 PM..."
                         />
                         {form.formState.errors.answer && (
@@ -121,7 +121,7 @@ export function FaqForm({ initialData, isEditing = false }: FaqFormProps) {
                         <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
                         <select
                             {...form.register("category")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                         >
                             <option value="General">General</option>
                             <option value="Bookings">Bookings</option>
@@ -136,7 +136,7 @@ export function FaqForm({ initialData, isEditing = false }: FaqFormProps) {
                             <input
                                 type="number"
                                 {...form.register("order", { valueAsNumber: true })}
-                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             />
                         </div>
 

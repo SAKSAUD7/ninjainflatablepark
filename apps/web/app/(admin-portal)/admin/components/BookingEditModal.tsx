@@ -79,7 +79,7 @@ export default function BookingEditModal({ booking, onClose }: BookingEditModalP
                                     type="date"
                                     value={formData.date}
                                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-neon-blue outline-none"
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-neon-blue outline-none text-slate-900"
                                     required
                                 />
                             </div>
@@ -90,7 +90,7 @@ export default function BookingEditModal({ booking, onClose }: BookingEditModalP
                                     type="time"
                                     value={formData.time}
                                     onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-neon-blue outline-none"
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-neon-blue outline-none text-slate-900"
                                     required
                                 />
                             </div>
@@ -102,7 +102,7 @@ export default function BookingEditModal({ booking, onClose }: BookingEditModalP
                                         type="number"
                                         value={formData.guests}
                                         onChange={(e) => setFormData({ ...formData, guests: parseInt(e.target.value) })}
-                                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-neon-blue outline-none"
+                                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-neon-blue outline-none text-slate-900"
                                         min="1"
                                         required
                                     />
@@ -113,7 +113,7 @@ export default function BookingEditModal({ booking, onClose }: BookingEditModalP
                                         type="number"
                                         value={formData.amount}
                                         onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) })}
-                                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-neon-blue outline-none"
+                                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neon-blue focus:border-neon-blue outline-none text-slate-900"
                                         min="0"
                                         step="0.01"
                                         required

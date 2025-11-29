@@ -23,7 +23,7 @@ export default async function AdminLoginPage() {
                             name="email"
                             type="email"
                             required
-                            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none transition-all"
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none transition-all text-slate-900"
                             placeholder="admin@ninja.com"
                         />
                     </div>
@@ -34,7 +34,7 @@ export default async function AdminLoginPage() {
                             name="password"
                             type="password"
                             required
-                            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none transition-all"
+                            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none transition-all text-slate-900"
                             placeholder="••••••••"
                         />
                     </div>

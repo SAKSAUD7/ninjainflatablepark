@@ -98,7 +98,7 @@ export function TestimonialForm({ initialData, isEditing = false }: TestimonialF
                         <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
                         <input
                             {...form.register("name")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="John Doe"
                         />
                         {form.formState.errors.name && (
@@ -110,7 +110,7 @@ export function TestimonialForm({ initialData, isEditing = false }: TestimonialF
                         <label className="block text-sm font-medium text-slate-700 mb-1">Role (Optional)</label>
                         <input
                             {...form.register("role")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="Parent"
                         />
                     </div>
@@ -120,7 +120,7 @@ export function TestimonialForm({ initialData, isEditing = false }: TestimonialF
                         <textarea
                             {...form.register("content")}
                             rows={4}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="Great place for kids..."
                         />
                         {form.formState.errors.content && (
@@ -136,7 +136,7 @@ export function TestimonialForm({ initialData, isEditing = false }: TestimonialF
                                 min="1"
                                 max="5"
                                 {...form.register("rating", { valueAsNumber: true })}
-                                className="w-24 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                className="w-24 px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             />
                             <div className="flex text-yellow-400">
                                 {[...Array(5)].map((_, i) => (
@@ -150,7 +150,7 @@ export function TestimonialForm({ initialData, isEditing = false }: TestimonialF
                         <label className="block text-sm font-medium text-slate-700 mb-1">Image URL (Optional)</label>
                         <input
                             {...form.register("imageUrl")}
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900"
                             placeholder="https://..."
                         />
                     </div>

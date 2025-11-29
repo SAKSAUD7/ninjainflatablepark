@@ -81,7 +81,7 @@ export default function NewUserPage() {
                         type="text"
                         required
                         placeholder="John Doe"
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                     />
                 </div>
 
@@ -96,7 +96,7 @@ export default function NewUserPage() {
                         type="email"
                         required
                         placeholder="john@ninja.com"
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                     />
                 </div>
 
@@ -112,7 +112,7 @@ export default function NewUserPage() {
                         required
                         minLength={6}
                         placeholder="Minimum 6 characters"
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                     />
                     <p className="text-xs text-slate-500 mt-1">User will be able to change this after first login</p>
                 </div>
@@ -126,7 +126,7 @@ export default function NewUserPage() {
                     <select
                         name="roleId"
                         required
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                     >
                         <option value="">Select a role...</option>
                         {roles.map((role) => (

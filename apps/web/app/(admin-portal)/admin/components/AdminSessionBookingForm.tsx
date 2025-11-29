@@ -147,7 +147,7 @@ export function AdminSessionBookingForm() {
                         <select
                             name="duration"
                             required
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-slate-900"
                         >
                             <option value="60">60 Minutes</option>
                             <option value="90">90 Minutes</option>
@@ -171,7 +171,7 @@ export function AdminSessionBookingForm() {
                             type="number"
                             required
                             min="0"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="0"
                         />
                     </div>
@@ -182,7 +182,7 @@ export function AdminSessionBookingForm() {
                             type="number"
                             required
                             min="0"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="0"
                         />
                     </div>
@@ -193,7 +193,7 @@ export function AdminSessionBookingForm() {
                             type="number"
                             required
                             min="0"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="0"
                         />
                     </div>

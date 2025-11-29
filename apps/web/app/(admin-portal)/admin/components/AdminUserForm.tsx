@@ -108,7 +108,7 @@ export function AdminUserForm({ user, roles, isNew = false }: AdminUserFormProps
                                 type="text"
                                 defaultValue={user?.name}
                                 required
-                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                             />
                         </div>
                         <div>
@@ -118,7 +118,7 @@ export function AdminUserForm({ user, roles, isNew = false }: AdminUserFormProps
                                 type="email"
                                 defaultValue={user?.email}
                                 required
-                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                             />
                         </div>
                     </div>
@@ -129,7 +129,7 @@ export function AdminUserForm({ user, roles, isNew = false }: AdminUserFormProps
                             name="roleId"
                             defaultValue={user?.roleId || ""}
                             required
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                         >
                             <option value="" disabled>Select a role</option>
                             {roles.map(role => (
@@ -147,7 +147,7 @@ export function AdminUserForm({ user, roles, isNew = false }: AdminUserFormProps
                                 name="password"
                                 type="password"
                                 required
-                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-slate-900"
                             />
                             <p className="text-xs text-slate-500 mt-1">Must be at least 8 characters</p>
                         </div>

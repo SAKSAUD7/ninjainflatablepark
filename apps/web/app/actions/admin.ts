@@ -89,41 +89,119 @@ export async function getDashboardStats() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
     const [
         bookingsToday,
         totalBookings,
+        sessionBookings,
+        partyBookings,
         totalRevenue,
         pendingWaivers,
+        totalWaivers,
         recentBookings,
-        monthlyRevenue
+        monthlyRevenue,
+        totalCustomers,
+        newCustomersMonth,
+        activeVouchers,
+        totalVoucherRedemptions,
+        totalActivities,
+        totalTestimonials,
+        totalFaqs,
+        totalBanners,
+        avgBookingValue
     ] = await Promise.all([
+        // Bookings
         prisma.booking.count({
             where: {
                 date: today.toISOString().split('T')[0],
                 status: { not: "CANCELLED" }
             }
         }),
-        prisma.booking.count(),
+        prisma.booking.count({ where: { status: { not: "CANCELLED" } } }),
+        prisma.booking.count({
+            where: {
+                type: "SESSION",
+                status: { not: "CANCELLED" }
+            }
+        }),
+        prisma.booking.count({
+            where: {
+                type: "PARTY",
+                status: { not: "CANCELLED" }
+            }
+        }),
+
+        // Revenue
         prisma.booking.aggregate({
             _sum: { amount: true },
             where: { status: { not: "CANCELLED" } }
         }),
+
+        // Waivers
         prisma.booking.count({
             where: { waiverStatus: "PENDING", status: { not: "CANCELLED" } }
         }),
+        prisma.waiver.count(),
+
+        // Recent bookings
         prisma.booking.findMany({
             take: 5,
             orderBy: { createdAt: 'desc' },
             include: { customer: true }
         }),
+
+        // Revenue chart
         prisma.booking.groupBy({
             by: ['date'],
             _sum: { amount: true },
             where: { status: { not: "CANCELLED" } },
             orderBy: { date: 'asc' },
-            take: 7 // Last 7 days for the chart
+            take: 7
+        }),
+
+        // Customers
+        prisma.customer.count(),
+        prisma.customer.count({
+            where: {
+                createdAt: { gte: firstDayOfMonth }
+            }
+        }),
+
+        // Vouchers
+        prisma.voucher.count({ where: { isActive: true } }),
+        prisma.voucher.aggregate({
+            _sum: { usedCount: true }
+        }),
+
+        // Content
+        prisma.activity.count({ where: { active: true } }),
+        prisma.testimonial.count({ where: { active: true } }),
+        prisma.faq.count({ where: { active: true } }),
+        prisma.banner.count({ where: { active: true } }),
+
+        // Average booking value
+        prisma.booking.aggregate({
+            _avg: { amount: true },
+            where: { status: { not: "CANCELLED" } }
         })
     ]);
+
+    // Calculate waiver completion rate (all waivers in DB are signed)
+    const signedWaivers = totalWaivers;
+    const waiverCompletionRate = totalWaivers > 0
+        ? Math.round((signedWaivers / totalWaivers) * 100)
+        : 100;
+
+    // Calculate repeat customers (customers with more than 1 booking)
+    const customersWithBookings = await prisma.customer.findMany({
+        include: {
+            _count: {
+                select: { bookings: true }
+            }
+        }
+    });
+    const repeatCustomers = customersWithBookings.filter(c => c._count.bookings > 1).length;
 
     return {
         bookingsToday,
@@ -134,11 +212,24 @@ export async function getDashboardStats() {
         monthlyRevenue: monthlyRevenue.map(item => ({
             name: new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' }),
             total: item._sum.amount || 0
-        }))
+        })),
+        sessionBookings,
+        partyBookings,
+        totalCustomers,
+        newCustomersMonth,
+        repeatCustomers,
+        activeVouchers,
+        redeemedVouchers: totalVoucherRedemptions._sum.usedCount || 0,
+        totalActivities,
+        totalTestimonials,
+        totalFaqs,
+        totalBanners,
+        avgBookingValue: Math.round(avgBookingValue._avg.amount || 0),
+        waiverCompletionRate,
+        totalWaivers,
+        signedWaivers
     };
 }
-
-// --- Booking Actions ---
 
 export async function getBookings(filter?: { status?: string; date?: string; search?: string }) {
     const session = await getAdminSession();
