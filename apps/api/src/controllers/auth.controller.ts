@@ -1,15 +1,22 @@
 import { Request, Response } from 'express';
 import { prisma } from '@repo/database';
-import { comparePassword, hashPassword } from '../utils/password.util';
-import { generateToken, generateRefreshToken } from '../utils/jwt.util';
-import { successResponse, errorResponse, unauthorizedResponse } from '../utils/response.util';
-import { asyncHandler, AppError } from '../middlewares/error.middleware';
-import { CONSTANTS } from '../config/constants';
+import {
+    successResponse,
+    errorResponse,
+    unauthorizedResponse,
+} from '../utils/response.util';
+import {
+    hashPassword,
+    comparePassword,
+    generateToken,
+    generateRefreshToken,
+} from '../utils/jwt.util';
+import { asyncHandler } from '../middlewares/error.middleware';
 import logger from '../middlewares/logger.middleware';
+import { CONSTANTS } from '../config/constants';
 
 // Login
 export const login = asyncHandler(async (req: Request, res: Response) => {
-    logger.error('DEBUG: Login request body: ' + JSON.stringify(req.body));
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -18,7 +25,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
     // Find user
     const user = await prisma.adminUser.findUnique({
-        where: { email: email.toLowerCase() },
+        where: { email },
         include: { role: true },
     });
 
@@ -229,7 +236,7 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response) => 
     }
 });
 // Fix admin password (TEMPORARY)
-export const fixAdmin = asyncHandler(async (req: Request, res: Response) => {
+export const fixAdmin = asyncHandler(async (_req: Request, res: Response) => {
     const email = 'admin@ninjapark.com';
     const password = 'admin123';
 

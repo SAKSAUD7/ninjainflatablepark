@@ -3,7 +3,7 @@ import { prisma } from '@repo/database';
 import { successResponse } from '../utils/response.util';
 import { asyncHandler } from '../middlewares/error.middleware';
 
-export const getSettings = asyncHandler(async (req: Request, res: Response) => {
+export const getSettings = asyncHandler(async (_req: Request, res: Response) => {
     const settings = await prisma.globalSettings.findFirst();
     return successResponse(res, settings);
 });

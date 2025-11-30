@@ -84,3 +84,5 @@ export const faqs = createCRUDHandlers(prisma.faq, 'FAQ');
 export const testimonials = createCRUDHandlers(prisma.testimonial, 'Testimonial');
 export const staticPages = createCRUDHandlers(prisma.staticPage, 'StaticPage');
 export const socialLinks = createCRUDHandlers(prisma.socialLink, 'SocialLink');
+export const invitationTemplates = createCRUDHandlers(prisma.invitationTemplate, 'InvitationTemplate');
+export const galleryItems = createCRUDHandlers(prisma.galleryItem, 'GalleryItem');

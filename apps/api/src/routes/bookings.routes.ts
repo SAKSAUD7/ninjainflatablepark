@@ -12,7 +12,7 @@ router.use(authenticate);
 router.get('/stats', bookingsController.getDashboardStats);
 
 // CRUD operations
-router.get('/', authorize(CONSTANTS.PERMISSIONS.BOOKINGS_READ), bookingsController.getAllBookings);
+router.get('/', authorize(CONSTANTS.PERMISSIONS.BOOKINGS_READ), bookingsController.getBookings);
 router.get('/:id', authorize(CONSTANTS.PERMISSIONS.BOOKINGS_READ), bookingsController.getBookingById);
 router.post('/', authorize(CONSTANTS.PERMISSIONS.BOOKINGS_WRITE), bookingsController.createBooking);
 router.put('/:id', authorize(CONSTANTS.PERMISSIONS.BOOKINGS_WRITE), bookingsController.updateBooking);

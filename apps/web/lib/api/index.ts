@@ -39,16 +39,16 @@ export const getStats = async (): Promise<Stat[]> => {
 
 export const getGalleryItems = async (): Promise<GalleryItem[]> => {
     noStore();
-    const activities = await prisma.activity.findMany({
+    const items = await prisma.galleryItem.findMany({
         where: { active: true },
         orderBy: { order: 'asc' },
         take: 8
     });
 
-    return activities.map(activity => ({
-        id: activity.id,
-        src: activity.imageUrl,
-        title: activity.name,
-        desc: activity.description
+    return items.map(item => ({
+        id: item.id,
+        src: item.imageUrl,
+        title: item.title || '',
+        desc: item.category || ''
     }));
 };

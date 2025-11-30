@@ -52,3 +52,10 @@ export async function getGlobalSettings() {
     }
     return settings;
 }
+
+export async function getPublicSocialLinks() {
+    return await prisma.socialLink.findMany({
+        where: { active: true },
+        orderBy: { order: 'asc' }
+    });
+}

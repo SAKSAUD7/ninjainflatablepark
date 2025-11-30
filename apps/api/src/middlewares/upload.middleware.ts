@@ -16,13 +16,13 @@ const ensureUploadDir = (folder: string) => {
 
 // Configure storage
 const storage = multer.diskStorage({
-    destination: (req: Request, file, cb) => {
+    destination: (req: Request, _file, cb) => {
         // Determine folder based on field name
         const folder = req.body.uploadType || CONSTANTS.UPLOAD_FOLDERS.WAIVERS;
         const dir = ensureUploadDir(folder);
         cb(null, dir);
     },
-    filename: (req, file, cb) => {
+    filename: (_req, file, cb) => {
         // Generate unique filename
         const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
         const ext = path.extname(file.originalname);
@@ -34,7 +34,7 @@ const storage = multer.diskStorage({
 });
 
 // File filter
-const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     // Check file type
     if (config.upload.allowedTypes.includes(file.mimetype)) {
         cb(null, true);

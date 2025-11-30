@@ -1,0 +1,23 @@
+src/controllers/auth.controller.ts(9,5): error TS2305: Module '"../utils/jwt.util"' has no exported member 'hashPassword'.
+src/controllers/auth.controller.ts(10,5): error TS2305: Module '"../utils/jwt.util"' has no exported member 'comparePassword'.
+src/controllers/bookings.controller.ts(7,5): error TS6133: 'errorResponse' is declared but its value is never read.
+src/controllers/calendar.controller.ts(3,59): error TS6133: 'notFoundResponse' is declared but its value is never read.
+src/controllers/calendar.controller.ts(8,53): error TS6133: 'req' is declared but its value is never read.
+src/controllers/settings.controller.ts(6,48): error TS6133: 'req' is declared but its value is never read.
+src/middlewares/validation.middleware.ts(13,38): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/middlewares/validation.middleware.ts(34,38): error TS2339: Property 'errors' does not exist on type 'ZodError<unknown>'.
+src/routes/bookings.routes.ts(15,84): error TS2551: Property 'getAllBookings' does not exist on type 'typeof import("C:/Users/saksa/OneDrive/Desktop/ninja/ninjainflatablepark-4/apps/api/src/controllers/bookings.controller")'. Did you mean 'getBookings'?
+src/utils/jwt.util.ts(11,16): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.
+src/utils/jwt.util.ts(17,16): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.

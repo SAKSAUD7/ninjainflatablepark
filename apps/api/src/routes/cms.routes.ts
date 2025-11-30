@@ -49,4 +49,18 @@ router.post('/social', authorize(CONSTANTS.PERMISSIONS.CMS_WRITE), cmsController
 router.put('/social/:id', authorize(CONSTANTS.PERMISSIONS.CMS_WRITE), cmsController.socialLinks.update);
 router.delete('/social/:id', authorize(CONSTANTS.PERMISSIONS.CMS_WRITE), cmsController.socialLinks.delete);
 
+// Invitation Templates
+router.get('/invitation-templates', authorize(CONSTANTS.PERMISSIONS.CMS_READ), cmsController.invitationTemplates.getAll);
+router.get('/invitation-templates/:id', authorize(CONSTANTS.PERMISSIONS.CMS_READ), cmsController.invitationTemplates.getById);
+router.post('/invitation-templates', authorize(CONSTANTS.PERMISSIONS.CMS_WRITE), cmsController.invitationTemplates.create);
+router.put('/invitation-templates/:id', authorize(CONSTANTS.PERMISSIONS.CMS_WRITE), cmsController.invitationTemplates.update);
+router.delete('/invitation-templates/:id', authorize(CONSTANTS.PERMISSIONS.CMS_WRITE), cmsController.invitationTemplates.delete);
+
+// Gallery Items
+router.get('/gallery', authorize(CONSTANTS.PERMISSIONS.CMS_READ), cmsController.galleryItems.getAll);
+router.get('/gallery/:id', authorize(CONSTANTS.PERMISSIONS.CMS_READ), cmsController.galleryItems.getById);
+router.post('/gallery', authorize(CONSTANTS.PERMISSIONS.CMS_WRITE), cmsController.galleryItems.create);
+router.put('/gallery/:id', authorize(CONSTANTS.PERMISSIONS.CMS_WRITE), cmsController.galleryItems.update);
+router.delete('/gallery/:id', authorize(CONSTANTS.PERMISSIONS.CMS_WRITE), cmsController.galleryItems.delete);
+
 export default router;

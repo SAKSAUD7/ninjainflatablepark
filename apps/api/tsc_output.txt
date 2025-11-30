@@ -1,0 +1,7 @@
+src/controllers/auth.controller.ts(1,24): error TS1128: Declaration or statement expected.
+src/controllers/auth.controller.ts(2,5): error TS1128: Declaration or statement expected.
+src/controllers/auth.controller.ts(2,6): error TS1128: Declaration or statement expected.
+src/controllers/auth.controller.ts(78,1): error TS1128: Declaration or statement expected.
+src/controllers/auth.controller.ts(78,2): error TS1128: Declaration or statement expected.
+src/controllers/bookings.controller.ts(40,1): error TS1128: Declaration or statement expected.
+src/controllers/bookings.controller.ts(40,2): error TS1128: Declaration or statement expected.

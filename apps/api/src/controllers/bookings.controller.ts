@@ -1,14 +1,18 @@
 import { Request, Response } from 'express';
 import { prisma } from '@repo/database';
-import { successResponse, errorResponse, createdResponse, notFoundResponse } from '../utils/response.util';
+import {
+    successResponse,
+    createdResponse,
+    notFoundResponse,
+} from '../utils/response.util';
 import { asyncHandler } from '../middlewares/error.middleware';
 import { getPaginationParams, getPaginationMeta } from '../utils/pagination.util';
 import { CONSTANTS } from '../config/constants';
-import QRCode from 'qrcode';
 import logger from '../middlewares/logger.middleware';
+import QRCode from 'qrcode';
 
 // Get all bookings
-export const getAllBookings = asyncHandler(async (req: Request, res: Response) => {
+export const getBookings = asyncHandler(async (req: Request, res: Response) => {
     const { page, limit, type, status, date, search } = req.query;
 
     const { skip, take, page: currentPage, limit: currentLimit } = getPaginationParams(
@@ -299,7 +303,7 @@ export const updateBookingStatus = asyncHandler(async (req: Request, res: Respon
 });
 
 // Get dashboard stats
-export const getDashboardStats = asyncHandler(async (req: Request, res: Response) => {
+export const getDashboardStats = asyncHandler(async (_req: Request, res: Response) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

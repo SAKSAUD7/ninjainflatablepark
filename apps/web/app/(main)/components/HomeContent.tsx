@@ -4,7 +4,7 @@ import { AnimatedHero, ScrollReveal, BouncyButton, SectionDivider, Marquee } fro
 import { motion } from "framer-motion";
 import { Zap, Shield, Users, Trophy, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Stat, GalleryItem } from "../../../lib/api/types";
+import { Stat, GalleryItem, Activity } from "../../../lib/api/types";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Zap,
@@ -19,9 +19,10 @@ interface HomeContentProps {
     banners: any[];
     reviews: Array<{ id: string; url: string; img: string }>;
     settings?: any;
+    activities: Activity[];
 }
 
-export default function HomeContent({ stats, gallery, banners, reviews, settings }: HomeContentProps) {
+export default function HomeContent({ stats, gallery, banners, reviews, settings, activities }: HomeContentProps) {
     const aboutText = settings?.aboutText || "Ninja Inflatable Park was born from a simple idea: create a space where people of all ages can unleash their inner ninja, challenge themselves, and have an absolute blast doing it.";
     const phone = settings?.contactPhone || "9845471611";
 
@@ -111,23 +112,12 @@ export default function HomeContent({ stats, gallery, banners, reviews, settings
                     {/* Activities Carousel */}
                     <div className="mb-12">
                         <Marquee speed={40}>
-                            {[
-                                "Ninja Warrior Course",
-                                "Giant Slides",
-                                "Wipeout Zone",
-                                "Bounce Arena",
-                                "Obstacle Challenge",
-                                "Mega Slides",
-                                "Jump Zone",
-                                "Adventure Park",
-                                "Inflatable Fun",
-                                "Party Zones"
-                            ].map((activity, index) => (
+                            {activities.map((activity, index) => (
                                 <div
-                                    key={index}
+                                    key={activity.id}
                                     className="mx-4 px-6 py-3 bg-gradient-to-r from-primary via-secondary to-accent rounded-full text-black font-bold text-lg whitespace-nowrap"
                                 >
-                                    {activity}
+                                    {activity.name}
                                 </div>
                             ))}
                         </Marquee>

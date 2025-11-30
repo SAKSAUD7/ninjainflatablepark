@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { errorResponse } from '../utils/response.util';
+import logger from './logger.middleware';
 
 export class AppError extends Error {
     statusCode: number;
@@ -17,10 +18,10 @@ export const errorHandler = (
     err: Error | AppError,
     req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
 ): void => {
     // Log error
-    console.error('Error:', {
+    logger.error('Error:', {
         message: err.message,
         stack: err.stack,
         url: req.url,

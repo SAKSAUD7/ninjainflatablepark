@@ -17,3 +17,12 @@ export interface Review {
     url: string;
     img: string;
 }
+
+export interface Activity {
+    id: string;
+    name: string;
+    description: string;
+    imageUrl: string;
+    active: boolean;
+    order: number;
+}

@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { prisma } from '@repo/database';
-import { successResponse, errorResponse, createdResponse, notFoundResponse } from '../utils/response.util';
+import { successResponse, errorResponse, createdResponse } from '../utils/response.util';
 import { asyncHandler } from '../middlewares/error.middleware';
 import { CONSTANTS } from '../config/constants';
 
 // Get booking blocks
-export const getBookingBlocks = asyncHandler(async (req: Request, res: Response) => {
+export const getBookingBlocks = asyncHandler(async (_req: Request, res: Response) => {
     const blocks = await prisma.bookingBlock.findMany({
         orderBy: { startDate: 'desc' },
     });

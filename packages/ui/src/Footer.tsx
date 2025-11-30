@@ -1,16 +1,31 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Heart } from "lucide-react";
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Heart, Youtube, Linkedin } from "lucide-react";
 import Link from "next/link";
 import { footerLinks, siteConfig } from "@repo/config";
 
-export const Footer = ({ settings }: { settings?: any }) => {
-    const socialLinks = [
-        { icon: <Facebook className="w-5 h-5" />, href: siteConfig.links.facebook, label: "Facebook" },
-        { icon: <Instagram className="w-5 h-5" />, href: siteConfig.links.instagram, label: "Instagram" },
-        { icon: <Twitter className="w-5 h-5" />, href: siteConfig.links.twitter, label: "Twitter" },
-    ];
+const iconMap: Record<string, any> = {
+    FACEBOOK: Facebook,
+    INSTAGRAM: Instagram,
+    TWITTER: Twitter,
+    YOUTUBE: Youtube,
+    LINKEDIN: Linkedin
+};
+
+export const Footer = ({ settings, socialLinks = [] }: { settings?: any, socialLinks?: any[] }) => {
+    const displayLinks = socialLinks && socialLinks.length > 0
+        ? socialLinks.map(link => ({
+            icon: iconMap[link.platform] ? iconMap[link.platform] : Facebook,
+            platform: link.platform,
+            href: link.url,
+            label: link.platform
+        }))
+        : [
+            { icon: Facebook, href: siteConfig.links.facebook, label: "Facebook", platform: "FACEBOOK" },
+            { icon: Instagram, href: siteConfig.links.instagram, label: "Instagram", platform: "INSTAGRAM" },
+            { icon: Twitter, href: siteConfig.links.twitter, label: "Twitter", platform: "TWITTER" },
+        ];
 
     const phone = settings?.contactPhone || siteConfig.contact.phone;
     const email = settings?.contactEmail || siteConfig.contact.email;
@@ -40,20 +55,23 @@ export const Footer = ({ settings }: { settings?: any }) => {
 
                         {/* Social Links */}
                         <div className="flex gap-3">
-                            {socialLinks.map((social) => (
-                                <motion.a
-                                    key={social.label}
-                                    href={social.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    whileHover={{ scale: 1.1, y: -2 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="w-10 h-10 rounded-full bg-surface-800 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all shadow-neon-blue"
-                                    aria-label={social.label}
-                                >
-                                    {social.icon}
-                                </motion.a>
-                            ))}
+                            {displayLinks.map((social) => {
+                                const Icon = social.icon;
+                                return (
+                                    <motion.a
+                                        key={social.label}
+                                        href={social.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        whileHover={{ scale: 1.1, y: -2 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        className="w-10 h-10 rounded-full bg-surface-800 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all shadow-neon-blue"
+                                        aria-label={social.label}
+                                    >
+                                        <Icon className="w-5 h-5" />
+                                    </motion.a>
+                                )
+                            })}
                         </div>
                     </div>
 

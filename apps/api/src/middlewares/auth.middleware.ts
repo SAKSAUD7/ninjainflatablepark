@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { verifyToken, JWTPayload } from '../utils/jwt.util';
+import { verifyToken } from '../utils/jwt.util';
 import { unauthorizedResponse, forbiddenResponse } from '../utils/response.util';
 import { prisma } from '@repo/database';
 
@@ -93,7 +93,7 @@ export const authorize = (...requiredPermissions: string[]) => {
 // Optional authentication - doesn't fail if no token
 export const optionalAuth = async (
     req: Request,
-    res: Response,
+    _res: Response,
     next: NextFunction
 ): Promise<void> => {
     try {

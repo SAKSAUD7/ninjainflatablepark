@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     description: "Experience the ultimate fun at Ninja Inflatable Park. Bounce, slide, and conquer the ultimate inflatable adventure!",
 };
 
-import { getGlobalSettings } from "../../lib/public-api";
+import { getGlobalSettings, getPublicSocialLinks } from "../../lib/public-api";
 
 export default async function MainLayout({
     children,
@@ -16,6 +16,7 @@ export default async function MainLayout({
     children: React.ReactNode;
 }) {
     const settings = await getGlobalSettings();
+    const socialLinks = await getPublicSocialLinks();
 
     return (
         <ToastProvider>
@@ -23,7 +24,7 @@ export default async function MainLayout({
             <main className="flex-grow">
                 {children}
             </main>
-            <Footer settings={settings} />
+            <Footer settings={settings} socialLinks={socialLinks} />
         </ToastProvider>
     );
 }
