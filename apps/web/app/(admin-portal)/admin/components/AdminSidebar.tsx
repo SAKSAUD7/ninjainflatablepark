@@ -159,9 +159,12 @@ export function AdminSidebar({ permissions = [] }: AdminSidebarProps) {
     };
 
     // Filter navigation based on permissions
+    const hasSuperAdminAccess = permissions.includes('*');
+
     const filteredNavigation = navigation.map(group => {
         const filteredItems = group.items.filter(item => {
             if (!item.permission) return true; // No permission required
+            if (hasSuperAdminAccess) return true; // Super Admin sees everything
             return hasPermission(permissions, item.permission);
         });
         return { ...group, items: filteredItems };
