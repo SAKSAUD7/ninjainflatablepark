@@ -8,7 +8,7 @@ export const config = {
     nodeEnv: process.env.NODE_ENV || 'development',
 
     // Database
-    databaseUrl: process.env.DATABASE_URL || 'file:../../packages/database/prisma/dev.db',
+    databaseUrl: 'file:C:/Users/saksa/OneDrive/Desktop/ninja/ninjainflatablepark-4/packages/database/prisma/dev.db',
 
     // JWT
     jwt: {

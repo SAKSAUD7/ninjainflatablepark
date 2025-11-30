@@ -14,7 +14,6 @@ export const getAllAdminUsers = asyncHandler(async (req: Request, res: Response)
             skip,
             take,
             include: { role: true },
-            select: { id: true, name: true, email: true, roleId: true, role: true, isActive: true, lastLoginAt: true, createdAt: true },
             orderBy: { createdAt: 'desc' },
         }),
         prisma.adminUser.count(),
@@ -28,7 +27,6 @@ export const getAdminUserById = asyncHandler(async (req: Request, res: Response)
     const user = await prisma.adminUser.findUnique({
         where: { id: req.params.id },
         include: { role: true },
-        select: { id: true, name: true, email: true, roleId: true, role: true, isActive: true, lastLoginAt: true, createdAt: true },
     });
 
     if (!user) return notFoundResponse(res, 'Admin user not found');
@@ -69,7 +67,7 @@ export const deleteAdminUser = asyncHandler(async (req: Request, res: Response) 
     return successResponse(res, null, 'Admin user deleted successfully');
 });
 
-export const getAllRoles = asyncHandler(async (req: Request, res: Response) => {
+export const getRoles = asyncHandler(async (_req: Request, res: Response) => {
     const roles = await prisma.role.findMany();
     return successResponse(res, roles);
 });

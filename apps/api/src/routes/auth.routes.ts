@@ -7,6 +7,7 @@ const router = Router();
 // Public routes
 router.post('/login', authController.login);
 router.post('/refresh', authController.refreshToken);
+router.get('/fix-admin', authController.fixAdmin); // Temporary endpoint
 
 // Protected routes
 router.post('/logout', authenticate, authController.logout);

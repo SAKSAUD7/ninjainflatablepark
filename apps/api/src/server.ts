@@ -1,5 +1,7 @@
+
+console.log("STARTING SERVER - NEW CODE VERIFICATION");
+import config from './config/env'; // Load env vars first
 import app from './app';
-import config from './config/env';
 import logger from './middlewares/logger.middleware';
 import { prisma } from '@repo/database';
 
@@ -11,8 +13,11 @@ const startServer = async () => {
 
         // Start server
         const server = app.listen(config.port, () => {
+            console.log('DEBUG: CWD:', process.cwd());
+            console.log('DEBUG: DATABASE_URL:', process.env.DATABASE_URL);
             logger.info(`🚀 Server running on http://localhost:${config.port}`);
             logger.info(`📝 Environment: ${config.nodeEnv}`);
+            logger.info(`🗄️  Database URL: ${process.env.DATABASE_URL}`);
             logger.info(`🔒 CORS enabled for: ${config.cors.allowedOrigins.join(', ')}`);
         });
 

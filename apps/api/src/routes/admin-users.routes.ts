@@ -7,7 +7,7 @@ const router = Router();
 
 router.use(authenticate);
 
-router.get('/roles', authorize(CONSTANTS.PERMISSIONS.USERS_READ), adminUsersController.getAllRoles);
+router.get('/roles', authorize(CONSTANTS.PERMISSIONS.USERS_READ), adminUsersController.getRoles);
 router.get('/', authorize(CONSTANTS.PERMISSIONS.USERS_READ), adminUsersController.getAllAdminUsers);
 router.get('/:id', authorize(CONSTANTS.PERMISSIONS.USERS_READ), adminUsersController.getAdminUserById);
 router.post('/', authorize(CONSTANTS.PERMISSIONS.USERS_WRITE), adminUsersController.createAdminUser);

@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:C:/Users/saksa/OneDrive/Desktop/ninja/ninjainflatablepark-4/packages/database/prisma/dev.db"
 }
 
 model Booking {

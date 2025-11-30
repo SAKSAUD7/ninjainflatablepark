@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -50,13 +50,15 @@ app.use(requestLogger);
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+const healthHandler = (_req: Request, res: Response) => {
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
         environment: config.nodeEnv,
     });
-});
+};
+
+app.get('/health', healthHandler);
 
 // API routes
 app.use('/api', routes);

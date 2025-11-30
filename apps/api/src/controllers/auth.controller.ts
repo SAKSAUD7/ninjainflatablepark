@@ -9,6 +9,7 @@ import logger from '../middlewares/logger.middleware';
 
 // Login
 export const login = asyncHandler(async (req: Request, res: Response) => {
+    logger.error('DEBUG: Login request body: ' + JSON.stringify(req.body));
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -22,15 +23,32 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     });
 
     if (!user) {
+        logger.error('DEBUG: User not found: ' + email);
         return unauthorizedResponse(res, 'Invalid credentials');
     }
+
+    logger.error('DEBUG: User found: ' + user.email);
+    logger.error('DEBUG: User active: ' + user.isActive);
+    logger.error('DEBUG: User updatedAt: ' + user.updatedAt);
+    logger.error('DEBUG: Stored hash: ' + user.password);
+    logger.error('DEBUG: Input password: ' + password);
 
     if (!user.isActive) {
         return unauthorizedResponse(res, 'Account is inactive');
     }
 
+    logger.error(`DEBUG: Stored hash length: ${user.password.length}`);
+    logger.error(`DEBUG: Input password length: ${password.length}`);
+
+    // Test hash in controller
+    const testHash = await hashPassword(password);
+    logger.error(`DEBUG: Test hash in controller: ${testHash}`);
+    const testCompare = await comparePassword(password, testHash);
+    logger.error(`DEBUG: Test compare in controller: ${testCompare}`);
+
     // Verify password
     const isValidPassword = await comparePassword(password, user.password);
+    logger.error('DEBUG: Password valid: ' + isValidPassword);
 
     if (!isValidPassword) {
         return unauthorizedResponse(res, 'Invalid credentials');
@@ -110,7 +128,6 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
 
     const user = await prisma.adminUser.findUnique({
         where: { id: req.user.id },
-        include: { role: true },
         select: {
             id: true,
             name: true,
@@ -210,4 +227,18 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response) => 
     } catch (error) {
         return unauthorizedResponse(res, 'Invalid refresh token');
     }
+});
+// Fix admin password (TEMPORARY)
+export const fixAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const email = 'admin@ninjapark.com';
+    const password = 'admin123';
+
+    const hashedPassword = await hashPassword(password);
+
+    const user = await prisma.adminUser.update({
+        where: { email },
+        data: { password: hashedPassword },
+    });
+
+    return successResponse(res, { user }, 'Admin password reset');
 });

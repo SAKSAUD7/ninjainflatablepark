@@ -57,7 +57,18 @@ test_endpoint() {
 
 # 1. Health Check
 echo "1️⃣  Health Check"
-test_endpoint "Health endpoint" "GET" "/health" "" "200"
+health_response=$(curl -s -w "\n%{http_code}" "http://localhost:4000/health")
+health_status=$(echo "$health_response" | tail -n1)
+health_body=$(echo "$health_response" | sed '$d')
+
+if [ "$health_status" == "200" ]; then
+    echo -e "${GREEN}✅ PASSED${NC} (HTTP $health_status)"
+    ((PASSED++))
+else
+    echo -e "${RED}❌ FAILED${NC} (Expected HTTP 200, got $health_status)"
+    echo "Response: $health_body"
+    ((FAILED++))
+fi
 echo ""
 
 # 2. Authentication Test
