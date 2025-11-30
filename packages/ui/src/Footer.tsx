@@ -5,12 +5,17 @@ import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Heart } from "lucide
 import Link from "next/link";
 import { footerLinks, siteConfig } from "@repo/config";
 
-export const Footer = () => {
+export const Footer = ({ settings }: { settings?: any }) => {
     const socialLinks = [
         { icon: <Facebook className="w-5 h-5" />, href: siteConfig.links.facebook, label: "Facebook" },
         { icon: <Instagram className="w-5 h-5" />, href: siteConfig.links.instagram, label: "Instagram" },
         { icon: <Twitter className="w-5 h-5" />, href: siteConfig.links.twitter, label: "Twitter" },
     ];
+
+    const phone = settings?.contactPhone || siteConfig.contact.phone;
+    const email = settings?.contactEmail || siteConfig.contact.email;
+    const address = settings?.address || siteConfig.contact.address;
+    const mapUrl = settings?.mapUrl || siteConfig.contact.mapUrl;
 
     return (
         <footer className="relative bg-background-dark text-white pt-20 pb-10">
@@ -78,7 +83,7 @@ export const Footer = () => {
                 <div className="border-t border-white/10 pt-8 mb-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <motion.a
-                            href={`tel:${siteConfig.contact.phone}`}
+                            href={`tel:${phone}`}
                             whileHover={{ scale: 1.02 }}
                             className="flex items-center gap-3 p-4 bg-surface-800/50 rounded-2xl border border-primary/20 hover:border-primary/50 transition-all"
                         >
@@ -87,12 +92,12 @@ export const Footer = () => {
                             </div>
                             <div>
                                 <div className="text-xs text-white/60">Call Us</div>
-                                <div className="font-bold text-white">{siteConfig.contact.phone}</div>
+                                <div className="font-bold text-white">{phone}</div>
                             </div>
                         </motion.a>
 
                         <motion.a
-                            href={`mailto:${siteConfig.contact.email}`}
+                            href={`mailto:${email}`}
                             whileHover={{ scale: 1.02 }}
                             className="flex items-center gap-3 p-4 bg-surface-800/50 rounded-2xl border border-secondary/20 hover:border-secondary/50 transition-all"
                         >
@@ -101,12 +106,12 @@ export const Footer = () => {
                             </div>
                             <div>
                                 <div className="text-xs text-white/60">Email Us</div>
-                                <div className="font-bold text-white">{siteConfig.contact.email}</div>
+                                <div className="font-bold text-white">{email}</div>
                             </div>
                         </motion.a>
 
                         <motion.a
-                            href={siteConfig.contact.mapUrl}
+                            href={mapUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             whileHover={{ scale: 1.02 }}
@@ -118,7 +123,7 @@ export const Footer = () => {
                             <div>
                                 <div className="text-xs text-white/60">Visit Us</div>
                                 <div className="font-bold text-white text-sm line-clamp-1">
-                                    {siteConfig.contact.address}
+                                    {address}
                                 </div>
                             </div>
                         </motion.a>

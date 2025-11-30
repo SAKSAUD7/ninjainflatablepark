@@ -1,4 +1,8 @@
-export const activitiesData = [
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+const activitiesData = [
     {
         id: "ninja-warrior",
         name: "Ninja Warrior Course",
@@ -88,3 +92,25 @@ export const activitiesData = [
         order: 11
     }
 ];
+
+async function main() {
+    console.log('Start seeding activities...');
+    for (const activity of activitiesData) {
+        const { id, ...data } = activity;
+        await prisma.activity.upsert({
+            where: { id: activity.id },
+            update: data,
+            create: activity,
+        });
+    }
+    console.log('Seeding finished.');
+}
+
+main()
+    .catch((e) => {
+        console.error(e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });

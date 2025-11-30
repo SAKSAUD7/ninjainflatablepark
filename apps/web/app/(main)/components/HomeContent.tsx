@@ -18,9 +18,13 @@ interface HomeContentProps {
     gallery: GalleryItem[];
     banners: any[];
     reviews: Array<{ id: string; url: string; img: string }>;
+    settings?: any;
 }
 
-export default function HomeContent({ stats, gallery, banners, reviews }: HomeContentProps) {
+export default function HomeContent({ stats, gallery, banners, reviews, settings }: HomeContentProps) {
+    const aboutText = settings?.aboutText || "Ninja Inflatable Park was born from a simple idea: create a space where people of all ages can unleash their inner ninja, challenge themselves, and have an absolute blast doing it.";
+    const phone = settings?.contactPhone || "9845471611";
+
     return (
         <main className="bg-background text-white">
             {/* Hero Section */}
@@ -73,7 +77,7 @@ export default function HomeContent({ stats, gallery, banners, reviews }: HomeCo
                                     </span>
                                 </h2>
                                 <p className="text-xl text-white/80 mb-6 leading-relaxed">
-                                    Ninja Inflatable Park was born from a simple idea: create a space where people of all ages can unleash their inner ninja, challenge themselves, and have an absolute blast doing it.
+                                    {aboutText}
                                 </p>
                                 <p className="text-xl text-white/80 leading-relaxed mb-8">
                                     Spanning over 20,000 square feet, we've created India's largest inflatable adventure park with 11+ unique zones designed to thrill, challenge, and entertain.
@@ -259,10 +263,10 @@ export default function HomeContent({ stats, gallery, banners, reviews }: HomeCo
                             <div className="w-full sm:w-auto text-center sm:text-left">
                                 <p className="text-sm text-white/60 mb-1">Questions?</p>
                                 <a
-                                    href="tel:9845471611"
+                                    href={`tel:${phone.replace(/\s/g, '')}`}
                                     className="text-xl font-bold text-white hover:text-primary transition-colors"
                                 >
-                                    📞 9845471611
+                                    📞 {phone}
                                 </a>
                             </div>
                         </div>

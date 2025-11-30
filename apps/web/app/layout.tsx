@@ -18,7 +18,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }): JSX.Element {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body className={`${inter.variable} ${outfit.variable} font-sans bg-background text-white`}>
                 <UIProvider>
                     {children}

@@ -1,41 +1,21 @@
-import { prisma } from "@repo/database";
+import { PrismaClient } from '@prisma/client';
 
-// Public API functions - no authentication required
+const prisma = new PrismaClient({
+    datasources: {
+        db: {
+            url: 'file:C:/Users/saksa/OneDrive/Desktop/ninja/ninjainflatablepark-4/packages/database/dev.db'
+        }
+    }
+});
 
-export async function getPublicBanners() {
-    return await prisma.banner.findMany({
-        where: { active: true },
-        orderBy: { order: 'asc' }
-    });
-}
+async function seedGlobalSettings() {
+    console.log('Checking GlobalSettings...');
 
-export async function getPublicTestimonials() {
-    return await prisma.testimonial.findMany({
-        where: { active: true },
-        orderBy: { createdAt: 'desc' },
-        take: 6
-    });
-}
+    const existing = await prisma.globalSettings.findFirst();
 
-export async function getPublicActivities() {
-    return await prisma.activity.findMany({
-        where: { active: true },
-        orderBy: { order: 'asc' }
-    });
-}
-
-export async function getPublicFaqs() {
-    return await prisma.faq.findMany({
-        where: { active: true },
-        orderBy: { order: 'asc' }
-    });
-}
-
-export async function getGlobalSettings() {
-    const settings = await prisma.globalSettings.findFirst();
-    if (!settings) {
-        // Return default settings if none exist
-        return await prisma.globalSettings.create({
+    if (!existing) {
+        console.log('Creating default GlobalSettings...');
+        await prisma.globalSettings.create({
             data: {
                 parkName: "Ninja Inflatable Park",
                 contactPhone: "+91 98454 71611",
@@ -49,6 +29,13 @@ export async function getGlobalSettings() {
                 aboutText: "Ninja Inflatable Park is India's largest inflatable adventure park, offering a unique blend of fun, fitness, and thrill. With over 20,000 sq ft of inflatable obstacles, slides, and challenges, we provide an unforgettable experience for all ages."
             }
         });
+        console.log('✓ GlobalSettings created successfully!');
+    } else {
+        console.log('✓ GlobalSettings already exists');
+        console.log('Current settings:', JSON.stringify(existing, null, 2));
     }
-    return settings;
+
+    await prisma.$disconnect();
 }
+
+seedGlobalSettings().catch(console.error);

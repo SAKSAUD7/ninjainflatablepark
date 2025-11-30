@@ -8,18 +8,22 @@ export const metadata: Metadata = {
     description: "Experience the ultimate fun at Ninja Inflatable Park. Bounce, slide, and conquer the ultimate inflatable adventure!",
 };
 
-export default function MainLayout({
+import { getGlobalSettings } from "../../lib/public-api";
+
+export default async function MainLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const settings = await getGlobalSettings();
+
     return (
         <ToastProvider>
-            <Navbar />
+            <Navbar settings={settings} />
             <main className="flex-grow">
                 {children}
             </main>
-            <Footer />
+            <Footer settings={settings} />
         </ToastProvider>
     );
 }

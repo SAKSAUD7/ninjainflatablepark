@@ -12,6 +12,7 @@
     "dependencies": {
         "@prisma/client": "^5.10.2",
         "bcryptjs": "^3.0.3",
+        "better-sqlite3": "^12.5.0",
         "qrcode": "^1.5.4"
     },
     "devDependencies": {

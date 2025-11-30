@@ -209,6 +209,9 @@ model Testimonial {
   content     String
   rating      Int      @default(5)
   imageUrl    String?
+  type        String   @default("TEXT") // TEXT, VIDEO
+  videoUrl    String?
+  thumbnailUrl String?
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -219,6 +222,13 @@ model GlobalSettings {
   parkName            String   @default("Ninja Inflatable Park")
   contactPhone        String   @default("+91 98454 71611")
   contactEmail        String   @default("info@ninjapark.com")
+  address             String?
+  mapUrl              String?
+  openingHours        String?  @default("{}")
+  marqueeText         String?  @default("[]")
+  aboutText           String?
+  heroTitle           String?
+  heroSubtitle        String?
   gstNumber           String?
   sessionDuration     Int      @default(60) // minutes
   adultPrice          Float    @default(899)

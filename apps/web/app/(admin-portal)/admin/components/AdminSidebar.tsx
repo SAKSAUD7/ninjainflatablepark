@@ -31,7 +31,8 @@ import {
     Menu,
     X,
     Shield,
-    Activity
+    Activity,
+    Settings
 } from "lucide-react";
 import { hasPermission, type PermissionCheck } from "../../../lib/permissions";
 import { logoutAdmin } from "../../../actions/admin";
@@ -59,6 +60,7 @@ const navigation: NavGroup[] = [
     {
         name: "Booking Management",
         items: [
+            { name: "All Bookings", href: "/admin/bookings", icon: Calendar, permission: { entity: 'bookings', action: 'read' } },
             { name: "Session Bookings", href: "/admin/session-bookings", icon: Users, permission: { entity: 'bookings', action: 'read' } },
             { name: "Manual Session Booking", href: "/admin/session-bookings/new", icon: Users, permission: { entity: 'bookings', action: 'write' } },
             { name: "Session Booking History", href: "/admin/session-bookings/history", icon: Clock, permission: { entity: 'bookings', action: 'read' } },
@@ -66,6 +68,7 @@ const navigation: NavGroup[] = [
             { name: "Manual Party Booking", href: "/admin/party-bookings/new", icon: PartyPopper, permission: { entity: 'parties', action: 'write' } },
             { name: "Party Booking History", href: "/admin/party-bookings/history", icon: Clock, permission: { entity: 'parties', action: 'read' } },
             { name: "Booking Blocks", href: "/admin/booking-blocks", icon: Calendar, permission: { entity: 'bookings', action: 'read' } },
+            { name: "Customers", href: "/admin/customers", icon: Users, permission: { entity: 'customers', action: 'read' } },
         ]
     },
     {
@@ -110,6 +113,7 @@ const navigation: NavGroup[] = [
     {
         name: "System",
         items: [
+            { name: "Settings", href: "/admin/settings", icon: Settings, permission: { entity: 'settings', action: 'read' } },
             { name: "Admin Users", href: "/admin/users", icon: Shield, permission: { entity: 'users', action: 'read' } },
             { name: "Activity Logs", href: "/admin/activity-logs", icon: Activity, permission: { entity: 'logs', action: 'read' } },
         ]
@@ -128,7 +132,16 @@ interface AdminSidebarProps {
 export function AdminSidebar({ permissions = [] }: AdminSidebarProps) {
     const pathname = usePathname();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
-    const [expandedGroups, setExpandedGroups] = useState<string[]>(["Overview", "Booking Management", "System"]);
+    const [expandedGroups, setExpandedGroups] = useState<string[]>([
+        "Overview",
+        "Booking Management",
+        "Waivers & Entries",
+        "Calendar & Availability",
+        "Promotions",
+        "Content Management",
+        "E-commerce",
+        "System"
+    ]);
 
     const toggleGroup = (groupName: string) => {
         setExpandedGroups(prev =>

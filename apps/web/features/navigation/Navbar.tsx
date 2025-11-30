@@ -17,10 +17,11 @@ const navLinks = [
     { href: "/contact", label: "Contact" },
 ];
 
-export function Navbar() {
+export function Navbar({ settings }: { settings?: any }) {
     const pathname = usePathname();
     const { state, dispatch } = useUI();
     const { isMobileMenuOpen } = state;
+    const phone = settings?.contactPhone || "+91 98454 71611";
 
     useEffect(() => {
         if (isMobileMenuOpen) {
@@ -63,9 +64,9 @@ export function Navbar() {
                             {link.label}
                         </Link>
                     ))}
-                    <a href="tel:+919845471611" className="hidden xl:flex items-center gap-2 bg-[#2D1B4E] hover:bg-[#3D2B5E] px-4 py-2 rounded-lg transition-colors">
+                    <a href={`tel:${phone.replace(/\s/g, '')}`} className="hidden xl:flex items-center gap-2 bg-[#2D1B4E] hover:bg-[#3D2B5E] px-4 py-2 rounded-lg transition-colors">
                         <Phone className="w-4 h-4 text-white" />
-                        <span className="text-white font-semibold">98454 71611</span>
+                        <span className="text-white font-semibold">{phone}</span>
                     </a>
                     <Link href="/book">
                         <BouncyButton size="sm" variant="accent" as="div">
@@ -80,7 +81,7 @@ export function Navbar() {
                 </nav>
 
                 <div className="lg:hidden flex items-center gap-2 relative z-50">
-                    <a href="tel:+919845471611" className="w-9 h-9 flex items-center justify-center bg-[#2D1B4E] hover:bg-[#3D2B5E] rounded-lg transition-colors">
+                    <a href={`tel:${phone.replace(/\s/g, '')}`} className="w-9 h-9 flex items-center justify-center bg-[#2D1B4E] hover:bg-[#3D2B5E] rounded-lg transition-colors">
                         <Phone className="w-4 h-4 text-white" />
                     </a>
                     <Link href="/book">
@@ -142,21 +143,21 @@ export function Navbar() {
                                 {/* Action Buttons */}
                                 <div className="space-y-2.5 mt-auto">
                                     <Link href="/book" onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}>
-                                        <button className="w-full py-3 px-5 rounded-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold text-base shadow-lg shadow-pink-500/50 hover:shadow-pink-500/70 transition-all">
+                                        <div className="w-full py-3 px-5 rounded-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold text-base shadow-lg shadow-pink-500/50 hover:shadow-pink-500/70 transition-all text-center">
                                             ⚡ Book Your Session
-                                        </button>
+                                        </div>
                                     </Link>
 
                                     <Link href="/admin" onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}>
-                                        <button className="w-full py-3 px-5 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition-all">
+                                        <div className="w-full py-3 px-5 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition-all text-center">
                                             🔒 Admin Login
-                                        </button>
+                                        </div>
                                     </Link>
 
                                     <Link href="/attractions" onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}>
-                                        <button className="w-full py-3 px-5 rounded-full bg-transparent border-2 border-white text-white font-bold text-sm hover:bg-white/10 transition-all">
+                                        <div className="w-full py-3 px-5 rounded-full bg-transparent border-2 border-white text-white font-bold text-sm hover:bg-white/10 transition-all text-center">
                                             View Attractions
-                                        </button>
+                                        </div>
                                     </Link>
                                 </div>
                             </div>
