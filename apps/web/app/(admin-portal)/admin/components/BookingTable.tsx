@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Booking {
     id: string;
@@ -39,8 +40,10 @@ interface BookingTableProps {
 }
 
 export function BookingTable({ bookings, title, type, readOnly = false }: BookingTableProps) {
+    const router = useRouter();
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const filteredBookings = bookings.filter(booking => {
         const matchesSearch =
@@ -52,6 +55,35 @@ export function BookingTable({ bookings, title, type, readOnly = false }: Bookin
 
         return matchesSearch && matchesStatus;
     });
+
+    const handleEdit = (bookingId: string) => {
+        router.push(`/admin/${type}-bookings/${bookingId}/edit`);
+    };
+
+    const handleDelete = async (bookingId: string) => {
+        if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+            return;
+        }
+
+        setDeletingId(bookingId);
+        try {
+            const response = await fetch(`/api/bookings/${bookingId}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                // Refresh the page to show updated list
+                router.refresh();
+            } else {
+                alert('Failed to delete booking. Please try again.');
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+            alert('An error occurred while deleting the booking.');
+        } finally {
+            setDeletingId(null);
+        }
+    };
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200">
@@ -175,13 +207,16 @@ export function BookingTable({ bookings, title, type, readOnly = false }: Bookin
                                             {!readOnly && (
                                                 <>
                                                     <button
+                                                        onClick={() => handleEdit(booking.id)}
                                                         className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                         title="Edit"
                                                     >
                                                         <Edit className="w-4 h-4" />
                                                     </button>
                                                     <button
-                                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        onClick={() => handleDelete(booking.id)}
+                                                        disabled={deletingId === booking.id}
+                                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                         title="Delete"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
