@@ -421,3 +421,35 @@ export async function deleteBookingBlock(id: string) {
 
     revalidatePath("/admin/booking-blocks");
 }
+
+export async function deleteBooking(id: string) {
+    const session = await getAdminSession();
+    if (!session) throw new Error("Unauthorized");
+
+    await prisma.booking.delete({
+        where: { id }
+    });
+
+    revalidatePath("/admin/bookings");
+    revalidatePath("/admin/session-bookings");
+    revalidatePath("/admin/party-bookings");
+}
+
+export async function updateBooking(id: string, data: any) {
+    const session = await getAdminSession();
+    if (!session) throw new Error("Unauthorized");
+
+    // Remove fields that shouldn't be updated directly or need formatting
+    const { id: _, createdAt, updatedAt, ...updateData } = data;
+
+    await prisma.booking.update({
+        where: { id },
+        data: updateData
+    });
+
+    revalidatePath("/admin/bookings");
+    revalidatePath("/admin/session-bookings");
+    revalidatePath("/admin/party-bookings");
+    revalidatePath(`/admin/session-bookings/${id}`);
+    revalidatePath(`/admin/party-bookings/${id}`);
+}
