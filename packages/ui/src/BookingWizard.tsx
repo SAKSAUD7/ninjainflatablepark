@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { bookingSchema, type BookingFormData, getAvailableTimeSlots, isTimeInPast } from "@repo/types";
 import { useToast } from "./components/ToastProvider";
 import { WaiverForm } from "./components/WaiverForm";
-import { validateVoucher } from "../../../apps/web/app/actions/validateVoucher";
+import { validateVoucher } from "../../../frontend/app/actions/validateVoucher";
 
 interface BookingWizardProps {
     onSubmit: (data: any) => Promise<{ success: boolean; bookingId?: string; bookingNumber?: string; error?: string }>;

@@ -1,0 +1,7 @@
+django>=5.0
+djangorestframework
+djangorestframework-simplejwt
+drf-spectacular
+python-dotenv
+django-cors-headers
+Pillow
