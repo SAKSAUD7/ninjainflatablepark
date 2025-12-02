@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save } from "lucide-react";
-import { updateBooking } from "../../../../actions/admin";
+import { updateBooking } from "../../../actions/admin";
 
 interface EditBookingFormProps {
     booking: any;

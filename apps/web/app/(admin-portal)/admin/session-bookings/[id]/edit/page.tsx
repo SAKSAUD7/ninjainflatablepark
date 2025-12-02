@@ -1,9 +1,9 @@
 import { prisma } from "@repo/database";
-import { getAdminSession } from "../../../../lib/admin-auth";
+import { getAdminSession } from "../../../../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import EditBookingForm from "../../components/EditBookingForm";
+import EditBookingForm from "../../../components/EditBookingForm";
 
 export default async function EditSessionBookingPage({ params }: { params: { id: string } }) {
     const session = await getAdminSession();
