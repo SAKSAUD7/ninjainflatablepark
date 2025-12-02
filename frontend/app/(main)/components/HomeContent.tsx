@@ -1,6 +1,10 @@
 "use client";
 
-import { AnimatedHero, ScrollReveal, BouncyButton, SectionDivider, Marquee } from "@repo/ui";
+import { AnimatedHero } from "../../../components/AnimatedHero";
+import { ScrollReveal } from "../../../components/ScrollReveal";
+import { BouncyButton } from "../../../components/BouncyButton";
+import { SectionDivider } from "../../../components/SectionDivider";
+import { Marquee } from "../../../components/Marquee";
 import { motion } from "framer-motion";
 import { Zap, Shield, Users, Trophy, ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -148,7 +152,7 @@ export default function HomeContent({ stats, gallery, banners, reviews, settings
                     </ScrollReveal>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {gallery.map((photo, index) => (
+                        {gallery.length > 0 ? gallery.map((photo, index) => (
                             <ScrollReveal key={photo.id} animation="fade" delay={index * 0.1}>
                                 <motion.div
                                     whileHover={{ scale: 1.05, y: -10 }}
@@ -158,20 +162,29 @@ export default function HomeContent({ stats, gallery, banners, reviews, settings
                                     <div className="aspect-[4/3] relative">
                                         <img
                                             src={photo.src}
-                                            alt={photo.title}
+                                            alt={photo.title || 'Gallery image'}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                            onError={(e) => {
+                                                e.currentTarget.src = "/park-slides-action.jpg";
+                                            }}
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                        <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                                            <h3 className="text-2xl font-display font-bold text-white mb-2">
-                                                {photo.title}
-                                            </h3>
-                                            <p className="text-white/80">{photo.desc}</p>
-                                        </div>
+                                        {photo.title && (
+                                            <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                                                <h3 className="text-2xl font-display font-bold text-white mb-2">
+                                                    {photo.title}
+                                                </h3>
+                                                {photo.desc && <p className="text-white/80">{photo.desc}</p>}
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             </ScrollReveal>
-                        ))}
+                        )) : (
+                            <div className="col-span-full text-center py-12">
+                                <p className="text-white/60 text-lg">No gallery images available yet. Check back soon!</p>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <SectionDivider position="bottom" variant="wave" color="fill-background" />
@@ -192,34 +205,40 @@ export default function HomeContent({ stats, gallery, banners, reviews, settings
                     </ScrollReveal>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        {reviews.map((review, index) => (
+                        {reviews.length > 0 ? reviews.map((review, index) => (
                             <ScrollReveal key={review.id} animation="scale" delay={index * 0.1}>
                                 <motion.a
-                                    href={review.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    href={review.url !== '#' ? review.url : undefined}
+                                    target={review.url !== '#' ? "_blank" : undefined}
+                                    rel={review.url !== '#' ? "noopener noreferrer" : undefined}
                                     whileHover={{ scale: 1.05, y: -5 }}
-                                    className="block relative aspect-[9/16] rounded-2xl overflow-hidden group cursor-pointer"
+                                    className={`block relative aspect-[9/16] rounded-2xl overflow-hidden group ${review.url !== '#' ? 'cursor-pointer' : 'cursor-default'}`}
                                 >
                                     <img
                                         src={review.img}
-                                        alt={`Instagram reel ${index + 1}`}
+                                        alt={`Customer testimonial ${index + 1}`}
                                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                         onError={(e) => {
-                                            e.currentTarget.src = "/images/hero-background.jpg";
+                                            e.currentTarget.src = "/park-slides-action.jpg";
                                         }}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                                            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M8 5v14l11-7z" />
-                                            </svg>
+                                    {review.url !== '#' && (
+                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M8 5v14l11-7z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </motion.a>
                             </ScrollReveal>
-                        ))}
+                        )) : (
+                            <div className="col-span-full text-center py-12">
+                                <p className="text-white/60 text-lg">No testimonials available yet. Be the first to share your experience!</p>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <SectionDivider position="bottom" variant="diagonal" color="fill-background-light" />

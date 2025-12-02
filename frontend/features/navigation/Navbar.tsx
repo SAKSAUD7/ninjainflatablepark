@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Ticket, Phone } from "lucide-react";
 import { useUI } from "../../state/ui/uiContext";
-import { BouncyButton } from "@repo/ui";
 import { useEffect } from "react";
 
 const navLinks = [
@@ -42,7 +41,7 @@ export function Navbar({ settings }: { settings?: any }) {
     }, [isMobileMenuOpen, dispatch]);
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-[#0F0518]/95 backdrop-blur-md border-b border-white/10">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-white/10">
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                 <Link href="/" className="relative z-50 block">
                     <img
@@ -59,7 +58,7 @@ export function Navbar({ settings }: { settings?: any }) {
                         <Link
                             key={link.href}
                             href={link.href}
-                            className={`text-sm font-bold uppercase tracking-wider transition-colors hover:text-primary ${pathname === link.href ? "text-primary" : "text-white/80"}`}
+                            className={`text-sm font-bold uppercase tracking-wider transition-colors ${pathname === link.href ? "text-[#00D9FF]" : "text-white hover:text-[#00D9FF]"}`}
                         >
                             {link.label}
                         </Link>
@@ -68,15 +67,11 @@ export function Navbar({ settings }: { settings?: any }) {
                         <Phone className="w-4 h-4 text-white" />
                         <span className="text-white font-semibold">{phone}</span>
                     </a>
-                    <Link href="/book">
-                        <BouncyButton size="sm" variant="accent" as="div">
-                            Book Now <Ticket className="w-4 h-4 ml-2" />
-                        </BouncyButton>
+                    <Link href="/book" className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold text-sm rounded-lg shadow-lg shadow-pink-500/50 hover:shadow-pink-500/70 hover:scale-105 transition-all">
+                        Book Now <Ticket className="w-4 h-4" />
                     </Link>
-                    <Link href="/admin">
-                        <BouncyButton size="sm" variant="outline" className="text-white border-white" as="div">
-                            Admin
-                        </BouncyButton>
+                    <Link href="/admin" className="inline-flex items-center gap-2 px-4 py-2 bg-transparent border-2 border-white text-white font-bold text-sm rounded-lg hover:bg-white/10 transition-all">
+                        Admin
                     </Link>
                 </nav>
 
@@ -84,10 +79,8 @@ export function Navbar({ settings }: { settings?: any }) {
                     <a href={`tel:${phone.replace(/\s/g, '')}`} className="w-9 h-9 flex items-center justify-center bg-[#2D1B4E] hover:bg-[#3D2B5E] rounded-lg transition-colors">
                         <Phone className="w-4 h-4 text-white" />
                     </a>
-                    <Link href="/book">
-                        <BouncyButton size="sm" variant="accent" className="text-xs px-3 py-1.5" as="div">
-                            Book
-                        </BouncyButton>
+                    <Link href="/book" className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold text-xs rounded-lg shadow-lg shadow-pink-500/50 hover:shadow-pink-500/70 transition-all">
+                        Book
                     </Link>
                     <button className="text-white" onClick={() => dispatch({ type: "TOGGLE_MOBILE_MENU" })}>
                         {isMobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}

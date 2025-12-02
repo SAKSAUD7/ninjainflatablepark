@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Navbar } from "../../features/navigation/Navbar";
-import { Footer, ToastProvider } from "@repo/ui";
+import { Footer } from "../../components/Footer";
+import { ToastProvider } from "../../components/ToastProvider";
 
 export default function ClientMainLayout({ children }: { children: React.ReactNode }) {
     const [isMounted, setIsMounted] = useState(false);
