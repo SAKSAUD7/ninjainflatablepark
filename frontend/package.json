@@ -10,10 +10,6 @@
     },
     "dependencies": {
         "@hookform/resolvers": "^5.2.2",
-        "@repo/config": "*",
-        "@repo/hooks": "*",
-        "@repo/ui": "*",
-        "@repo/utils": "*",
         "bcryptjs": "^3.0.3",
         "clsx": "^2.1.0",
         "date-fns": "^4.1.0",
