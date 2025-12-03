@@ -1,6 +1,6 @@
 "use client";
 
-import { BookingWizard } from "@repo/ui";
+import { BookingWizard } from "../../../components/BookingWizard";
 import { createBooking } from "../../actions/createBooking";
 
 export default function BookingPage() {

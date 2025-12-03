@@ -1,0 +1,128 @@
+/**
+ * Centralized API configuration for Ninja Inflatable Park
+ * All backend API endpoints are defined here
+ */
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+export const API_ENDPOINTS = {
+    // CMS Endpoints
+    cms: {
+        banners: `${API_BASE_URL}/cms/banners/`,
+        activities: `${API_BASE_URL}/cms/activities/`,
+        faqs: `${API_BASE_URL}/cms/faqs/`,
+        testimonials: `${API_BASE_URL}/cms/testimonials/`,
+        pages: `${API_BASE_URL}/cms/pages/`,
+        socialLinks: `${API_BASE_URL}/cms/social-links/`,
+        gallery: `${API_BASE_URL}/cms/gallery/`,
+        freeEntries: `${API_BASE_URL}/cms/free-entries/`,
+    },
+
+    // Core Endpoints
+    core: {
+        users: `${API_BASE_URL}/core/users/`,
+        settings: `${API_BASE_URL}/core/settings/`,
+        dashboard: `${API_BASE_URL}/core/dashboard/`,
+    },
+
+    // Bookings Endpoints
+    bookings: {
+        customers: `${API_BASE_URL}/bookings/customers/`,
+        bookings: `${API_BASE_URL}/bookings/bookings/`,
+        waivers: `${API_BASE_URL}/bookings/waivers/`,
+        transactions: `${API_BASE_URL}/bookings/transactions/`,
+        bookingBlocks: `${API_BASE_URL}/bookings/booking-blocks/`,
+    },
+
+    // Shop Endpoints
+    shop: {
+        products: `${API_BASE_URL}/shop/products/`,
+    },
+
+    // Auth Endpoints
+    auth: {
+        token: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/token/`,
+        refresh: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/token/refresh/`,
+    },
+};
+
+/**
+ * Helper function to fetch data from API
+ */
+export async function fetchAPI<T>(url: string, options?: RequestInit): Promise<T> {
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    return response.json();
+}
+
+/**
+ * Helper function to post data to API
+ */
+export async function postAPI<T>(url: string, data: any, options?: RequestInit): Promise<T> {
+    const response = await fetch(url, {
+        method: 'POST',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers,
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    return response.json();
+}
+
+/**
+ * Helper function to update data via API
+ */
+export async function putAPI<T>(url: string, data: any, options?: RequestInit): Promise<T> {
+    const response = await fetch(url, {
+        method: 'PUT',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers,
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    return response.json();
+}
+
+/**
+ * Helper function to delete data via API
+ */
+export async function deleteAPI(url: string, options?: RequestInit): Promise<void> {
+    const response = await fetch(url, {
+        method: 'DELETE',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options?.headers,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`API Error: ${response.statusText}`);
+    }
+}
+
+export default API_ENDPOINTS;

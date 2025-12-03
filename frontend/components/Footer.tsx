@@ -1,60 +1,145 @@
-export function Footer({ settings, socialLinks }: { settings?: any; socialLinks?: any[] }) {
-    const currentYear = new Date().getFullYear();
-    const parkName = settings?.parkName || "Ninja Inflatable Park";
-    const phone = settings?.contactPhone || "+91 98454 71611";
-    const email = settings?.contactEmail || "info@ninjapark.com";
+"use client";
+
+import { motion } from "framer-motion";
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Heart } from "lucide-react";
+import Link from "next/link";
+import { footerLinks, siteConfig } from "../lib/config";
+
+export const Footer = ({ settings }: { settings?: any }) => {
+    const socialLinks = [
+        { icon: <Facebook className="w-5 h-5" />, href: siteConfig.links.facebook, label: "Facebook" },
+        { icon: <Instagram className="w-5 h-5" />, href: siteConfig.links.instagram, label: "Instagram" },
+        { icon: <Twitter className="w-5 h-5" />, href: siteConfig.links.twitter, label: "Twitter" },
+    ];
+
+    const phone = settings?.contactPhone || siteConfig.contact.phone;
+    const email = settings?.contactEmail || siteConfig.contact.email;
+    const address = settings?.address || siteConfig.contact.address;
+    const mapUrl = settings?.mapUrl || siteConfig.contact.mapUrl;
 
     return (
-        <footer className="bg-black border-t border-white/10 py-8 mt-auto">
-            <div className="max-w-7xl mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
-                    {/* Contact Info */}
-                    <div>
-                        <h3 className="text-white font-bold text-lg mb-3">{parkName}</h3>
-                        <div className="space-y-2 text-white/70 text-sm">
-                            <p>Phone: <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-white transition-colors">{phone}</a></p>
-                            <p>Email: <a href={`mailto:${email}`} className="hover:text-white transition-colors">{email}</a></p>
+        <footer className="relative bg-background-dark text-white pt-20 pb-10">
+            {/* Decorative Top Border */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent" />
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Main Footer Content */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
+                    {/* Brand Column */}
+                    <div className="lg:col-span-2">
+                        <Link href="/" className="inline-block mb-4">
+                            <img
+                                src="/ninja-logo.png"
+                                alt="Ninja Inflatable Park"
+                                className="h-16 w-auto drop-shadow-neon-blue"
+                            />
+                        </Link>
+                        <p className="text-white/70 mb-6 max-w-sm">
+                            {siteConfig.description}
+                        </p>
+
+                        {/* Social Links */}
+                        <div className="flex gap-3">
+                            {socialLinks.map((social) => (
+                                <motion.a
+                                    key={social.label}
+                                    href={social.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    whileHover={{ scale: 1.1, y: -2 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="w-10 h-10 rounded-full bg-surface-800 border border-primary/30 flex items-center justify-center text-primary hover:bg-primary hover:text-black transition-all shadow-neon-blue"
+                                    aria-label={social.label}
+                                >
+                                    {social.icon}
+                                </motion.a>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Quick Links */}
-                    <div>
-                        <h3 className="text-white font-bold text-lg mb-3">Quick Links</h3>
-                        <div className="space-y-2 text-white/70 text-sm">
-                            <a href="/attractions" className="block hover:text-white transition-colors">Attractions</a>
-                            <a href="/parties" className="block hover:text-white transition-colors">Parties</a>
-                            <a href="/pricing" className="block hover:text-white transition-colors">Pricing</a>
-                            <a href="/contact" className="block hover:text-white transition-colors">Contact</a>
-                        </div>
-                    </div>
-
-                    {/* Social Links */}
-                    {socialLinks && socialLinks.length > 0 && (
-                        <div>
-                            <h3 className="text-white font-bold text-lg mb-3">Follow Us</h3>
-                            <div className="flex gap-3">
-                                {socialLinks.map((link: any) => (
-                                    <a
-                                        key={link.id}
-                                        href={link.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
-                                        aria-label={link.platform}
-                                    >
-                                        <span className="text-white text-sm">{link.platform[0]}</span>
-                                    </a>
+                    {/* Link Columns */}
+                    {footerLinks.map((group) => (
+                        <div key={group.title}>
+                            <h3 className="text-lg font-display font-bold mb-4 text-secondary">
+                                {group.title}
+                            </h3>
+                            <ul className="space-y-3">
+                                {group.items.map((link) => (
+                                    <li key={link.title}>
+                                        <Link
+                                            href={link.href}
+                                            className="text-white/70 hover:text-primary transition-colors inline-block hover:translate-x-1 transform duration-200"
+                                        >
+                                            {link.title}
+                                        </Link>
+                                    </li>
                                 ))}
-                            </div>
+                            </ul>
                         </div>
-                    )}
+                    ))}
                 </div>
 
-                {/* Copyright */}
-                <div className="border-t border-white/10 pt-6 text-center text-white/50 text-sm">
-                    <p>&copy; {currentYear} {parkName}. All rights reserved.</p>
+                {/* Contact Info Bar */}
+                <div className="border-t border-white/10 pt-8 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <motion.a
+                            href={`tel:${phone}`}
+                            whileHover={{ scale: 1.02 }}
+                            className="flex items-center gap-3 p-4 bg-surface-800/50 rounded-2xl border border-primary/20 hover:border-primary/50 transition-all"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                                <Phone className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                                <div className="text-xs text-white/60">Call Us</div>
+                                <div className="font-bold text-white">{phone}</div>
+                            </div>
+                        </motion.a>
+
+                        <motion.a
+                            href={`mailto:${email}`}
+                            whileHover={{ scale: 1.02 }}
+                            className="flex items-center gap-3 p-4 bg-surface-800/50 rounded-2xl border border-secondary/20 hover:border-secondary/50 transition-all"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
+                                <Mail className="w-5 h-5 text-secondary" />
+                            </div>
+                            <div>
+                                <div className="text-xs text-white/60">Email Us</div>
+                                <div className="font-bold text-white">{email}</div>
+                            </div>
+                        </motion.a>
+
+                        <motion.a
+                            href={mapUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.02 }}
+                            className="flex items-center gap-3 p-4 bg-surface-800/50 rounded-2xl border border-accent/20 hover:border-accent/50 transition-all"
+                        >
+                            <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
+                                <MapPin className="w-5 h-5 text-accent" />
+                            </div>
+                            <div>
+                                <div className="text-xs text-white/60">Visit Us</div>
+                                <div className="font-bold text-white text-sm line-clamp-1">
+                                    {address}
+                                </div>
+                            </div>
+                        </motion.a>
+                    </div>
+                </div>
+
+                {/* Bottom Bar */}
+                <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-white/60 text-sm">
+                        © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
+                    </p>
+                    <p className="text-white/60 text-sm flex items-center gap-1">
+                        Made with <Heart className="w-4 h-4 text-accent fill-accent" /> for bouncing fun
+                    </p>
                 </div>
             </div>
         </footer>
     );
-}
+};

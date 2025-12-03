@@ -28,10 +28,10 @@
         "./*"
       ],
       "@repo/ui": [
-        "../../packages/ui/src"
+        "../packages/ui/src"
       ],
       "@repo/config": [
-        "../../packages/config"
+        "../packages/config"
       ]
     }
   },

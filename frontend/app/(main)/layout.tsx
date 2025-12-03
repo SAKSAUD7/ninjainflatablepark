@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Navbar } from "../../features/navigation/Navbar";
 import { Footer } from "../../components/Footer";
 import { ToastProvider } from "../../components/ToastProvider";
+import { API_ENDPOINTS } from "../../lib/api";
 
 export default function ClientMainLayout({ children }: { children: React.ReactNode }) {
     const [isMounted, setIsMounted] = useState(false);
@@ -19,11 +20,9 @@ export default function ClientMainLayout({ children }: { children: React.ReactNo
 
         async function loadSettings() {
             try {
-                const API_URL = 'http://localhost:8000/api/v1';
-
                 const [settingsRes, linksRes] = await Promise.all([
-                    fetch(`${API_URL}/core/settings/`, { cache: 'no-store' }),
-                    fetch(`${API_URL}/cms/social-links/`, { cache: 'no-store' })
+                    fetch(API_ENDPOINTS.core.settings, { cache: 'no-store' }),
+                    fetch(API_ENDPOINTS.cms.socialLinks, { cache: 'no-store' })
                 ]);
 
                 if (settingsRes.ok) {

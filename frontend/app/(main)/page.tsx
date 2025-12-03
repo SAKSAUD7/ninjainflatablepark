@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import HomeContent from "./components/HomeContent";
+import { API_ENDPOINTS } from "../../lib/api";
 
 export default function Home() {
     const [data, setData] = useState<any>({
@@ -17,14 +18,12 @@ export default function Home() {
     useEffect(() => {
         async function loadData() {
             try {
-                const API_URL = 'http://localhost:8000/api/v1';
-
-                // Fetch all data
+                // Fetch all data using centralized API endpoints
                 const [bannersRes, activitiesRes, testimonialsRes, galleryRes] = await Promise.all([
-                    fetch(`${API_URL}/cms/banners/`),
-                    fetch(`${API_URL}/cms/activities/`),
-                    fetch(`${API_URL}/cms/testimonials/`),
-                    fetch(`${API_URL}/cms/gallery/`)
+                    fetch(API_ENDPOINTS.cms.banners),
+                    fetch(API_ENDPOINTS.cms.activities),
+                    fetch(API_ENDPOINTS.cms.testimonials),
+                    fetch(API_ENDPOINTS.cms.gallery)
                 ]);
 
                 const banners = bannersRes.ok ? await bannersRes.json() : [];
