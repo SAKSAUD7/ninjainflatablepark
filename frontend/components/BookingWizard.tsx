@@ -852,18 +852,18 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                         {isSubmitting ? (
                                             <>
                                                 <Loader2 className="w-6 h-6 animate-spin" />
-                                                Processing Payment...
+                                                Processing Booking...
                                             </>
                                         ) : (
                                             <>
-                                                <CreditCard className="w-6 h-6" />
-                                                Proceed to Payment
+                                                <Check className="w-6 h-6" />
+                                                Confirm Booking & Pay at Venue
                                             </>
                                         )}
                                     </motion.button>
 
                                     <p className="text-center text-white/40 text-sm">
-                                        🔒 Secure payment powered by industry-standard encryption
+                                        🔒 Your booking will be confirmed immediately. Payment will be collected at the venue.
                                     </p>
                                 </motion.div>
                             )}

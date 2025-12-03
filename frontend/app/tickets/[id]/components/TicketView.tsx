@@ -111,8 +111,8 @@ export const TicketView = ({ booking }: TicketViewProps) => {
                                 </div>
                             )}
                             <div className="text-center space-y-2">
-                                <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wide">
-                                    <CheckCircle size={12} /> Paid
+                                <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${booking.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                                    <CheckCircle size={12} /> {booking.paymentStatus === 'PAID' ? 'Paid' : 'Pay at Venue'}
                                 </div>
                                 <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${booking.waiverStatus === 'SIGNED' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
                                     {booking.waiverStatus === 'SIGNED' ? 'Waiver Signed' : 'Waiver Pending'}
