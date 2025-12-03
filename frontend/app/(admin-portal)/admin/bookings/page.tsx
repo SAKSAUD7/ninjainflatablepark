@@ -1,6 +1,7 @@
 import { getBookings } from "../../../actions/admin";
 import { getAdminSession } from "../../../lib/admin-auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import BookingEditModal from "../components/BookingEditModal";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import {
@@ -33,9 +34,9 @@ export default async function AdminBookings() {
                         <Download size={16} />
                         Export CSV
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-neon-blue text-slate-900 rounded-lg hover:bg-blue-400 transition-colors font-bold text-sm">
+                    <Link href="/admin/bookings/new" className="flex items-center gap-2 px-4 py-2 bg-neon-blue text-slate-900 rounded-lg hover:bg-blue-400 transition-colors font-bold text-sm">
                         + New Booking
-                    </button>
+                    </Link>
                 </div>
             </div>
 

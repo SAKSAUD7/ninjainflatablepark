@@ -84,8 +84,9 @@ export async function loginAdmin(formData: FormData) {
         cookies().set("admin_token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            maxAge: 60 * 60 * 24, // 1 day
+            maxAge: 60 * 60 * 24 * 7, // 7 days
             path: "/",
+            sameSite: "lax"
         });
 
     } catch (error) {
@@ -107,6 +108,19 @@ export async function getDashboardStats() {
     const res = await fetchAPI("/core/dashboard/stats/");
     if (!res || !res.ok) throw new Error("Unauthorized or Failed to fetch stats");
     return await res.json();
+}
+
+export async function getAllBookings(filter?: { type?: string; status?: string; search?: string }) {
+    const params = new URLSearchParams();
+    if (filter?.type) params.append("type", filter.type);
+    if (filter?.status) params.append("status", filter.status);
+    if (filter?.search) params.append("search", filter.search);
+
+    const res = await fetchAPI(`/core/dashboard/all_bookings/?${params.toString()}`);
+    if (!res || !res.ok) return [];
+
+    const data = await res.json();
+    return data.results || [];
 }
 
 // --- Booking Actions ---
@@ -135,6 +149,35 @@ export async function getPartyBookings(filter?: { status?: string; date?: string
 
     const data = await res.json();
     return data.map(transformBooking);
+}
+
+export async function getPartyBookingById(id: string) {
+    const res = await fetchAPI(`/bookings/party-bookings/${id}/`);
+    if (!res || !res.ok) return null;
+    const data = await res.json();
+    return transformBooking(data);
+}
+
+export async function updatePartyBookingStatus(id: string, status: string) {
+    const res = await fetchAPI(`/bookings/party-bookings/${id}/`, {
+        method: "PATCH",
+        body: JSON.stringify({ booking_status: status })
+    });
+
+    if (res && res.ok) {
+        revalidatePath("/admin/party-bookings");
+        revalidatePath(`/admin/party-bookings/${id}`);
+    }
+}
+
+export async function deletePartyBooking(id: string) {
+    const res = await fetchAPI(`/bookings/party-bookings/${id}/`, {
+        method: "DELETE"
+    });
+
+    if (res && res.ok) {
+        revalidatePath("/admin/party-bookings");
+    }
 }
 
 export async function getSessionBookings(filter?: { status?: string; date?: string; search?: string }) {
@@ -166,6 +209,16 @@ export async function updateBookingDetails(id: string, data: { date?: string; ti
     const res = await fetchAPI(`/bookings/bookings/${id}/`, {
         method: "PATCH",
         body: JSON.stringify(data)
+    });
+
+    if (res && res.ok) {
+        revalidatePath("/admin/bookings");
+    }
+}
+
+export async function deleteBooking(id: string) {
+    const res = await fetchAPI(`/bookings/bookings/${id}/`, {
+        method: "DELETE"
     });
 
     if (res && res.ok) {

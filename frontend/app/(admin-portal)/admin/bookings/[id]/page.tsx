@@ -1,8 +1,8 @@
 import { getAdminSession } from "../../../../lib/admin-auth";
-import { getBookingById, updateBookingStatus } from "../../../../actions/admin";
+import { getBookingById, updateBookingStatus, deleteBooking } from "../../../../actions/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Check, X, Printer, Mail } from "lucide-react";
+import { ArrowLeft, Check, X, Printer, Mail, Trash2, Ticket } from "lucide-react";
 
 export default async function BookingDetailPage({ params }: { params: { id: string } }) {
     const session = await getAdminSession();
@@ -124,6 +124,17 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
                             <form action={updateBookingStatus.bind(null, booking.id, "CANCELLED")}>
                                 <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors font-medium">
                                     <X size={18} /> Cancel Booking
+                                </button>
+                            </form>
+                            <Link
+                                href={`/tickets/${booking.uuid}`}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+                            >
+                                <Ticket size={18} /> View Ticket
+                            </Link>
+                            <form action={deleteBooking.bind(null, booking.id)}>
+                                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors font-medium">
+                                    <Trash2 size={18} /> Delete Booking
                                 </button>
                             </form>
                         </div>

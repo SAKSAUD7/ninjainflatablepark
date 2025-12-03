@@ -41,11 +41,25 @@ function transformWaiver(w: any) {
 }
 
 export async function getTicket(uuid: string) {
-    const res = await fetch(`${API_URL}/bookings/bookings/ticket/${uuid}/`, {
+    // Try fetching from regular bookings
+    let res = await fetch(`${API_URL}/bookings/bookings/ticket/${uuid}/`, {
         cache: "no-store",
     });
 
-    if (!res.ok) return null;
-    const data = await res.json();
-    return transformBooking(data);
+    if (res.ok) {
+        const data = await res.json();
+        return transformBooking(data);
+    }
+
+    // If not found, try fetching from party bookings
+    res = await fetch(`${API_URL}/bookings/party-bookings/ticket/${uuid}/`, {
+        cache: "no-store",
+    });
+
+    if (res.ok) {
+        const data = await res.json();
+        return transformBooking(data);
+    }
+
+    return null;
 }

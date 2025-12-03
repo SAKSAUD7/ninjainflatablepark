@@ -2,14 +2,14 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
-from django.db.models import Sum, Count, Avg
+from django.db.models import Sum, Count, Avg, Q
 from datetime import timedelta
 
 from .models import User, GlobalSettings
 from .serializers import UserSerializer, GlobalSettingsSerializer
 
-from apps.bookings.models import Booking, Waiver, Customer
-from apps.bookings.serializers import BookingSerializer
+from apps.bookings.models import Booking, Waiver, Customer, PartyBooking
+from apps.bookings.serializers import BookingSerializer, PartyBookingSerializer
 from apps.shop.models import Voucher
 from apps.cms.models import Activity, Testimonial, Faq, Banner
 
@@ -45,41 +45,57 @@ class DashboardViewSet(viewsets.ViewSet):
         today = timezone.now().date()
         first_day_of_month = today.replace(day=1)
 
-        # Bookings
-        bookings_today = Booking.objects.filter(date=today).exclude(status='CANCELLED').count()
-        total_bookings = Booking.objects.exclude(status='CANCELLED').count()
-        session_bookings = Booking.objects.filter(type='SESSION').exclude(status='CANCELLED').count()
-        party_bookings = Booking.objects.filter(type='PARTY').exclude(status='CANCELLED').count()
+        # Session Bookings (Standard Booking model)
+        session_bookings_today = Booking.objects.filter(date=today).exclude(status='CANCELLED').count()
+        total_session_bookings = Booking.objects.exclude(status='CANCELLED').count()
+        session_revenue = Booking.objects.exclude(status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
 
-        # Revenue
-        total_revenue = Booking.objects.exclude(status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
-        
+        # Party Bookings (New PartyBooking model)
+        party_bookings_today = PartyBooking.objects.filter(date=today).exclude(booking_status='CANCELLED').count()
+        total_party_bookings = PartyBooking.objects.exclude(booking_status='CANCELLED').count()
+        party_revenue = PartyBooking.objects.exclude(booking_status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
+
+        # Aggregated Stats
+        bookings_today = session_bookings_today + party_bookings_today
+        total_bookings = total_session_bookings + total_party_bookings
+        total_revenue = session_revenue + party_revenue
+
         # Waivers
         pending_waivers = Booking.objects.filter(waiver_status='PENDING').exclude(status='CANCELLED').count()
-        total_waivers = Waiver.objects.count()
-        signed_waivers = total_waivers # Assuming all in DB are signed for now as per original logic
+        pending_party_waivers = PartyBooking.objects.filter(waiver_status='PENDING').exclude(booking_status='CANCELLED').count()
+        total_pending_waivers = pending_waivers + pending_party_waivers
 
-        # Recent Bookings
-        recent_bookings_qs = Booking.objects.select_related('customer').order_by('-created_at')[:5]
-        recent_bookings = BookingSerializer(recent_bookings_qs, many=True).data
+        total_waivers = Waiver.objects.count()
+        signed_waivers = total_waivers 
+
+        # Recent Bookings (Combine and Sort)
+        recent_sessions = Booking.objects.select_related('customer').order_by('-created_at')[:5]
+        recent_parties = PartyBooking.objects.select_related('customer').order_by('-created_at')[:5]
+        
+        recent_sessions_data = BookingSerializer(recent_sessions, many=True).data
+        recent_parties_data = PartyBookingSerializer(recent_parties, many=True).data
+        
+        all_recent = sorted(
+            recent_sessions_data + recent_parties_data, 
+            key=lambda x: x.get('created_at', ''), 
+            reverse=True
+        )[:5]
 
         # Revenue Chart (last 7 days)
-        # Simplified: just getting raw data, frontend can group if needed or we group here
-        # Doing simple grouping here
         monthly_revenue = []
         for i in range(6, -1, -1):
             d = today - timedelta(days=i)
-            day_revenue = Booking.objects.filter(date=d).exclude(status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
+            day_session_revenue = Booking.objects.filter(date=d).exclude(status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
+            day_party_revenue = PartyBooking.objects.filter(date=d).exclude(booking_status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
+            
             monthly_revenue.append({
                 "name": d.strftime('%a'),
-                "total": day_revenue
+                "total": day_session_revenue + day_party_revenue
             })
 
         # Customers
         total_customers = Customer.objects.count()
         new_customers_month = Customer.objects.filter(created_at__gte=first_day_of_month).count()
-        
-        # Repeat customers (naive implementation)
         repeat_customers = Customer.objects.annotate(booking_count=Count('bookings')).filter(booking_count__gt=1).count()
 
         # Vouchers
@@ -93,7 +109,9 @@ class DashboardViewSet(viewsets.ViewSet):
         total_banners = Banner.objects.filter(active=True).count()
 
         # Avg Booking Value
-        avg_booking_value = Booking.objects.exclude(status='CANCELLED').aggregate(Avg('amount'))['amount__avg'] or 0
+        avg_booking_value = 0
+        if total_bookings > 0:
+            avg_booking_value = total_revenue / total_bookings
 
         waiver_completion_rate = 100 if total_waivers == 0 else int((signed_waivers / total_waivers) * 100)
 
@@ -101,11 +119,11 @@ class DashboardViewSet(viewsets.ViewSet):
             "bookingsToday": bookings_today,
             "totalBookings": total_bookings,
             "totalRevenue": total_revenue,
-            "pendingWaivers": pending_waivers,
-            "recentBookings": recent_bookings,
+            "pendingWaivers": total_pending_waivers,
+            "recentBookings": all_recent,
             "monthlyRevenue": monthly_revenue,
-            "sessionBookings": session_bookings,
-            "partyBookings": party_bookings,
+            "sessionBookings": total_session_bookings,
+            "partyBookings": total_party_bookings,
             "totalCustomers": total_customers,
             "newCustomersMonth": new_customers_month,
             "repeatCustomers": repeat_customers,
@@ -119,4 +137,101 @@ class DashboardViewSet(viewsets.ViewSet):
             "waiverCompletionRate": waiver_completion_rate,
             "totalWaivers": total_waivers,
             "signedWaivers": signed_waivers
+        })
+    
+    @action(detail=False, methods=['get'])
+    def all_bookings(self, request):
+        """
+        Unified endpoint that returns both session and party bookings combined with customer data
+        """
+        booking_type = request.query_params.get('type', None)
+        status = request.query_params.get('status', None)
+        search = request.query_params.get('search', None)
+        
+        all_bookings_data = []
+        
+        # Fetch session bookings
+        if booking_type != 'party':
+            session_bookings = Booking.objects.select_related('customer').all()
+            if status:
+                session_bookings = session_bookings.filter(booking_status=status)
+            if search:
+                session_bookings = session_bookings.filter(
+                    Q(name__icontains=search) | Q(email__icontains=search)
+                )
+            
+            for booking in session_bookings:
+                all_bookings_data.append({
+                    'id': booking.id,
+                    'uuid': str(booking.uuid),
+                    'type': 'SESSION',
+                    'name': booking.name,
+                    'email': booking.email,
+                    'phone': booking.phone,
+                    'date': booking.date,
+                    'time': str(booking.time),
+                    'duration': booking.duration,
+                    'adults': booking.adults,
+                    'kids': booking.kids,
+                    'spectators': booking.spectators,
+                    'amount': float(booking.amount),
+                    'booking_status': booking.booking_status,
+                    'payment_status': booking.payment_status,
+                    'waiver_status': booking.waiver_status,
+                    'created_at': booking.created_at.isoformat(),
+                    'customer': {
+                        'id': booking.customer.id if booking.customer else None,
+                        'name': booking.customer.name if booking.customer else booking.name,
+                        'email': booking.customer.email if booking.customer else booking.email,
+                        'phone': booking.customer.phone if booking.customer else booking.phone,
+                    } if booking.customer or booking.name else None
+                })
+        
+        # Fetch party bookings
+        if booking_type != 'session':
+            party_bookings = PartyBooking.objects.select_related('customer').all()
+            if status:
+                party_bookings = party_bookings.filter(booking_status=status)
+            if search:
+                party_bookings = party_bookings.filter(
+                    Q(name__icontains=search) | Q(email__icontains=search)
+                )
+            
+            for booking in party_bookings:
+                all_bookings_data.append({
+                    'id': booking.id,
+                    'uuid': str(booking.uuid),
+                    'type': 'PARTY',
+                    'name': booking.name,
+                    'email': booking.email,
+                    'phone': booking.phone,
+                    'date': booking.date,
+                    'time': str(booking.time),
+                    'duration': booking.duration,
+                    'adults': booking.adults,
+                    'kids': booking.kids,
+                    'spectators': booking.spectators,
+                    'amount': float(booking.amount),
+                    'booking_status': booking.booking_status,
+                    'payment_status': booking.payment_status,
+                    'waiver_status': booking.waiver_status,
+                    'created_at': booking.created_at.isoformat(),
+                    'birthday_child_name': booking.birthday_child_name,
+                    'birthday_child_age': booking.birthday_child_age,
+                    'party_package': booking.party_package,
+                    'theme': booking.theme,
+                    'customer': {
+                        'id': booking.customer.id if booking.customer else None,
+                        'name': booking.customer.name if booking.customer else booking.name,
+                        'email': booking.customer.email if booking.customer else booking.email,
+                        'phone': booking.customer.phone if booking.customer else booking.phone,
+                    } if booking.customer or booking.name else None
+                })
+        
+        # Sort by created_at (most recent first)
+        all_bookings_data.sort(key=lambda x: x['created_at'], reverse=True)
+        
+        return Response({
+            'count': len(all_bookings_data),
+            'results': all_bookings_data
         })

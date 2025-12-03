@@ -60,8 +60,8 @@ const navigation: NavGroup[] = [
     {
         name: "Booking Management",
         items: [
-            { name: "All Bookings", href: "/admin/bookings", icon: Calendar, permission: { entity: 'bookings', action: 'read' } },
-            { name: "Session Bookings", href: "/admin/session-bookings", icon: Users, permission: { entity: 'bookings', action: 'read' } },
+            { name: "All Bookings", href: "/admin/all-bookings", icon: Calendar, permission: { entity: 'bookings', action: 'read' } },
+            { name: "Session Bookings", href: "/admin/bookings", icon: Users, permission: { entity: 'bookings', action: 'read' } },
             { name: "Manual Session Booking", href: "/admin/session-bookings/new", icon: Users, permission: { entity: 'bookings', action: 'write' } },
             { name: "Session Booking History", href: "/admin/session-bookings/history", icon: Clock, permission: { entity: 'bookings', action: 'read' } },
             { name: "Party Bookings", href: "/admin/party-bookings", icon: PartyPopper, permission: { entity: 'parties', action: 'read' } },
@@ -286,7 +286,7 @@ export function AdminSidebar({ permissions = [] }: AdminSidebarProps) {
             </aside>
 
             {/* Sidebar - Desktop */}
-            <aside className="hidden lg:block fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-30">
+            <aside className="hidden lg:block fixed top-0 left-0 bottom-0 w-72 bg-white border-r border-slate-200 z-50">
                 <SidebarContent />
             </aside>
         </>

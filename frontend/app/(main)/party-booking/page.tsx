@@ -109,9 +109,14 @@ export default function PartyBookingPage() {
                                 </p>
                             </div>
 
-                            <BouncyButton size="lg" variant="primary" onClick={() => window.location.href = "/"}>
-                                Back to Home
-                            </BouncyButton>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <BouncyButton size="lg" variant="primary" onClick={() => window.location.href = `/tickets/${bookingDetails.bookingId}`}>
+                                    View Ticket
+                                </BouncyButton>
+                                <BouncyButton size="lg" variant="secondary" onClick={() => window.location.href = "/"}>
+                                    Back to Home
+                                </BouncyButton>
+                            </div>
                         </div>
                     </ScrollReveal>
                 </div>

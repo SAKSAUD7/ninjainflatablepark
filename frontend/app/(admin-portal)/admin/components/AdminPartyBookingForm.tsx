@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createPartyBooking } from "../../../actions/createPartyBooking";
 import { useRouter } from "next/navigation";
-import { Calendar, Clock, Users, User, Mail, Phone, Baby, Info } from "lucide-react";
+import { Calendar, Clock, Users, User, Mail, Phone, Baby, Info, Gift } from "lucide-react";
 
 export function AdminPartyBookingForm() {
     const router = useRouter();
@@ -27,6 +27,13 @@ export function AdminPartyBookingForm() {
                 childName: formData.get("childName"),
                 childAge: Number(formData.get("childAge")),
                 specialRequests: formData.get("specialRequests"),
+                partyPackage: formData.get("partyPackage"),
+                theme: formData.get("theme"),
+                decorations: formData.get("decorations") === "true",
+                catering: formData.get("catering") === "true",
+                cake: formData.get("cake") === "true",
+                photographer: formData.get("photographer") === "true",
+                partyFavors: formData.get("partyFavors") === "true",
             };
 
             const result = await createPartyBooking(data);
@@ -203,6 +210,67 @@ export function AdminPartyBookingForm() {
                             placeholder="0"
                         />
                         <p className="text-xs text-slate-500 mt-1">First 10 spectators are free</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Package & Add-ons */}
+            <div>
+                <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <Gift className="w-5 h-5 text-primary" />
+                    Package & Add-ons
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Party Package</label>
+                        <select
+                            name="partyPackage"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
+                        >
+                            <option value="STANDARD">Standard</option>
+                            <option value="PREMIUM">Premium</option>
+                            <option value="ULTIMATE">Ultimate</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Theme</label>
+                        <select
+                            name="theme"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
+                        >
+                            <option value="">No Theme</option>
+                            <option value="NINJA">Ninja Warrior</option>
+                            <option value="SPACE">Space Adventure</option>
+                            <option value="JUNGLE">Jungle Safari</option>
+                            <option value="PRINCESS">Princess Castle</option>
+                            <option value="SUPERHERO">Superhero</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-700">Add-ons</label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="decorations" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <span className="text-sm text-slate-700">Decorations</span>
+                        </label>
+                        <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="catering" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <span className="text-sm text-slate-700">Catering</span>
+                        </label>
+                        <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="cake" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <span className="text-sm text-slate-700">Cake</span>
+                        </label>
+                        <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="photographer" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <span className="text-sm text-slate-700">Photographer</span>
+                        </label>
+                        <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
+                            <input type="checkbox" name="partyFavors" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <span className="text-sm text-slate-700">Party Favors</span>
+                        </label>
                     </div>
                 </div>
             </div>

@@ -41,13 +41,38 @@ export async function createPartyBooking(formData: any) {
         const gst = subtotal * 0.18;
         const totalAmount = subtotal + gst;
 
+        // Convert time to 24-hour format for backend (e.g., "4:00 PM" -> "16:00:00")
+        // Convert time to 24-hour format for backend (e.g., "4:00 PM" -> "16:00:00" or "14:00" -> "14:00:00")
+        const convertTo24Hour = (timeStr: string) => {
+            if (!timeStr) return "00:00:00";
+
+            // If already in HH:MM or HH:MM:SS format (24-hour)
+            if (!timeStr.includes('AM') && !timeStr.includes('PM')) {
+                const parts = timeStr.split(':');
+                if (parts.length === 2) return `${timeStr}:00`;
+                if (parts.length === 3) return timeStr;
+                return timeStr;
+            }
+
+            const [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':');
+            if (hours === '12') {
+                hours = modifier === 'PM' ? '12' : '00';
+            } else if (modifier === 'PM') {
+                hours = (parseInt(hours, 10) + 12).toString();
+            }
+            return `${hours}:${minutes}:00`;
+        };
+
+        const formattedTime = convertTo24Hour(time);
+
         // Create party booking via Django API using dedicated party-bookings endpoint
         const partyBookingPayload = {
             name,
             email,
             phone,
             date,
-            time,
+            time: formattedTime,
             duration: 120, // Party is 2 hours
             adults: 0,
             kids: participants,

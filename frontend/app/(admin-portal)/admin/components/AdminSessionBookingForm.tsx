@@ -31,7 +31,7 @@ export function AdminSessionBookingForm() {
             const result = await createBooking(data);
 
             if (result.success) {
-                router.push("/admin/session-bookings");
+                router.push("/admin/bookings");
                 router.refresh();
             } else {
                 setError(result.error || "Failed to create booking");
