@@ -17,6 +17,14 @@ export async function createPartyBooking(formData: any) {
             childName,
             childAge,
             specialRequests,
+            partyPackage,
+            theme,
+            decorations,
+            catering,
+            cake,
+            photographer,
+            partyFavors,
+            dietaryRestrictions,
         } = formData;
 
         // Party pricing calculation
@@ -33,31 +41,40 @@ export async function createPartyBooking(formData: any) {
         const gst = subtotal * 0.18;
         const totalAmount = subtotal + gst;
 
-        // Create booking via Django API
-        const bookingPayload = {
+        // Create party booking via Django API using dedicated party-bookings endpoint
+        const partyBookingPayload = {
             name,
             email,
             phone,
             date,
             time,
             duration: 120, // Party is 2 hours
-            adults: 0, // Not used for parties
+            adults: 0,
             kids: participants,
             spectators,
+            birthday_child_name: childName,
+            birthday_child_age: childAge,
+            party_package: partyPackage || null,
+            theme: theme || null,
+            decorations: decorations || false,
+            catering: catering || false,
+            cake: cake || false,
+            photographer: photographer || false,
+            party_favors: partyFavors || false,
+            special_requests: specialRequests || null,
+            dietary_restrictions: dietaryRestrictions || null,
             subtotal,
             amount: totalAmount,
             discount_amount: 0,
-            status: "PENDING", // Requires 50% deposit
             booking_status: "PENDING",
             payment_status: "PENDING",
             waiver_status: "PENDING",
-            type: "PARTY",
         };
 
-        const bookingRes = await fetch(`${API_URL}/bookings/bookings/`, {
+        const bookingRes = await fetch(`${API_URL}/bookings/party-bookings/`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(bookingPayload)
+            body: JSON.stringify(partyBookingPayload)
         });
 
         if (!bookingRes.ok) {
@@ -86,3 +103,4 @@ export async function createPartyBooking(formData: any) {
         return { success: false, error: "Failed to create party booking" };
     }
 }
+

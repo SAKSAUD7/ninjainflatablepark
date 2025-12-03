@@ -9,6 +9,7 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status, type = "booking" }: StatusBadgeProps) {
     const getStyles = (status: string) => {
+        if (!status) return "bg-slate-100 text-slate-700 border-slate-200";
         const s = status.toUpperCase();
 
         switch (s) {
@@ -34,7 +35,7 @@ export function StatusBadge({ status, type = "booking" }: StatusBadgeProps) {
             "px-2.5 py-0.5 rounded-full text-xs font-medium border",
             getStyles(status)
         )}>
-            {status}
+            {status || "PENDING"}
         </span>
     );
 }

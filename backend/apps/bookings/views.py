@@ -1,6 +1,6 @@
 from rest_framework import viewsets, permissions
-from .models import Customer, Booking, Waiver, Transaction, BookingBlock
-from .serializers import CustomerSerializer, BookingSerializer, WaiverSerializer, TransactionSerializer, BookingBlockSerializer
+from .models import Customer, Booking, Waiver, Transaction, BookingBlock, PartyBooking
+from .serializers import CustomerSerializer, BookingSerializer, WaiverSerializer, TransactionSerializer, BookingBlockSerializer, PartyBookingSerializer
 
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
@@ -45,3 +45,20 @@ class BookingBlockViewSet(viewsets.ModelViewSet):
     queryset = BookingBlock.objects.all()
     serializer_class = BookingBlockSerializer
     permission_classes = [permissions.IsAdminUser]
+
+class PartyBookingViewSet(viewsets.ModelViewSet):
+    queryset = PartyBooking.objects.all()
+    serializer_class = PartyBookingSerializer
+    
+    def get_permissions(self):
+        # Allow public access for create, list (for duplicate checking), and ticket retrieval
+        if self.action in ['create', 'list', 'ticket']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
+
+    @action(detail=False, methods=['get'], url_path='ticket/(?P<uuid>[^/.]+)')
+    def ticket(self, request, uuid=None):
+        party_booking = get_object_or_404(PartyBooking, uuid=uuid)
+        serializer = self.get_serializer(party_booking)
+        return Response(serializer.data)
+

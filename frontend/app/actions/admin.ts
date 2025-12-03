@@ -126,12 +126,11 @@ export async function getBookings(filter?: { status?: string; date?: string; sea
 
 export async function getPartyBookings(filter?: { status?: string; date?: string; search?: string }) {
     const params = new URLSearchParams();
-    params.append("type", "PARTY");
     if (filter?.status) params.append("booking_status", filter.status);
     if (filter?.date) params.append("date", filter.date);
     if (filter?.search) params.append("search", filter.search);
 
-    const res = await fetchAPI(`/bookings/bookings/?${params.toString()}`);
+    const res = await fetchAPI(`/bookings/party-bookings/?${params.toString()}`);
     if (!res || !res.ok) return [];
 
     const data = await res.json();

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer, Booking, Waiver, Transaction, BookingBlock
+from .models import Customer, Booking, Waiver, Transaction, BookingBlock, PartyBooking
 from apps.shop.serializers import VoucherSerializer
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -41,3 +41,12 @@ class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = '__all__'
+
+class PartyBookingSerializer(serializers.ModelSerializer):
+    customer_details = CustomerSerializer(source='customer', read_only=True)
+    voucher_details = VoucherSerializer(source='voucher', read_only=True)
+    
+    class Meta:
+        model = PartyBooking
+        fields = '__all__'
+

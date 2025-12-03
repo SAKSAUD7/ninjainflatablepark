@@ -5,12 +5,25 @@ import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Heart } from "lucide
 import Link from "next/link";
 import { footerLinks, siteConfig } from "../lib/config";
 
-export const Footer = ({ settings }: { settings?: any }) => {
-    const socialLinks = [
+export const Footer = ({ settings, socialLinks }: { settings?: any; socialLinks?: any[] }) => {
+    const defaultSocialLinks = [
         { icon: <Facebook className="w-5 h-5" />, href: siteConfig.links.facebook, label: "Facebook" },
         { icon: <Instagram className="w-5 h-5" />, href: siteConfig.links.instagram, label: "Instagram" },
         { icon: <Twitter className="w-5 h-5" />, href: siteConfig.links.twitter, label: "Twitter" },
     ];
+
+    const linksToDisplay = socialLinks && socialLinks.length > 0 ? socialLinks.map((link: any) => {
+        const platform = (link.platform || link.label || "").toLowerCase();
+        let Icon = Facebook;
+        if (platform.includes('instagram')) Icon = Instagram;
+        else if (platform.includes('twitter')) Icon = Twitter;
+
+        return {
+            icon: <Icon className="w-5 h-5" />,
+            href: link.url || link.href,
+            label: link.platform || link.label
+        };
+    }) : defaultSocialLinks;
 
     const phone = settings?.contactPhone || siteConfig.contact.phone;
     const email = settings?.contactEmail || siteConfig.contact.email;
@@ -40,7 +53,7 @@ export const Footer = ({ settings }: { settings?: any }) => {
 
                         {/* Social Links */}
                         <div className="flex gap-3">
-                            {socialLinks.map((social) => (
+                            {linksToDisplay.map((social) => (
                                 <motion.a
                                     key={social.label}
                                     href={social.href}
