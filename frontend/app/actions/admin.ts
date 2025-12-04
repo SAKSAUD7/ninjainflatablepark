@@ -13,20 +13,30 @@ function transformBooking(b: any) {
     const customer = b.customer_details ? transformCustomer(b.customer_details) : null;
     return {
         ...b,
-        bookingStatus: b.booking_status,
+        bookingStatus: b.booking_status || b.status,
         waiverStatus: b.waiver_status,
         paymentStatus: b.payment_status,
         createdAt: b.created_at,
         updatedAt: b.updated_at,
         voucherCode: b.voucher_code,
         discountAmount: b.discount_amount,
+        // Party booking specific fields
+        packageName: b.package_name,
+        birthdayChildName: b.birthday_child_name,
+        birthdayChildAge: b.birthday_child_age,
+        waiverSigned: b.waiver_signed,
+        waiverSignedAt: b.waiver_signed_at,
+        waiverIpAddress: b.waiver_ip_address,
         // Add flat customer properties for easy access
         customerName: customer?.name || b.name || null,
         customerEmail: customer?.email || b.email || null,
         customerPhone: customer?.phone || b.phone || null,
         customer: customer,
         waivers: b.waivers?.map(transformWaiver) || [],
-        transactions: b.transactions || []
+        transactions: b.transactions || [],
+        // Default values for missing fields
+        duration: b.duration || 120, // Default 2 hours for party bookings
+        spectators: b.spectators || 0,
     };
 }
 
@@ -207,6 +217,7 @@ export async function updateBookingStatus(id: string, status: string) {
 
     if (res && res.ok) {
         revalidatePath("/admin/bookings");
+        revalidatePath(`/admin/bookings/${id}`);
     }
 }
 
@@ -218,6 +229,7 @@ export async function updateBookingDetails(id: string, data: { date?: string; ti
 
     if (res && res.ok) {
         revalidatePath("/admin/bookings");
+        revalidatePath(`/admin/bookings/${id}`);
     }
 }
 
@@ -228,6 +240,7 @@ export async function deleteBooking(id: string) {
 
     if (res && res.ok) {
         revalidatePath("/admin/bookings");
+        revalidatePath(`/admin/bookings/${id}`);
     }
 }
 

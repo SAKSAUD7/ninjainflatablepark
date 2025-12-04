@@ -5,3 +5,4 @@ drf-spectacular
 python-dotenv
 django-cors-headers
 Pillow
+reportlab

@@ -34,7 +34,6 @@ interface Booking {
     customerEmail?: string;
     customerPhone?: string;
     bookingStatus?: string;
-    paymentStatus?: string;
     createdAt?: string;
 }
 

@@ -39,7 +39,48 @@ export async function createPartyBooking(formData: any) {
         const spectatorCost = chargeableSpectators * extraSpectatorPrice;
         const subtotal = participantCost + spectatorCost;
         const gst = subtotal * 0.18;
-        const totalAmount = subtotal + gst;
+        let totalAmount = subtotal + gst;
+        let discountAmount = 0;
+        let voucherCode = null;
+
+        // Apply voucher if provided
+        if (formData.voucherCode) {
+            // Validate voucher server-side
+            const voucherRes = await fetch(`${API_URL}/shop/vouchers/validate/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    code: formData.voucherCode.toUpperCase(),
+                    order_amount: subtotal
+                }),
+                cache: "no-store"
+            });
+
+            if (voucherRes.ok) {
+                const voucherData = await voucherRes.json();
+                if (voucherData.valid) {
+                    discountAmount = voucherData.discount_amount;
+                    totalAmount = voucherData.final_amount;
+                    voucherCode = formData.voucherCode.toUpperCase();
+
+                    // Increment usage count
+                    const vouchersRes = await fetch(`${API_URL}/shop/vouchers/?code=${voucherCode}`, {
+                        cache: "no-store"
+                    });
+                    if (vouchersRes.ok) {
+                        const voucherList = await vouchersRes.json();
+                        const voucher = voucherList[0];
+                        if (voucher) {
+                            await fetch(`${API_URL}/shop/vouchers/${voucher.id}/`, {
+                                method: "PATCH",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ used_count: voucher.used_count + 1 })
+                            });
+                        }
+                    }
+                }
+            }
+        }
 
         // Convert time to 24-hour format for backend (e.g., "4:00 PM" -> "16:00:00")
         // Convert time to 24-hour format for backend (e.g., "4:00 PM" -> "16:00:00" or "14:00" -> "14:00:00")

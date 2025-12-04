@@ -111,3 +111,18 @@ export async function deleteVoucher(id: string) {
 
     revalidatePath("/admin/vouchers");
 }
+
+export async function validateVoucher(code: string, orderAmount: number) {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/shop/vouchers/validate/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code.toUpperCase(), order_amount: orderAmount })
+    });
+
+    if (!res.ok) {
+        const error = await res.json();
+        return { valid: false, error: error.error || "Failed to validate voucher" };
+    }
+
+    return await res.json();
+}

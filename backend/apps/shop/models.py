@@ -5,7 +5,7 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField(default=0)
-    image_url = models.URLField(null=True, blank=True)
+    # image_url = models.URLField(null=True, blank=True)  # Temporarily disabled due to DRF bug
     category = models.CharField(max_length=100, null=True, blank=True)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

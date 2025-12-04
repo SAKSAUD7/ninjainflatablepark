@@ -24,7 +24,7 @@ export default async function AdminLoginPage() {
                             type="email"
                             required
                             className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none transition-all text-slate-900"
-                            placeholder="admin@ninja.com"
+                            placeholder="superadmin@ninjapark.com"
                         />
                     </div>
 

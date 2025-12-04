@@ -148,18 +148,18 @@ export default function AdminCustomers() {
                                             <div className="flex gap-4">
                                                 <div>
                                                     <p className="text-xs text-slate-600 uppercase font-bold">Bookings</p>
-                                                    <p className="text-sm font-bold text-slate-900">{customer.totalBookings || 0}</p>
+                                                    <p className="text-sm font-bold text-slate-900">{customer.booking_count || 0}</p>
                                                 </div>
                                                 <div>
                                                     <p className="text-xs text-slate-600 uppercase font-bold">Spent</p>
-                                                    <p className="text-sm font-bold text-emerald-600">₹{customer.totalSpent || 0}</p>
+                                                    <p className="text-sm font-bold text-emerald-600">₹{customer.total_spent || 0}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2 text-sm text-slate-900">
                                                 <Calendar size={14} className="text-slate-400" />
-                                                {customer.lastBooking ? new Date(customer.lastBooking).toLocaleDateString() : 'Never'}
+                                                {customer.last_visit ? new Date(customer.last_visit).toLocaleDateString() : 'Never'}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">

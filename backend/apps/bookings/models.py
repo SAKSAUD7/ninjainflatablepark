@@ -89,6 +89,18 @@ class PartyBooking(models.Model):
     birthday_child_name = models.CharField(max_length=255, null=True, blank=True)
     birthday_child_age = models.IntegerField(null=True, blank=True)
     
+    # Participant Details
+    participants = models.JSONField(null=True, blank=True)
+    # Structure: {
+    #   "adults": [{"name": "John Doe", "email": "john@example.com", "phone": "123", "dob": "1990-01-01"}],
+    #   "minors": [{"name": "Jane Doe", "dob": "2015-05-10", "guardian": "John Doe"}]
+    # }
+    
+    # Waiver Information
+    waiver_signed = models.BooleanField(default=False)
+    waiver_signed_at = models.DateTimeField(null=True, blank=True)
+    waiver_ip_address = models.GenericIPAddressField(null=True, blank=True)
+    
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name='party_bookings')
     
@@ -99,22 +111,40 @@ class PartyBooking(models.Model):
         return f"Party {self.id} - {self.name}"
 
 class Waiver(models.Model):
-    name = models.CharField(max_length=255)
-    email = models.EmailField()
-    phone = models.CharField(max_length=50, null=True, blank=True)
-    file_url = models.URLField(null=True, blank=True)
-    signed_at = models.DateTimeField(auto_now_add=True)
-    version = models.CharField(max_length=20)
-    emergency_contact = models.CharField(max_length=255, null=True, blank=True)
-    dob = models.DateField(null=True, blank=True)
-    minors = models.JSONField(null=True, blank=True) # List of {name, dob}
-    adults = models.JSONField(null=True, blank=True) # List of {name, email, phone, dob}
+    PARTICIPANT_TYPE_CHOICES = [
+        ('ADULT', 'Adult'),
+        ('MINOR', 'Minor'),
+    ]
     
+    # Participant Information
+    name = models.CharField(max_length=255)
+    email = models.EmailField(null=True, blank=True)
+    phone = models.CharField(max_length=50, null=True, blank=True)
+    dob = models.DateField(null=True, blank=True)
+    participant_type = models.CharField(max_length=10, choices=PARTICIPANT_TYPE_CHOICES, default='ADULT')
+    is_primary_signer = models.BooleanField(default=False)
+    
+    # Waiver Details
+    # file_url = models.URLField(null=True, blank=True)  # Temporarily disabled due to DRF bug
+    signed_at = models.DateTimeField(auto_now_add=True)
+    version = models.CharField(max_length=20, default='1.0')
+    emergency_contact = models.CharField(max_length=255, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    
+    # Legacy fields for backward compatibility
+    minors = models.JSONField(null=True, blank=True)  # List of {name, dob}
+    adults = models.JSONField(null=True, blank=True)  # List of {name, email, phone, dob}
+    
+    # Relationships
     booking = models.ForeignKey(Booking, on_delete=models.SET_NULL, null=True, blank=True, related_name='waivers')
+    party_booking = models.ForeignKey(PartyBooking, on_delete=models.SET_NULL, null=True, blank=True, related_name='waivers')
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name='waivers')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Waiver for {self.name}"
+        return f"Waiver for {self.name} ({self.participant_type})"
 
 class Transaction(models.Model):
     METHOD_CHOICES = [

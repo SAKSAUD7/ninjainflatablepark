@@ -211,6 +211,7 @@ export default async function AdminDashboard() {
                         <thead className="bg-slate-50 border-b border-slate-200">
                             <tr>
                                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Customer</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
                                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date & Time</th>
                                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
                                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
@@ -233,6 +234,14 @@ export default async function AdminDashboard() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${booking.type === 'PARTY'
+                                                ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                                                : 'bg-blue-100 text-blue-700 border border-blue-200'
+                                                }`}>
+                                                {booking.type}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
                                             <div className="flex items-center gap-2 text-sm text-slate-600">
                                                 <Clock size={14} className="text-slate-400" />
                                                 {booking.date} • {booking.time}
@@ -245,7 +254,7 @@ export default async function AdminDashboard() {
                                             <StatusBadge status={booking.status} />
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Link href={`/admin/bookings/${booking.id}`} className="text-slate-400 hover:text-neon-blue transition-colors">
+                                            <Link href={booking.type === 'PARTY' ? `/admin/party-bookings/${booking.id}` : `/admin/bookings/${booking.id}`} className="text-slate-400 hover:text-neon-blue transition-colors">
                                                 <ArrowRight size={18} />
                                             </Link>
                                         </td>

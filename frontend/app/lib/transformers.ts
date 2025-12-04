@@ -10,7 +10,15 @@ export function transformCmsItem(item: any) {
         metaTitle: item.meta_title,
         metaDesc: item.meta_desc,
         createdAt: item.created_at,
-        updatedAt: item.updated_at
+        updatedAt: item.updated_at,
+        // Voucher-specific fields
+        discountType: item.discount_type,
+        discountValue: item.discount_value,
+        minOrderAmount: item.min_order_amount,
+        expiryDate: item.expiry_date,
+        usageLimit: item.usage_limit,
+        usedCount: item.used_count,
+        isActive: item.is_active
     };
 }
 
