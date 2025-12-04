@@ -122,7 +122,7 @@ export default function EditBookingBlockPage({ params }: { params: { id: string 
                             type="date"
                             required
                             defaultValue={startDateStr}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                         />
                     </div>
                     <div>
@@ -132,7 +132,7 @@ export default function EditBookingBlockPage({ params }: { params: { id: string 
                             type="time"
                             required
                             defaultValue={startTimeStr}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                         />
                     </div>
 
@@ -144,7 +144,7 @@ export default function EditBookingBlockPage({ params }: { params: { id: string 
                             type="date"
                             required
                             defaultValue={endDateStr}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                         />
                     </div>
                     <div>
@@ -154,7 +154,7 @@ export default function EditBookingBlockPage({ params }: { params: { id: string 
                             type="time"
                             required
                             defaultValue={endTimeStr}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                         />
                     </div>
                 </div>
@@ -168,7 +168,7 @@ export default function EditBookingBlockPage({ params }: { params: { id: string 
                         required
                         defaultValue={block.reason}
                         placeholder="e.g., Maintenance, Private Event"
-                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900 placeholder:text-slate-400"
                     />
                 </div>
 
@@ -179,7 +179,7 @@ export default function EditBookingBlockPage({ params }: { params: { id: string 
                             name="type"
                             required
                             defaultValue={block.type}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white text-slate-900"
                         >
                             <option value="MAINTENANCE">Maintenance</option>
                             <option value="PRIVATE_EVENT">Private Event</option>

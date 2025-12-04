@@ -67,6 +67,37 @@ class Booking(models.Model):
     def __str__(self):
         return f"Booking {self.id} - {self.name}"
 
+class PartyBooking(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('CONFIRMED', 'Confirmed'),
+        ('CANCELLED', 'Cancelled'),
+        ('COMPLETED', 'Completed'),
+    ]
+    
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=50)
+    date = models.DateField()
+    time = models.TimeField()
+    package_name = models.CharField(max_length=255)
+    kids = models.IntegerField(default=0)
+    adults = models.IntegerField(default=0)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    birthday_child_name = models.CharField(max_length=255, null=True, blank=True)
+    birthday_child_age = models.IntegerField(null=True, blank=True)
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name='party_bookings')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Party {self.id} - {self.name}"
+
 class Waiver(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField()
@@ -98,114 +129,32 @@ class Transaction(models.Model):
         ('FAILED', 'Failed'),
     ]
 
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    method = models.CharField(max_length=20, choices=METHOD_CHOICES)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='transactions')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    currency = models.CharField(max_length=3, default='INR')
+    transaction_id = models.CharField(max_length=255, unique=True)
+    payment_method = models.CharField(max_length=20, choices=METHOD_CHOICES)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.method} - {self.amount}"
+        return f"{self.transaction_id} - {self.amount} {self.currency}"
 
 class BookingBlock(models.Model):
     TYPE_CHOICES = [
+        ('CLOSED', 'Closed'),
         ('MAINTENANCE', 'Maintenance'),
         ('PRIVATE_EVENT', 'Private Event'),
-        ('HOLIDAY', 'Holiday'),
         ('OTHER', 'Other'),
     ]
 
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     reason = models.CharField(max_length=255)
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='OTHER')
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='CLOSED')
     recurring = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Block: {self.reason} ({self.start_date})"
-
-class PartyBooking(models.Model):
-    """
-    Dedicated model for party bookings with party-specific fields
-    """
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    
-    STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('CONFIRMED', 'Confirmed'),
-        ('CANCELLED', 'Cancelled'),
-        ('COMPLETED', 'Completed'),
-    ]
-    PAYMENT_STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('PAID', 'Paid'),
-        ('REFUNDED', 'Refunded'),
-        ('FAILED', 'Failed'),
-    ]
-    WAIVER_STATUS_CHOICES = [
-        ('PENDING', 'Pending'),
-        ('SIGNED', 'Signed'),
-    ]
-    
-    # Contact Information
-    name = models.CharField(max_length=255, help_text="Party organizer name")
-    email = models.EmailField()
-    phone = models.CharField(max_length=50)
-    
-    # Party Details
-    date = models.DateField()
-    time = models.TimeField()
-    duration = models.IntegerField(help_text="Duration in minutes", default=120)
-    
-    # Guest Count
-    adults = models.IntegerField(default=0)
-    kids = models.IntegerField(default=0)
-    spectators = models.IntegerField(default=0, help_text="Non-participating guests")
-    
-    # Party-Specific Fields
-    party_package = models.CharField(max_length=100, null=True, blank=True, help_text="Selected party package")
-    theme = models.CharField(max_length=100, null=True, blank=True, help_text="Party theme")
-    birthday_child_name = models.CharField(max_length=255, null=True, blank=True)
-    birthday_child_age = models.IntegerField(null=True, blank=True)
-    
-    # Add-ons
-    decorations = models.BooleanField(default=False)
-    catering = models.BooleanField(default=False)
-    cake = models.BooleanField(default=False)
-    photographer = models.BooleanField(default=False)
-    party_favors = models.BooleanField(default=False)
-    
-    # Special Requests
-    special_requests = models.TextField(null=True, blank=True)
-    dietary_restrictions = models.TextField(null=True, blank=True)
-    
-    # Pricing
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    voucher_code = models.CharField(max_length=50, null=True, blank=True)
-    
-    # Status Fields
-    booking_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    waiver_status = models.CharField(max_length=20, choices=WAIVER_STATUS_CHOICES, default='PENDING')
-    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='PENDING')
-    qr_code = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    
-    # Relationships
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name='party_bookings')
-    voucher = models.ForeignKey(Voucher, on_delete=models.SET_NULL, null=True, blank=True, related_name='party_bookings')
-    
-    # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['-created_at']
-        verbose_name = 'Party Booking'
-        verbose_name_plural = 'Party Bookings'
-    
-    def __str__(self):
-        return f"Party Booking {self.id} - {self.name} ({self.date})"
-
+        return f"Block: {self.reason} ({self.start_date} - {self.end_date})"

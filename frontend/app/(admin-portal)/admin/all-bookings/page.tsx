@@ -1,8 +1,9 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { getAllBookings } from "../../../actions/admin";
-import { getAdminSession } from "../../../lib/admin-auth";
-import { redirect } from "next/navigation";
-import Link from "next/link";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
+import { exportBookingsToCSV } from "../../../../lib/export-csv";
 import {
     Search,
     Download,
@@ -10,17 +11,78 @@ import {
     Clock,
     Mail,
     Phone,
-    Eye,
-    Filter
+    Eye
 } from "lucide-react";
+import Link from "next/link";
 
-export default async function AllBookingsPage() {
-    const session = await getAdminSession();
-    if (!session) {
-        redirect("/admin/login");
+export default function AllBookingsPage() {
+    const [allBookings, setAllBookings] = useState<any[]>([]);
+    const [filteredBookings, setFilteredBookings] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [typeFilter, setTypeFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
+
+    useEffect(() => {
+        loadBookings();
+    }, []);
+
+    useEffect(() => {
+        filterBookings();
+    }, [searchTerm, typeFilter, statusFilter, allBookings]);
+
+    async function loadBookings() {
+        try {
+            const data = await getAllBookings();
+            setAllBookings(data);
+            setFilteredBookings(data);
+        } catch (error) {
+            console.error("Error loading bookings:", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const bookings = await getAllBookings();
+    function filterBookings() {
+        let filtered = [...allBookings];
+
+        // Search filter
+        if (searchTerm) {
+            const search = searchTerm.toLowerCase();
+            filtered = filtered.filter(booking =>
+                booking.customer?.name?.toLowerCase().includes(search) ||
+                booking.name?.toLowerCase().includes(search) ||
+                booking.customer?.email?.toLowerCase().includes(search) ||
+                booking.email?.toLowerCase().includes(search) ||
+                booking.birthday_child_name?.toLowerCase().includes(search) ||
+                booking.id?.toString().includes(search)
+            );
+        }
+
+        // Type filter
+        if (typeFilter) {
+            filtered = filtered.filter(booking =>
+                booking.type?.toUpperCase() === typeFilter.toUpperCase()
+            );
+        }
+
+        // Status filter
+        if (statusFilter) {
+            filtered = filtered.filter(booking =>
+                booking.booking_status?.toUpperCase() === statusFilter.toUpperCase()
+            );
+        }
+
+        setFilteredBookings(filtered);
+    }
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon-blue"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="p-8">
@@ -30,7 +92,10 @@ export default async function AllBookingsPage() {
                     <p className="text-slate-500 mt-1">Unified view of all session and party bookings with customer data</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium text-sm">
+                    <button
+                        onClick={() => exportBookingsToCSV(filteredBookings, 'all-bookings')}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium text-sm"
+                    >
                         <Download size={16} />
                         Export CSV
                     </button>
@@ -44,16 +109,26 @@ export default async function AllBookingsPage() {
                     <input
                         type="text"
                         placeholder="Search by name, email or booking ID..."
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none text-slate-900 placeholder:text-slate-400"
                     />
                 </div>
                 <div className="flex gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                    <select className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm outline-none focus:border-neon-blue">
+                    <select
+                        value={typeFilter}
+                        onChange={(e) => setTypeFilter(e.target.value)}
+                        className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-neon-blue"
+                    >
                         <option value="">All Types</option>
-                        <option value="session">Session Bookings</option>
-                        <option value="party">Party Bookings</option>
+                        <option value="SESSION">Session Bookings</option>
+                        <option value="PARTY">Party Bookings</option>
                     </select>
-                    <select className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm outline-none focus:border-neon-blue">
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-neon-blue"
+                    >
                         <option value="">All Statuses</option>
                         <option value="CONFIRMED">Confirmed</option>
                         <option value="PENDING">Pending</option>
@@ -69,43 +144,43 @@ export default async function AllBookingsPage() {
                     <table className="w-full text-left">
                         <thead className="bg-slate-50 border-b border-slate-200">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Customer Details</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Booking Info</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Guests</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Type</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Customer Details</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Booking Info</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Guests</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {bookings.length === 0 ? (
+                            {filteredBookings.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
-                                        No bookings found
+                                        No bookings found matching your filters
                                     </td>
                                 </tr>
                             ) : (
-                                bookings.map((booking: any) => (
+                                filteredBookings.map((booking: any) => (
                                     <tr key={`${booking.type}-${booking.id}`} className="hover:bg-slate-50 transition-colors group">
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${booking.type === 'SESSION'
-                                                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                                    : 'bg-purple-100 text-purple-700 border border-purple-200'
+                                                ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                                                : 'bg-purple-100 text-purple-700 border border-purple-200'
                                                 }`}>
                                                 {booking.type}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">
+                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold">
                                                     {getInitials(booking.customer?.name || booking.name || 'U')}
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-bold text-slate-900">{booking.customer?.name || booking.name || 'Unknown'}</p>
-                                                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                                                    <div className="flex items-center gap-2 text-xs text-slate-600 mt-0.5">
                                                         <Mail size={12} /> {booking.customer?.email || booking.email || 'No Email'}
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                                                    <div className="flex items-center gap-2 text-xs text-slate-600 mt-0.5">
                                                         <Phone size={12} /> {booking.customer?.phone || booking.phone || 'No Phone'}
                                                     </div>
                                                 </div>
@@ -117,11 +192,11 @@ export default async function AllBookingsPage() {
                                                     <Calendar size={14} className="text-slate-400" />
                                                     {formatDate(booking.date)}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-xs text-slate-500">
+                                                <div className="flex items-center gap-2 text-xs text-slate-600">
                                                     <Clock size={12} />
                                                     {booking.time}
                                                 </div>
-                                                <div className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded inline-block">
+                                                <div className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded inline-block">
                                                     ID: #{String(booking.id).slice(-6)}
                                                 </div>
                                                 {booking.type === 'PARTY' && booking.birthday_child_name && (
@@ -133,7 +208,7 @@ export default async function AllBookingsPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <p className="text-sm font-medium text-slate-900">{booking.duration} mins</p>
-                                            <p className="text-xs text-slate-500">{(booking.adults || 0) + (booking.kids || 0) + (booking.spectators || 0)} Guests</p>
+                                            <p className="text-xs text-slate-600">{(booking.adults || 0) + (booking.kids || 0) + (booking.spectators || 0)} Guests</p>
                                             <p className="text-sm font-bold text-slate-900 mt-1">{formatCurrency(booking.amount)}</p>
                                         </td>
                                         <td className="px-6 py-4">
@@ -157,11 +232,7 @@ export default async function AllBookingsPage() {
 
                 {/* Pagination */}
                 <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
-                    <p className="text-sm text-slate-500">Showing <span className="font-bold">1-{bookings.length}</span> of <span className="font-bold">{bookings.length}</span> results</p>
-                    <div className="flex gap-2">
-                        <button className="px-3 py-1 text-sm border border-slate-300 rounded-lg disabled:opacity-50" disabled>Previous</button>
-                        <button className="px-3 py-1 text-sm border border-slate-300 rounded-lg hover:bg-white">Next</button>
-                    </div>
+                    <p className="text-sm text-slate-600">Showing <span className="font-bold text-slate-900">{filteredBookings.length}</span> of <span className="font-bold text-slate-900">{allBookings.length}</span> results</p>
                 </div>
             </div>
         </div>

@@ -1,7 +1,9 @@
-import { getBookings } from "../../../../actions/admin";
-import { getAdminSession } from "../../../../lib/admin-auth";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useState, useEffect } from "react";
+import { getSessionBookings } from "../../../../actions/admin";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
+import { exportBookingsToCSV } from "../../../../../lib/export-csv";
 import {
     Search,
     Download,
@@ -13,22 +15,101 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default async function BookingHistoryPage() {
-    const session = await getAdminSession();
-    if (!session) {
-        redirect("/admin/login");
+export default function BookingHistoryPage() {
+    const [allBookings, setAllBookings] = useState<any[]>([]);
+    const [filteredBookings, setFilteredBookings] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [timeFilter, setTimeFilter] = useState("all");
+
+    useEffect(() => {
+        loadBookings();
+    }, []);
+
+    useEffect(() => {
+        filterBookings();
+    }, [searchTerm, statusFilter, timeFilter, allBookings]);
+
+    async function loadBookings() {
+        try {
+            const data = await getSessionBookings();
+
+            // Filter for past bookings
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const pastBookings = data.filter((booking: any) => {
+                const bookingDate = new Date(booking.date);
+                return bookingDate < today;
+            });
+
+            setAllBookings(pastBookings);
+            setFilteredBookings(pastBookings);
+        } catch (error) {
+            console.error("Error loading bookings:", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const allBookings = await getBookings();
+    function filterBookings() {
+        let filtered = [...allBookings];
 
-    // Filter for past bookings
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+        // Search filter
+        if (searchTerm) {
+            const search = searchTerm.toLowerCase();
+            filtered = filtered.filter(booking =>
+                booking.customerName?.toLowerCase().includes(search) ||
+                booking.customerEmail?.toLowerCase().includes(search) ||
+                booking.name?.toLowerCase().includes(search) ||
+                booking.email?.toLowerCase().includes(search) ||
+                booking.id?.toString().includes(search)
+            );
+        }
 
-    const bookings = allBookings.filter((booking: any) => {
-        const bookingDate = new Date(booking.date);
-        return bookingDate < today;
-    });
+        // Status filter
+        if (statusFilter !== "all") {
+            filtered = filtered.filter(booking =>
+                (booking.bookingStatus || booking.status)?.toUpperCase() === statusFilter.toUpperCase()
+            );
+        }
+
+        // Time filter
+        if (timeFilter !== "all") {
+            const now = new Date();
+            const filterDate = new Date();
+
+            switch (timeFilter) {
+                case "30":
+                    filterDate.setDate(now.getDate() - 30);
+                    break;
+                case "90":
+                    filterDate.setDate(now.getDate() - 90);
+                    break;
+                case "365":
+                    filterDate.setFullYear(now.getFullYear() - 1);
+                    break;
+            }
+
+            if (timeFilter !== "all") {
+                filtered = filtered.filter(booking => {
+                    const bookingDate = new Date(booking.date);
+                    return bookingDate >= filterDate;
+                });
+            }
+        }
+
+        setFilteredBookings(filtered);
+    }
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon-blue"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="p-8">
@@ -44,7 +125,10 @@ export default async function BookingHistoryPage() {
                     >
                         Back to All Bookings
                     </Link>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium text-sm">
+                    <button
+                        onClick={() => exportBookingsToCSV(filteredBookings, 'session-booking-history')}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium text-sm"
+                    >
                         <Download size={16} />
                         Export CSV
                     </button>
@@ -58,20 +142,30 @@ export default async function BookingHistoryPage() {
                     <input
                         type="text"
                         placeholder="Search by name, email or booking ID..."
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none text-slate-900 placeholder:text-slate-400"
                     />
                 </div>
                 <div className="flex gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                    <select className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm outline-none focus:border-neon-blue">
-                        <option>All Statuses</option>
-                        <option>Completed</option>
-                        <option>Cancelled</option>
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-neon-blue"
+                    >
+                        <option value="all">All Statuses</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
                     </select>
-                    <select className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm outline-none focus:border-neon-blue">
-                        <option>Last 30 Days</option>
-                        <option>Last 90 Days</option>
-                        <option>Last Year</option>
-                        <option>All Time</option>
+                    <select
+                        value={timeFilter}
+                        onChange={(e) => setTimeFilter(e.target.value)}
+                        className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-neon-blue"
+                    >
+                        <option value="all">All Time</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="365">Last Year</option>
                     </select>
                 </div>
             </div>
@@ -82,35 +176,35 @@ export default async function BookingHistoryPage() {
                     <table className="w-full text-left">
                         <thead className="bg-slate-50 border-b border-slate-200">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Customer Details</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Booking Info</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Guests</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Customer Details</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Booking Info</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Guests</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {bookings.length === 0 ? (
+                            {filteredBookings.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
                                         No past bookings found
                                     </td>
                                 </tr>
                             ) : (
-                                bookings.map((booking: any) => (
+                                filteredBookings.map((booking: any) => (
                                     <tr key={booking.id} className="hover:bg-slate-50 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">
-                                                    {getInitials(booking.name || 'U')}
+                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold">
+                                                    {getInitials(booking.customerName || booking.name || 'U')}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-bold text-slate-900">{booking.name || 'Unknown'}</p>
-                                                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                                                        <Mail size={12} /> {booking.email || 'No Email'}
+                                                    <p className="text-sm font-bold text-slate-900">{booking.customerName || booking.name || 'Unknown'}</p>
+                                                    <div className="flex items-center gap-2 text-xs text-slate-600 mt-0.5">
+                                                        <Mail size={12} /> {booking.customerEmail || booking.email || 'No Email'}
                                                     </div>
-                                                    <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                                                        <Phone size={12} /> {booking.phone || 'No Phone'}
+                                                    <div className="flex items-center gap-2 text-xs text-slate-600 mt-0.5">
+                                                        <Phone size={12} /> {booking.customerPhone || booking.phone || 'No Phone'}
                                                     </div>
                                                 </div>
                                             </div>
@@ -121,18 +215,18 @@ export default async function BookingHistoryPage() {
                                                     <Calendar size={14} className="text-slate-400" />
                                                     {formatDate(booking.date)}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-xs text-slate-500">
+                                                <div className="flex items-center gap-2 text-xs text-slate-600">
                                                     <Clock size={12} />
                                                     {booking.time}
                                                 </div>
-                                                <div className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded inline-block">
+                                                <div className="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded inline-block">
                                                     ID: #{String(booking.id).slice(-6)}
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <p className="text-sm font-medium text-slate-900">{booking.duration} mins</p>
-                                            <p className="text-xs text-slate-500">{(booking.adults || 0) + (booking.kids || 0) + (booking.spectators || 0)} Guests</p>
+                                            <p className="text-xs text-slate-600">{(booking.adults || 0) + (booking.kids || 0) + (booking.spectators || 0)} Guests</p>
                                             <p className="text-sm font-bold text-slate-900 mt-1">{formatCurrency(booking.amount)}</p>
                                         </td>
                                         <td className="px-6 py-4">
@@ -156,11 +250,7 @@ export default async function BookingHistoryPage() {
 
                 {/* Pagination */}
                 <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
-                    <p className="text-sm text-slate-500">Showing <span className="font-bold">1-{bookings.length}</span> of <span className="font-bold">{bookings.length}</span> results</p>
-                    <div className="flex gap-2">
-                        <button className="px-3 py-1 text-sm border border-slate-300 rounded-lg disabled:opacity-50" disabled>Previous</button>
-                        <button className="px-3 py-1 text-sm border border-slate-300 rounded-lg hover:bg-white">Next</button>
-                    </div>
+                    <p className="text-sm text-slate-600">Showing <span className="font-bold text-slate-900">{filteredBookings.length}</span> of <span className="font-bold text-slate-900">{allBookings.length}</span> past bookings</p>
                 </div>
             </div>
         </div>
@@ -178,9 +268,9 @@ function StatusBadge({ status }: { status: string }) {
     const defaultStyle = "bg-slate-100 text-slate-700 border-slate-200";
 
     return (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${styles[status] || defaultStyle} inline-flex items-center gap-1`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${status === 'CONFIRMED' ? 'bg-emerald-500' : status === 'PENDING' ? 'bg-amber-500' : 'bg-slate-400'}`} />
-            {status}
+        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${styles[status?.toUpperCase()] || defaultStyle} inline-flex items-center gap-1`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${status?.toUpperCase() === 'CONFIRMED' ? 'bg-emerald-500' : status?.toUpperCase() === 'PENDING' ? 'bg-amber-500' : 'bg-slate-400'}`} />
+            {status || 'PENDING'}
         </span>
     );
 }

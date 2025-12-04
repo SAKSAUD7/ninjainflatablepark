@@ -10,6 +10,7 @@ import { fetchAPI } from "../lib/server-api";
 // Transform Django snake_case to camelCase for Booking
 function transformBooking(b: any) {
     if (!b) return null;
+    const customer = b.customer_details ? transformCustomer(b.customer_details) : null;
     return {
         ...b,
         bookingStatus: b.booking_status,
@@ -19,7 +20,11 @@ function transformBooking(b: any) {
         updatedAt: b.updated_at,
         voucherCode: b.voucher_code,
         discountAmount: b.discount_amount,
-        customer: b.customer_details ? transformCustomer(b.customer_details) : null,
+        // Add flat customer properties for easy access
+        customerName: customer?.name || b.name || null,
+        customerEmail: customer?.email || b.email || null,
+        customerPhone: customer?.phone || b.phone || null,
+        customer: customer,
         waivers: b.waivers?.map(transformWaiver) || [],
         transactions: b.transactions || []
     };

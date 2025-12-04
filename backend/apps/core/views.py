@@ -191,7 +191,7 @@ class DashboardViewSet(viewsets.ViewSet):
         if booking_type != 'session':
             party_bookings = PartyBooking.objects.select_related('customer').all()
             if status:
-                party_bookings = party_bookings.filter(booking_status=status)
+                party_bookings = party_bookings.filter(status=status)
             if search:
                 party_bookings = party_bookings.filter(
                     Q(name__icontains=search) | Q(email__icontains=search)
@@ -207,19 +207,18 @@ class DashboardViewSet(viewsets.ViewSet):
                     'phone': booking.phone,
                     'date': booking.date,
                     'time': str(booking.time),
-                    'duration': booking.duration,
+                    'duration': 120,  # Default party duration
                     'adults': booking.adults,
                     'kids': booking.kids,
-                    'spectators': booking.spectators,
+                    'spectators': 0,  # Not tracked for party bookings
                     'amount': float(booking.amount),
-                    'booking_status': booking.booking_status,
-                    'payment_status': booking.payment_status,
-                    'waiver_status': booking.waiver_status,
+                    'booking_status': booking.status,
+                    'payment_status': 'PENDING',  # Not tracked separately for party bookings
+                    'waiver_status': 'PENDING',  # Not tracked separately for party bookings
                     'created_at': booking.created_at.isoformat(),
                     'birthday_child_name': booking.birthday_child_name,
                     'birthday_child_age': booking.birthday_child_age,
-                    'party_package': booking.party_package,
-                    'theme': booking.theme,
+                    'package_name': booking.package_name,
                     'customer': {
                         'id': booking.customer.id if booking.customer else None,
                         'name': booking.customer.name if booking.customer else booking.name,

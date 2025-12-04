@@ -66,7 +66,7 @@ export function AdminSessionBookingForm() {
                                 name="name"
                                 type="text"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900 placeholder:text-slate-400"
                                 placeholder="John Doe"
                             />
                         </div>
@@ -79,7 +79,7 @@ export function AdminSessionBookingForm() {
                                 name="email"
                                 type="email"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900 placeholder:text-slate-400"
                                 placeholder="john@example.com"
                             />
                         </div>
@@ -92,7 +92,7 @@ export function AdminSessionBookingForm() {
                                 name="phone"
                                 type="tel"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900 placeholder:text-slate-400"
                                 placeholder="+91 98765 43210"
                             />
                         </div>
@@ -115,7 +115,7 @@ export function AdminSessionBookingForm() {
                                 name="date"
                                 type="date"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             />
                         </div>
                     </div>
@@ -126,7 +126,7 @@ export function AdminSessionBookingForm() {
                             <select
                                 name="time"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-white"
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-white text-slate-900"
                             >
                                 <option value="">Select Time</option>
                                 <option value="10:00">10:00 AM</option>
@@ -171,7 +171,7 @@ export function AdminSessionBookingForm() {
                             type="number"
                             required
                             min="0"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900 placeholder:text-slate-400"
                             placeholder="0"
                         />
                     </div>
@@ -182,7 +182,7 @@ export function AdminSessionBookingForm() {
                             type="number"
                             required
                             min="0"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900 placeholder:text-slate-400"
                             placeholder="0"
                         />
                     </div>
@@ -193,7 +193,7 @@ export function AdminSessionBookingForm() {
                             type="number"
                             required
                             min="0"
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900 placeholder:text-slate-400"
                             placeholder="0"
                         />
                     </div>

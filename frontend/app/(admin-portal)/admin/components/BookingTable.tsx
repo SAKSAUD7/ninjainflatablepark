@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import Link from "next/link";
+import { exportBookingsToCSV } from "../../../../lib/export-csv";
 
 interface Booking {
     id: string;
@@ -29,6 +30,12 @@ interface Booking {
     kids: number;
     spectators: number;
     type: string;
+    customerName?: string;
+    customerEmail?: string;
+    customerPhone?: string;
+    bookingStatus?: string;
+    paymentStatus?: string;
+    createdAt?: string;
 }
 
 interface BookingTableProps {
@@ -46,7 +53,7 @@ export function BookingTable({ bookings, title, type, readOnly = false }: Bookin
         const matchesSearch =
             booking.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            booking.id.toLowerCase().includes(searchTerm.toLowerCase());
+            String(booking.id).toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === "ALL" || booking.status === statusFilter;
 
@@ -70,7 +77,10 @@ export function BookingTable({ bookings, title, type, readOnly = false }: Bookin
                             New Booking
                         </Link>
                     )}
-                    <button className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg border border-slate-200">
+                    <button
+                        onClick={() => exportBookingsToCSV(filteredBookings, `${type}-bookings`)}
+                        className="p-2 text-slate-600 hover:bg-slate-100 rounded-lg border border-slate-200"
+                    >
                         <Download className="w-5 h-5" />
                     </button>
                 </div>
