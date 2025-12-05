@@ -4,13 +4,29 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Ticket } from "lucide-react";
 
-export function AnimatedHero() {
+interface AnimatedHeroProps {
+    title?: string;
+    subtitle?: string;
+    backgroundImage?: string;
+}
+
+export function AnimatedHero({
+    title = "ARE YOU A NINJA?",
+    subtitle = "Get ready to jump, climb, bounce, and conquer the ultimate inflatable adventure! Experience thrills, laughter, and challenges that push your limits in the most exciting way.",
+    backgroundImage = "/park-slides-action.jpg"
+}: AnimatedHeroProps) {
+
+    // Split title for styling if it contains "NINJA" or line breaks
+    // This is a simple heuristic to maintain the visual style
+    const titleParts = title.split('NINJA');
+    const hasNinja = titleParts.length > 1;
+
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <img
-                    src="/park-slides-action.jpg"
+                    src={backgroundImage}
                     alt="Ninja Inflatable Park"
                     className="w-full h-full object-cover"
                 />
@@ -38,11 +54,17 @@ export function AnimatedHero() {
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="text-5xl md:text-7xl lg:text-8xl font-black mb-4 leading-tight"
                 >
-                    <span className="text-white">ARE YOU A</span>
-                    <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-cyan-400 to-pink-500">
-                        NINJA?
-                    </span>
+                    {hasNinja ? (
+                        <>
+                            <span className="text-white">{titleParts[0]}</span>
+                            <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-cyan-400 to-pink-500">
+                                NINJA{titleParts[1]}
+                            </span>
+                        </>
+                    ) : (
+                        <span className="text-white">{title}</span>
+                    )}
                 </motion.h1>
 
                 {/* Subtitle */}
@@ -52,8 +74,7 @@ export function AnimatedHero() {
                     transition={{ duration: 0.6, delay: 0.4 }}
                     className="text-white text-lg md:text-xl lg:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed"
                 >
-                    Get ready to jump, climb, bounce, and conquer the ultimate inflatable adventure!
-                    Experience thrills, laughter, and challenges that push your limits in the most exciting way.
+                    {subtitle}
                 </motion.p>
 
                 {/* CTA Buttons */}

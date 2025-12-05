@@ -16,6 +16,17 @@ export const API_ENDPOINTS = {
         socialLinks: `${API_BASE_URL}/cms/social-links/`,
         gallery: `${API_BASE_URL}/cms/gallery/`,
         freeEntries: `${API_BASE_URL}/cms/free-entries/`,
+        page_sections: `${API_BASE_URL}/cms/page-sections/`,
+        stat_cards: `${API_BASE_URL}/cms/stat-cards/`,
+        timeline_items: `${API_BASE_URL}/cms/timeline-items/`,
+        value_items: `${API_BASE_URL}/cms/value-items/`,
+        contact_info: `${API_BASE_URL}/cms/contact-info/`,
+        party_packages: `${API_BASE_URL}/cms/party-packages/`,
+        pricing_plans: `${API_BASE_URL}/cms/pricing-plans/`,
+        facility_items: `${API_BASE_URL}/cms/facility-items/`,
+        guideline_categories: `${API_BASE_URL}/cms/guideline-categories/`,
+        legal_documents: `${API_BASE_URL}/cms/legal-documents/`,
+        menu_sections: `${API_BASE_URL}/cms/menu-sections/`,
     },
 
     // Core Endpoints

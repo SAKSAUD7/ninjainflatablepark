@@ -1,121 +1,57 @@
-"use server";
+'use server';
 
-import { fetchAPI } from "../lib/server-api";
-import { requirePermission } from "../lib/admin-auth";
-import { logActivity } from "../lib/audit-log";
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from 'next/cache';
+import { fetchAPI, postAPI, putAPI, deleteAPI, API_ENDPOINTS } from '@/lib/api';
 
-function transformActivity(a: any) {
-    if (!a) return null;
-    return {
-        ...a,
-        imageUrl: a.image_url,
-        createdAt: a.created_at,
-        updatedAt: a.updated_at
-    };
-}
+const ENDPOINT = API_ENDPOINTS.cms.activities;
 
 export async function getActivities() {
-    await requirePermission('cms', 'read');
-    const res = await fetchAPI("/cms/activities/");
-    if (!res || !res.ok) return [];
-    const data = await res.json();
-    return data.map(transformActivity);
+    try {
+        return await fetchAPI(ENDPOINT, { cache: 'no-store' });
+    } catch (error) {
+        console.error('Failed to fetch activities:', error);
+        return [];
+    }
 }
 
 export async function getActivity(id: string) {
-    await requirePermission('cms', 'read');
-    const res = await fetchAPI(`/cms/activities/${id}/`);
-    if (!res || !res.ok) return null;
-    const data = await res.json();
-    return transformActivity(data);
-}
-
-export async function createActivity(data: {
-    name: string;
-    description: string;
-    imageUrl: string;
-    active: boolean;
-    order: number;
-}) {
-    await requirePermission('cms', 'write');
-
-    const payload = {
-        name: data.name,
-        description: data.description,
-        image_url: data.imageUrl,
-        active: data.active,
-        order: data.order
-    };
-
-    const res = await fetchAPI("/cms/activities/", {
-        method: "POST",
-        body: JSON.stringify(payload)
-    });
-
-    if (!res || !res.ok) return { success: false };
-
-    const activity = await res.json();
-
-    await logActivity({
-        action: 'CREATE',
-        entity: 'ACTIVITY',
-        entityId: activity.id.toString(),
-        details: { after: activity }
-    });
-
-    revalidatePath('/admin/activities');
-    return { success: true, activity: transformActivity(activity) };
-}
-
-export async function updateActivity(id: string, data: {
-    name?: string;
-    description?: string;
-    imageUrl?: string;
-    active?: boolean;
-    order?: number;
-}) {
-    await requirePermission('cms', 'write');
-
-    const payload: any = { ...data };
-    if (data.imageUrl) {
-        payload.image_url = data.imageUrl;
-        delete payload.imageUrl;
+    try {
+        return await fetchAPI(`${ENDPOINT}${id}/`, { cache: 'no-store' });
+    } catch (error) {
+        console.error(`Failed to fetch activity ${id}:`, error);
+        return null;
     }
+}
 
-    const res = await fetchAPI(`/cms/activities/${id}/`, {
-        method: "PATCH",
-        body: JSON.stringify(payload)
-    });
+export async function createActivity(data: any) {
+    try {
+        const result = await postAPI(ENDPOINT, data);
+        revalidatePath('/admin/cms/attractions');
+        return { success: true, item: result };
+    } catch (error) {
+        console.error('Failed to create activity:', error);
+        return { success: false, error };
+    }
+}
 
-    if (!res || !res.ok) return { success: false };
-
-    await logActivity({
-        action: 'UPDATE',
-        entity: 'ACTIVITY',
-        entityId: id,
-        details: { after: data }
-    });
-
-    revalidatePath('/admin/activities');
-    return { success: true };
+export async function updateActivity(id: string, data: any) {
+    try {
+        const result = await putAPI(`${ENDPOINT}${id}/`, data);
+        revalidatePath('/admin/cms/attractions');
+        return { success: true, item: result };
+    } catch (error) {
+        console.error(`Failed to update activity ${id}:`, error);
+        return { success: false, error };
+    }
 }
 
 export async function deleteActivity(id: string) {
-    await requirePermission('cms', 'delete');
-
-    const res = await fetchAPI(`/cms/activities/${id}/`, {
-        method: "DELETE"
-    });
-
-    if (!res || !res.ok) return { success: false };
-
-    await logActivity({
-        action: 'DELETE',
-        entity: 'ACTIVITY',
-        entityId: id
-    });
-
-    revalidatePath('/admin/activities');
-    return { success: true };
+    try {
+        await deleteAPI(`${ENDPOINT}${id}/`);
+        revalidatePath('/admin/cms/attractions');
+        return { success: true };
+    } catch (error) {
+        console.error(`Failed to delete activity ${id}:`, error);
+        return { success: false, error };
+    }
 }

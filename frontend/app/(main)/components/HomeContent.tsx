@@ -24,16 +24,32 @@ interface HomeContentProps {
     reviews: Array<{ id: string; url: string; img: string }>;
     settings?: any;
     activities: Activity[];
+    hero?: {
+        title: string;
+        subtitle: string;
+        image: string;
+    };
+    about?: {
+        title: string;
+        content: string;
+        image: string;
+    };
 }
 
-export default function HomeContent({ stats, gallery, banners, reviews, settings, activities }: HomeContentProps) {
-    const aboutText = settings?.aboutText || "Ninja Inflatable Park was born from a simple idea: create a space where people of all ages can unleash their inner ninja, challenge themselves, and have an absolute blast doing it.";
+export default function HomeContent({ stats, gallery, banners, reviews, settings, activities, hero, about }: HomeContentProps) {
+    const aboutText = about?.content || settings?.aboutText || "Ninja Inflatable Park was born from a simple idea: create a space where people of all ages can unleash their inner ninja, challenge themselves, and have an absolute blast doing it.";
+    const aboutTitle = about?.title || "India's Biggest Inflatable Park";
+    const aboutImage = about?.image || "/park-slides-action.jpg";
     const phone = settings?.contactPhone || "9845471611";
 
     return (
         <main className="bg-background text-white">
             {/* Hero Section */}
-            <AnimatedHero />
+            <AnimatedHero
+                title={hero?.title}
+                subtitle={hero?.subtitle}
+                backgroundImage={hero?.image}
+            />
 
             {/* Stats Section */}
             <section className="relative pt-12 md:pt-20 pb-16 md:pb-32 px-4 bg-background-light">
@@ -78,7 +94,7 @@ export default function HomeContent({ stats, gallery, banners, reviews, settings
                                 </span>
                                 <h2 className="text-5xl md:text-6xl font-display font-black mb-6">
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">
-                                        India's Biggest Inflatable Park
+                                        {aboutTitle}
                                     </span>
                                 </h2>
                                 <p className="text-xl text-white/80 mb-6 leading-relaxed">
@@ -98,7 +114,7 @@ export default function HomeContent({ stats, gallery, banners, reviews, settings
                         <ScrollReveal animation="slideRight">
                             <div className="relative rounded-3xl overflow-hidden aspect-video lg:aspect-square">
                                 <img
-                                    src="/park-slides-action.jpg"
+                                    src={aboutImage}
                                     alt="Kids enjoying the park"
                                     className="w-full h-full object-cover rounded-3xl"
                                 />

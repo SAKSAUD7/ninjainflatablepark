@@ -1,8 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    BannerViewSet, ActivityViewSet, FaqViewSet, 
-    TestimonialViewSet, StaticPageViewSet, SocialLinkViewSet, GalleryItemViewSet, FreeEntryViewSet
+    BannerViewSet, ActivityViewSet, FaqViewSet, TestimonialViewSet, SocialLinkViewSet, GalleryItemViewSet,
+    StatCardViewSet, InstagramReelViewSet, MenuSectionViewSet, GroupPackageViewSet,
+    GuidelineCategoryViewSet, LegalDocumentViewSet,
+    PageSectionViewSet, PricingPlanViewSet, ContactInfoViewSet, PartyPackageViewSet,
+    TimelineItemViewSet, ValueItemViewSet, FacilityItemViewSet,
+    PageViewSet, UploadView, ReorderView
 )
 
 router = DefaultRouter()
@@ -10,11 +14,25 @@ router.register(r'banners', BannerViewSet)
 router.register(r'activities', ActivityViewSet)
 router.register(r'faqs', FaqViewSet)
 router.register(r'testimonials', TestimonialViewSet)
-router.register(r'pages', StaticPageViewSet)
 router.register(r'social-links', SocialLinkViewSet)
 router.register(r'gallery', GalleryItemViewSet)
-router.register(r'free-entries', FreeEntryViewSet)
+router.register(r'stat-cards', StatCardViewSet)
+router.register(r'instagram-reels', InstagramReelViewSet)
+router.register(r'menu-sections', MenuSectionViewSet)
+router.register(r'group-packages', GroupPackageViewSet)
+router.register(r'guideline-categories', GuidelineCategoryViewSet)
+router.register(r'legal-documents', LegalDocumentViewSet)
+router.register(r'page-sections', PageSectionViewSet)
+router.register(r'pricing-plans', PricingPlanViewSet)
+router.register(r'contact-info', ContactInfoViewSet)
+router.register(r'party-packages', PartyPackageViewSet)
+router.register(r'timeline-items', TimelineItemViewSet)
+router.register(r'value-items', ValueItemViewSet)
+router.register(r'facility-items', FacilityItemViewSet)
+router.register(r'pages', PageViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('upload/', UploadView.as_view(), name='cms-upload'),
+    path('reorder/', ReorderView.as_view(), name='cms-reorder'),
 ]

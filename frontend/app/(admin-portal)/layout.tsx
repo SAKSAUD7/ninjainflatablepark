@@ -24,7 +24,7 @@ export default async function AdminPortalLayout({
 
     // Pass Super Admin permissions to show all menu items
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 text-slate-900">
             {/* Sidebar */}
             <AdminSidebar permissions={['*']} />
 

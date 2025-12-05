@@ -1,64 +1,33 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import React from "react";
 import { Navbar } from "../../features/navigation/Navbar";
 import { Footer } from "../../components/Footer";
 import { ToastProvider } from "../../components/ToastProvider";
-import { API_ENDPOINTS } from "../../lib/api";
+import { getSettings } from "@/app/actions/settings";
+import { getSocialLinks } from "@/app/actions/social-links";
 
-export default function ClientMainLayout({ children }: { children: React.ReactNode }) {
-    const [isMounted, setIsMounted] = useState(false);
-    const [settings, setSettings] = useState<any>({
-        parkName: "Ninja Inflatable Park",
-        contactPhone: "+91 98454 71611",
-        contactEmail: "info@ninjapark.com",
-    });
-    const [socialLinks, setSocialLinks] = useState<any[]>([]);
+// Server Layout
+export default async function MainLayout({ children }: { children: React.ReactNode }) {
+    // Fetch data in parallel
+    const [settingsData, socialLinksData] = await Promise.all([
+        getSettings(),
+        getSocialLinks()
+    ]) as [any[], any[]];
 
-    useEffect(() => {
-        setIsMounted(true);
+    // Extract first settings object if available
+    const settings = settingsData && settingsData.length > 0 ? {
+        parkName: settingsData[0].park_name,
+        contactPhone: settingsData[0].contact_phone,
+        contactEmail: settingsData[0].contact_email,
+        address: settingsData[0].address,
+        mapUrl: settingsData[0].map_url,
+        openingHours: settingsData[0].opening_hours,
+    } : undefined;
 
-        async function loadSettings() {
-            try {
-                const [settingsRes, linksRes] = await Promise.all([
-                    fetch(API_ENDPOINTS.core.settings, { cache: 'no-store' }),
-                    fetch(API_ENDPOINTS.cms.socialLinks, { cache: 'no-store' })
-                ]);
-
-                if (settingsRes.ok) {
-                    const settingsData = await settingsRes.json();
-                    if (settingsData.length > 0) {
-                        const s = settingsData[0];
-                        setSettings({
-                            parkName: s.park_name || "Ninja Inflatable Park",
-                            contactPhone: s.contact_phone || "+91 98454 71611",
-                            contactEmail: s.contact_email || "info@ninjapark.com",
-                            address: s.address || "",
-                            mapUrl: s.map_url || "",
-                            openingHours: s.opening_hours || {},
-                        });
-                    }
-                }
-
-                if (linksRes.ok) {
-                    const linksData = await linksRes.json();
-                    setSocialLinks(linksData.filter((l: any) => l.active));
-                }
-            } catch (error) {
-                console.error("Failed to load settings:", error);
-            }
-        }
-
-        loadSettings();
-    }, []);
-
-    if (!isMounted) {
-        return null;
-    }
+    const socialLinks = socialLinksData ? socialLinksData.filter((l: any) => l.active) : [];
 
     return (
         <ToastProvider>
-            <div suppressHydrationWarning>
+            <div suppressHydrationWarning className="flex flex-col min-h-screen">
                 <Navbar settings={settings} />
                 <main className="flex-grow">
                     {children}

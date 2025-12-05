@@ -1,5 +1,15 @@
 from rest_framework import serializers
-from .models import Banner, Activity, Faq, Testimonial, StaticPage, SocialLink, GalleryItem, FreeEntry
+from .models import (
+    Banner, Activity, Faq, Testimonial, SocialLink, GalleryItem,
+    StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
+    PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
+    Page
+)
+
+class PageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Page
+        fields = '__all__'
 
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,11 +31,6 @@ class TestimonialSerializer(serializers.ModelSerializer):
         model = Testimonial
         fields = '__all__'
 
-class StaticPageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StaticPage
-        fields = '__all__'
-
 class SocialLinkSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialLink
@@ -36,7 +41,67 @@ class GalleryItemSerializer(serializers.ModelSerializer):
         model = GalleryItem
         fields = '__all__'
 
-class FreeEntrySerializer(serializers.ModelSerializer):
+class StatCardSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FreeEntry
+        model = StatCard
+        fields = '__all__'
+
+class InstagramReelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InstagramReel
+        fields = '__all__'
+
+class MenuSectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuSection
+        fields = '__all__'
+
+class GroupPackageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GroupPackage
+        fields = '__all__'
+
+class GuidelineCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GuidelineCategory
+        fields = '__all__'
+
+class LegalDocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LegalDocument
+        fields = '__all__'
+
+class PageSectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PageSection
+        fields = '__all__'
+
+class PricingPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PricingPlan
+        fields = '__all__'
+
+class ContactInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactInfo
+        fields = '__all__'
+
+class PartyPackageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartyPackage
+        fields = '__all__'
+
+class TimelineItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TimelineItem
+        fields = '__all__'
+
+class ValueItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ValueItem
+        fields = '__all__'
+
+class FacilityItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FacilityItem
         fields = '__all__'
