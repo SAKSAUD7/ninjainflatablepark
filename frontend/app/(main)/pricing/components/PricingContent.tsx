@@ -8,55 +8,19 @@ import { formatCurrency } from "@repo/utils";
 
 interface PricingContentProps {
     plans: any[];
-    hero?: {
-        title: string;
-        subtitle: string;
-        image: string;
-    };
     settings?: any;
     info?: any; // For additional info section
 }
 
-export default function PricingContent({ plans, hero, settings, info }: PricingContentProps) {
-    const heroTitle = hero?.title || "Choose Your Adventure";
-    const heroSubtitle = hero?.subtitle || "Affordable fun for everyone! Pick the perfect pass and get ready to bounce.";
-    const heroImage = hero?.image || "/images/uploads/img-5.jpg";
-
+export default function PricingContent({ plans, settings, info }: PricingContentProps) {
     // Sort plans by price or some order field if available, otherwise assume backend order
     // Ensure active plans only
     const activePlans = plans.filter(p => !p.hasOwnProperty('active') || p.active);
 
     return (
         <main className="bg-background text-white min-h-screen pt-24">
-            {/* Header */}
-            <section className="relative py-16 md:py-32 px-4 overflow-hidden">
-                <div className="absolute inset-0">
-                    <img
-                        src={heroImage}
-                        alt="Pricing"
-                        className="w-full h-full object-cover opacity-30"
-                        onError={(e) => {
-                            e.currentTarget.src = "/images/hero-background.jpg";
-                        }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background" />
-                </div>
-                <div className="max-w-7xl mx-auto text-center relative z-10">
-                    <ScrollReveal animation="slideUp">
-                        <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-black mb-6">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
-                                {heroTitle}
-                            </span>
-                        </h1>
-                        <p className="text-base md:text-xl text-white/70 max-w-2xl mx-auto">
-                            {heroSubtitle}
-                        </p>
-                    </ScrollReveal>
-                </div>
-            </section>
-
             {/* Pricing Cards */}
-            <section className="relative px-4 pb-32 md:pb-40">
+            <section className="relative px-4 pb-32 md:pb-40 pt-16">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {activePlans.length > 0 ? (

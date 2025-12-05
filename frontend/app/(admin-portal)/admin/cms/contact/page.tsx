@@ -1,90 +1,51 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import { getContactInfos, updateContactInfo } from '@/app/actions/contact-info';
-import { getPageSections } from '@/app/actions/page-sections';
-import { CMSForm } from '@/components/admin/cms/CMSForm';
-import { schemas } from '@/lib/cms/schema';
+import React from 'react';
+import { getSettings } from '@/app/actions/settings';
 import { CMSBackLink } from '@/components/admin/cms/CMSBackLink';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import Link from 'next/link';
+import { Settings } from 'lucide-react';
 
-export default function ContactAdminPage() {
-    const [loading, setLoading] = useState(true);
-    const [heroSection, setHeroSection] = useState<any>(null);
-    const [contacts, setContacts] = useState<any[]>([]);
-
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    async function loadData() {
-        try {
-            const [sections, contactsData] = await Promise.all([
-                getPageSections('contact'),
-                getContactInfos()
-            ]) as [any[], any[]];
-
-            setHeroSection(sections.find((s: any) => s.section_key === 'hero'));
-            setContacts(contactsData);
-        } catch (error) {
-            console.error('Failed to load contact page data:', error);
-            toast.error('Failed to load data');
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const handleUpdateContact = async (data: any) => {
-        const result = await updateContactInfo(data.id, data);
-        if (result.success) {
-            toast.success('Contact info updated');
-            // Update local state without reload
-            setContacts(prev => prev.map(c => c.id === data.id ? result.item : c));
-        } else {
-            toast.error('Failed to update');
-        }
-        return result;
-    };
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-        );
-    }
+export default async function ContactAdminPage() {
+    // Fetch settings
+    const settings = await getSettings() as any;
 
     return (
-        <div className="space-y-12 max-w-4xl mx-auto pb-20">
+        <div className="space-y-8 max-w-5xl mx-auto pb-20">
             <CMSBackLink />
             <div>
                 <h1 className="text-2xl font-bold text-slate-900">Contact Page Editing</h1>
-                <p className="text-slate-500">Manage contact details and page visuals</p>
+                <p className="text-slate-500">Manage contact page content</p>
             </div>
 
-            {/* Contact Information List */}
-            <div className="grid gap-6">
-                <h2 className="text-lg font-semibold text-slate-900">Contact Details</h2>
-                {contacts.length === 0 && <p className="text-slate-500">No contact info found.</p>}
-
-                {contacts.map((contact) => (
-                    <div key={contact.id} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                        <div className="mb-4 flex items-center gap-3">
-                            <span className="bg-slate-100 p-2 rounded-lg text-slate-600 font-bold text-xs uppercase tracking-wider">
-                                {contact.category}
-                            </span>
-                            <h3 className="font-semibold text-slate-900">{contact.label}</h3>
+            <div className="grid gap-8">
+                {/* Contact Information */}
+                <section>
+                    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                        <div className="flex items-start justify-between mb-4">
+                            <div>
+                                <h2 className="text-lg font-semibold text-slate-900">Contact Information</h2>
+                                <p className="text-sm text-slate-500">Phone, email, address, and map settings</p>
+                            </div>
+                            <Link
+                                href="/admin/settings"
+                                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+                            >
+                                <Settings className="w-4 h-4" />
+                                Edit Settings
+                            </Link>
                         </div>
-                        <CMSForm
-                            schema={schemas.contact_info} // Use contact_info schema 
-                            initialData={contact}
-                            onSubmit={handleUpdateContact}
-                            submitLabel="Save Changes"
-                        />
+
+                        {settings && (
+                            <div className="bg-slate-50 rounded-lg p-4 space-y-2 text-sm">
+                                <p><strong>Park Name:</strong> {settings.park_name || 'Not set'}</p>
+                                <p><strong>Phone:</strong> {settings.contact_phone || 'Not set'}</p>
+                                <p><strong>Email:</strong> {settings.contact_email || 'Not set'}</p>
+                                <p><strong>Address:</strong> {settings.address || 'Not set'}</p>
+                            </div>
+                        )}
                     </div>
-                ))}
+                </section>
             </div>
         </div>
     );
 }
+

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { getMenuSection, updateMenuSection } from '../../../../actions/menu-sections';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { getMenuSection, updateMenuSection } from '@/app/actions/menu-sections';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 

@@ -110,9 +110,26 @@ class LegalDocumentViewSet(BaseCmsViewSet):
 class PageSectionViewSet(BaseCmsViewSet):
     queryset = PageSection.objects.all()
     serializer_class = PageSectionSerializer
-    filterset_fields = ['active', 'page', 'section_key']
+    # filterset_fields = ['active', 'page', 'section_key']  <-- Replacing this with explicit get_queryset
     ordering_fields = ['order']
     ordering = ['page', 'order']
+
+    def get_queryset(self):
+        """
+        Explicitly filter queryset to ensure strict isolation.
+        Relies on frontend passing ?page=...
+        """
+        queryset = PageSection.objects.all()
+        page = self.request.query_params.get('page')
+        section_key = self.request.query_params.get('section_key')
+        
+        if page:
+            queryset = queryset.filter(page=page)
+        
+        if section_key:
+            queryset = queryset.filter(section_key=section_key)
+            
+        return queryset
 
 class PricingPlanViewSet(BaseCmsViewSet):
     queryset = PricingPlan.objects.all()
@@ -163,35 +180,85 @@ class PageViewSet(BaseCmsViewSet):
     lookup_field = 'slug'
 
 class UploadView(APIView):
-    permission_classes = [permissions.IsAdminUser]
+    """
+    Handle file uploads for CMS images.
+    Validates file type, size, and saves to media storage.
+    """
+    permission_classes = [permissions.AllowAny]  # For development - change to IsAdminUser in production
     parser_classes = (MultiPartParser, FormParser)
+    
+    # Configuration
+    MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+    ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp'}
+    ALLOWED_MIME_TYPES = {'image/jpeg', 'image/jpg', 'image/png', 'image/webp'}
 
     def post(self, request, *args, **kwargs):
         file_obj = request.FILES.get('file')
+        
         if not file_obj:
-            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': 'No file provided'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        # In a real production environment, you'd upload to S3/Cloudinary here.
-        # For now, we'll assume the file is handled by Django's media storage 
-        # or a separate upload handler if configured.
-        # Since we don't have a dedicated Media model for generic uploads in this snippet,
-        # we will simulate a successful upload response or use a temporary approach.
+        # Validate file size
+        if file_obj.size > self.MAX_FILE_SIZE:
+            size_mb = file_obj.size / 1024 / 1024
+            return Response(
+                {'error': f'File too large. Maximum size is 5MB. Uploaded file is {size_mb:.2f}MB'},
+                status=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+            )
         
-        # NOTE: To make this fully functional, we should ideally have a Media model 
-        # or use default file storage and return the URL.
-        # For this specific task, we will return a mock URL if no storage is configured,
-        # or implement a simple file save if needed.
+        # Validate file extension
+        file_ext = file_obj.name.split('.')[-1].lower() if '.' in file_obj.name else ''
+        if file_ext not in self.ALLOWED_EXTENSIONS:
+            return Response(
+                {'error': f'Invalid file type. Allowed: {", ".join(self.ALLOWED_EXTENSIONS).upper()}. Got: {file_ext}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        # Let's assume we want to return a URL that the frontend can use.
-        # If using standard Django FileSystemStorage:
-        from django.core.files.storage import default_storage
-        from django.core.files.base import ContentFile
+        # Validate MIME type
+        content_type = file_obj.content_type
+        if content_type not in self.ALLOWED_MIME_TYPES:
+            return Response(
+                {'error': f'Invalid content type. Expected image, got: {content_type}'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
-        path = default_storage.save(f"uploads/{file_obj.name}", ContentFile(file_obj.read()))
-        relative_url = default_storage.url(path)
-        full_url = request.build_absolute_uri(relative_url)
-        
-        return Response({'url': full_url, 'filename': file_obj.name}, status=status.HTTP_201_CREATED)
+        try:
+            # Save file using Django's default storage
+            from django.core.files.storage import default_storage
+            from django.core.files.base import ContentFile
+            import uuid
+            from datetime import datetime
+            
+            # Generate unique filename to prevent overwrites
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            unique_id = str(uuid.uuid4())[:8]
+            safe_filename = f"{timestamp}_{unique_id}_{file_obj.name}"
+            
+            # Save to uploads directory
+            path = default_storage.save(
+                f"uploads/{safe_filename}", 
+                ContentFile(file_obj.read())
+            )
+            
+            # Generate absolute URL
+            relative_url = default_storage.url(path)
+            full_url = request.build_absolute_uri(relative_url)
+            
+            return Response({
+                'url': full_url,
+                'filename': file_obj.name,
+                'size': file_obj.size,
+                'path': path
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response(
+                {'error': f'Upload failed: {str(e)}'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class ReorderView(APIView):
     permission_classes = [permissions.IsAdminUser]

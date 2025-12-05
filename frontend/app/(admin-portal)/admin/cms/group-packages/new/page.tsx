@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createGroupPackage } from '../../../../actions/group-packages';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createGroupPackage } from '@/app/actions/group-packages';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewGroupPackagePage() {
     return (
@@ -22,3 +22,4 @@ export default function NewGroupPackagePage() {
         </div>
     );
 }
+

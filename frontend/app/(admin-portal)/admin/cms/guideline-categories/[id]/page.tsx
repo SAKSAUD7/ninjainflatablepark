@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { getGuidelineCategory, updateGuidelineCategory } from '../../../../actions/guideline-categories';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { getGuidelineCategory, updateGuidelineCategory } from '@/app/actions/guideline-categories';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 

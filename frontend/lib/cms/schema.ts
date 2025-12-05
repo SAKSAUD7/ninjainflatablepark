@@ -286,5 +286,37 @@ export const schemas: SchemaMap = {
             { name: "keywords", label: "SEO Keywords", type: "textarea" },
             { name: "active", label: "Active", type: "boolean", defaultValue: true },
         ],
+    },
+    group_package: {
+        name: "Group Package",
+        fields: [
+            { name: "name", label: "Package Name", type: "text", required: true },
+            { name: "description", label: "Description", type: "textarea", required: true },
+            { name: "min_size", label: "Minimum Group Size", type: "text", required: true },
+            { name: "price", label: "Price", type: "number", required: true },
+            { name: "price_note", label: "Price Note", type: "text" },
+            { name: "features", label: "Features (JSON list)", type: "json_list", required: true },
+            { name: "icon", label: "Icon Name", type: "text" },
+            {
+                name: "color", label: "Color Variant", type: "select", options: [
+                    { label: "Primary", value: "primary" },
+                    { label: "Secondary", value: "secondary" },
+                    { label: "Accent", value: "accent" }
+                ]
+            },
+            { name: "popular", label: "Mark as Popular", type: "boolean", defaultValue: false },
+            { name: "order", label: "Order", type: "number", defaultValue: 0 },
+            { name: "active", label: "Active", type: "boolean", defaultValue: true },
+        ],
+    },
+    group_benefit: {
+        name: "Group Benefit",
+        fields: [
+            { name: "title", label: "Benefit Title", type: "text", required: true },
+            { name: "description", label: "Description", type: "textarea", required: true },
+            { name: "icon", label: "Icon Name (Lucide)", type: "text", required: true },
+            { name: "order", label: "Order", type: "number", defaultValue: 0 },
+            { name: "active", label: "Active", type: "boolean", defaultValue: true },
+        ],
     }
 };

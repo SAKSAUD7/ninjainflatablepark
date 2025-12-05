@@ -1,5 +1,5 @@
 import React from 'react';
-import { getInstagramReels, deleteInstagramReel } from '../../../../actions/instagram-reels';
+import { getInstagramReels, deleteInstagramReel } from '@/app/actions/instagram-reels';
 import { CollectionList } from "@/components/admin/cms/CollectionList";
 import { schemas } from "@/lib/cms/schema";
 
@@ -17,3 +17,4 @@ export default async function InstagramReelsPage() {
         />
     );
 }
+

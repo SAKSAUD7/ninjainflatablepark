@@ -24,29 +24,32 @@ export async function getLegalDocument(id: string) {
 export async function createLegalDocument(data: any) {
     try {
         const result = await postAPI(ENDPOINT, data);
-        revalidatePath('/admin/cms/legal');
+        revalidatePath('/admin/cms/guidelines');
+        revalidatePath('/guidelines');
         return { success: true, item: result };
     } catch (error) {
-        return { success: false, error: 'Failed to create legal document' };
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to create legal document' };
     }
 }
 
 export async function updateLegalDocument(id: string, data: any) {
     try {
         const result = await putAPI(`${ENDPOINT}${id}/`, data);
-        revalidatePath('/admin/cms/legal');
+        revalidatePath('/admin/cms/guidelines');
+        revalidatePath('/guidelines');
         return { success: true, item: result };
     } catch (error) {
-        return { success: false, error: 'Failed to update legal document' };
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to update legal document' };
     }
 }
 
 export async function deleteLegalDocument(id: string) {
     try {
         await deleteAPI(`${ENDPOINT}${id}/`);
-        revalidatePath('/admin/cms/legal');
+        revalidatePath('/admin/cms/guidelines');
+        revalidatePath('/guidelines');
         return { success: true };
     } catch (error) {
-        return { success: false, error: 'Failed to delete legal document' };
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to delete legal document' };
     }
 }

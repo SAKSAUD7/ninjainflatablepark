@@ -1,7 +1,7 @@
 import React from 'react';
-import { getValueItems, deleteValueItem } from '../../../../actions/value-items';
-import { CollectionList } from '../../../../components/admin/cms/CollectionList';
-import { schemas } from '../../../../lib/cms/schema';
+import { getValueItems, deleteValueItem } from '@/app/actions/value-items';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
+import { schemas } from '@/lib/cms/schema';
 
 export default async function ValueItemsPage() {
     const items = await getValueItems();
@@ -17,3 +17,4 @@ export default async function ValueItemsPage() {
         />
     );
 }
+

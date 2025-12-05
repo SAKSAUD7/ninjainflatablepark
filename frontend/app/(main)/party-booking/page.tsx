@@ -416,11 +416,9 @@ export default function PartyBookingPage() {
 
                                     <div className="bg-background-dark rounded-xl p-4 text-xs text-white/70 space-y-2">
                                         <p className="font-bold text-white text-sm mb-2">Includes:</p>
-                                        <p>✓ 75 mins play time</p>
-                                        <p>✓ 1 hour party room</p>
-                                        <p>✓ Party feast for participants</p>
+                                        <p>✓ 75 mins play + 1hr party room</p>
+                                        <p>✓ Party feast included</p>
                                         <p>✓ Drinks & mini slush</p>
-                                        <p>✓ Online invitations</p>
                                         <p>✓ 10 free spectators</p>
                                     </div>
                                 </div>

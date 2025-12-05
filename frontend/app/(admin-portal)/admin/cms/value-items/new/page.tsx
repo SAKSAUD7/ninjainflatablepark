@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createValueItem } from '../../../../actions/value-items';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createValueItem } from '@/app/actions/value-items';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewValueItemPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewValueItemPage() {
         </div>
     );
 }
+

@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createLegalDocument } from '../../../../actions/legal-documents';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createLegalDocument } from '@/app/actions/legal-documents';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewLegalDocumentPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewLegalDocumentPage() {
         </div>
     );
 }
+

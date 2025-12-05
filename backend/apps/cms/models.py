@@ -361,3 +361,19 @@ class FacilityItem(models.Model):
 
     def __str__(self):
         return self.title
+
+class GroupBenefit(models.Model):
+    """Benefits for group bookings page"""
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    icon = models.CharField(max_length=50, help_text="Lucide icon name")
+    order = models.IntegerField(default=0)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title

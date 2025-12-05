@@ -1,7 +1,7 @@
 import React from 'react';
-import { getSocialLinks, deleteSocialLink } from '../../../../actions/social-links';
-import { CollectionList } from '../../../../components/admin/cms/CollectionList';
-import { schemas } from '../../../../lib/cms/schema';
+import { getSocialLinks, deleteSocialLink } from '@/app/actions/social-links';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
+import { schemas } from '@/lib/cms/schema';
 
 export default async function SocialLinksPage() {
     const items = await getSocialLinks();
@@ -17,3 +17,4 @@ export default async function SocialLinksPage() {
         />
     );
 }
+

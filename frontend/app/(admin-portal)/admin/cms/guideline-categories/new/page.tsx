@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createGuidelineCategory } from '../../../../actions/guideline-categories';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createGuidelineCategory } from '@/app/actions/guideline-categories';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewGuidelineCategoryPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewGuidelineCategoryPage() {
         </div>
     );
 }
+

@@ -54,8 +54,13 @@ export function HeroEditor({ section: initialSection, pageSlug }: HeroEditorProp
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
                 <div>
-                    <h2 className="text-lg font-semibold text-slate-900">Hero Section</h2>
-                    <p className="text-sm text-slate-500">Edit the main landing banner</p>
+                    <div className="flex items-center gap-2 mb-1">
+                        <h2 className="text-lg font-semibold text-slate-900">Hero Section</h2>
+                        <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+                            Page: {pageSlug}
+                        </span>
+                    </div>
+                    <p className="text-sm text-slate-500">Edit the main landing banner for the <span className="font-medium text-slate-900">{pageSlug}</span> page</p>
                 </div>
                 <button
                     onClick={handleSave}

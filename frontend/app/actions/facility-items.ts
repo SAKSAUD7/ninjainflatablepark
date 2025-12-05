@@ -24,29 +24,32 @@ export async function getFacilityItem(id: string) {
 export async function createFacilityItem(data: any) {
     try {
         const result = await postAPI(ENDPOINT, data);
-        revalidatePath('/admin/cms/facilities');
+        revalidatePath('/admin/cms/attractions');
+        revalidatePath('/attractions');
         return { success: true, item: result };
     } catch (error) {
-        return { success: false, error: 'Failed to create facility' };
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to create facility' };
     }
 }
 
 export async function updateFacilityItem(id: string, data: any) {
     try {
         const result = await putAPI(`${ENDPOINT}${id}/`, data);
-        revalidatePath('/admin/cms/facilities');
+        revalidatePath('/admin/cms/attractions');
+        revalidatePath('/attractions');
         return { success: true, item: result };
     } catch (error) {
-        return { success: false, error: 'Failed to update facility' };
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to update facility' };
     }
 }
 
 export async function deleteFacilityItem(id: string) {
     try {
         await deleteAPI(`${ENDPOINT}${id}/`);
-        revalidatePath('/admin/cms/facilities');
+        revalidatePath('/admin/cms/attractions');
+        revalidatePath('/attractions');
         return { success: true };
     } catch (error) {
-        return { success: false, error: 'Failed to delete facility' };
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to delete facility' };
     }
 }

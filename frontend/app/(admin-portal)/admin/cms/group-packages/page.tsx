@@ -1,7 +1,7 @@
 import React from 'react';
-import { getGroupPackages, deleteGroupPackage } from '../../../../actions/group-packages';
-import { CollectionList } from '../../../../components/admin/cms/CollectionList';
-import { schemas } from '../../../../lib/cms/schema';
+import { getGroupPackages, deleteGroupPackage } from '@/app/actions/group-packages';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
+import { schemas } from '@/lib/cms/schema';
 
 export default async function GroupPackagesPage() {
     const items = await getGroupPackages();
@@ -17,3 +17,4 @@ export default async function GroupPackagesPage() {
         />
     );
 }
+

@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { getStatCard, updateStatCard } from '../../../../actions/stat-cards';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { getStatCard, updateStatCard } from '@/app/actions/stat-cards';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 

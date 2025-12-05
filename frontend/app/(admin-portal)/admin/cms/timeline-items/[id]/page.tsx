@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { getTimelineItem, updateTimelineItem } from '../../../../actions/timeline-items';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { getTimelineItem, updateTimelineItem } from '@/app/actions/timeline-items';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 

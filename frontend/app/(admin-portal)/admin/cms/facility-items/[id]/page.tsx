@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { getFacilityItem, updateFacilityItem } from '../../../../actions/facility-items';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { getFacilityItem, updateFacilityItem } from '@/app/actions/facility-items';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -53,7 +53,7 @@ export default function EditFacilityItemPage({ params }: { params: { id: string 
                 initialData={item}
                 onSubmit={(data) => updateFacilityItem(params.id, data)}
                 submitLabel="Update Facility Item"
-                backUrl="/admin/cms/facility-items"
+                backUrl="/admin/cms/attractions"
             />
         </div>
     );

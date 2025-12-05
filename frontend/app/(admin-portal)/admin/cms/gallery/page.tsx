@@ -1,7 +1,7 @@
 import React from 'react';
-import { getGalleryItems, deleteGalleryItem } from '../../../../actions/gallery';
-import { CollectionList } from '../../../../components/admin/cms/CollectionList';
-import { schemas } from '../../../../lib/cms/schema';
+import { getGalleryItems, deleteGalleryItem } from '@/app/actions/gallery';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
+import { schemas } from '@/lib/cms/schema';
 
 export default async function GalleryPage() {
     const items = await getGalleryItems();
@@ -17,3 +17,4 @@ export default async function GalleryPage() {
         />
     );
 }
+

@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createStatCard } from '../../../../actions/stat-cards';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createStatCard } from '@/app/actions/stat-cards';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewStatCardPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewStatCardPage() {
         </div>
     );
 }
+

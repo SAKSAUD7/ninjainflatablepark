@@ -1,7 +1,7 @@
 import React from 'react';
-import { getMenuSections, deleteMenuSection } from '../../../../actions/menu-sections';
-import { CollectionList } from '../../../../components/admin/cms/CollectionList';
-import { schemas } from '../../../../lib/cms/schema';
+import { getMenuSections, deleteMenuSection } from '@/app/actions/menu-sections';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
+import { schemas } from '@/lib/cms/schema';
 
 export default async function MenuSectionsPage() {
     const items = await getMenuSections();
@@ -17,3 +17,4 @@ export default async function MenuSectionsPage() {
         />
     );
 }
+

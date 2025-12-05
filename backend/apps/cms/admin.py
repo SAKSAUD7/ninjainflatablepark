@@ -13,12 +13,13 @@ class BannerAdmin(admin.ModelAdmin):
     search_fields = ['title']
     ordering = ['order', '-created_at']
 
-@admin.register(Activity)
-class ActivityAdmin(admin.ModelAdmin):
-    list_display = ['name', 'active', 'order', 'created_at']
-    list_filter = ['active', 'created_at']
-    search_fields = ['name', 'description']
-    ordering = ['order', '-created_at']
+# Activity admin registration removed - use Attractions in frontend CMS instead
+# @admin.register(Activity)
+# class ActivityAdmin(admin.ModelAdmin):
+#     list_display = ['name', 'active', 'order', 'created_at']
+#     list_filter = ['active', 'created_at']
+#     search_fields = ['name', 'description']
+#     ordering = ['order', '-created_at']
 
 @admin.register(Faq)
 class FaqAdmin(admin.ModelAdmin):

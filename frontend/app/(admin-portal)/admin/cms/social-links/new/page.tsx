@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createSocialLink } from '../../../../actions/social-links';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createSocialLink } from '@/app/actions/social-links';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewSocialLinkPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewSocialLinkPage() {
         </div>
     );
 }
+

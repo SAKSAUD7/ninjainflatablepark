@@ -1,7 +1,7 @@
 import React from 'react';
-import { getPricingPlans, deletePricingPlan } from '../../../../actions/pricing-plans';
-import { CollectionList } from '../../../../components/admin/cms/CollectionList';
-import { schemas } from '../../../../lib/cms/schema';
+import { getPricingPlans, deletePricingPlan } from '@/app/actions/pricing-plans';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
+import { schemas } from '@/lib/cms/schema';
 
 export default async function PricingPlansPage() {
     const items = await getPricingPlans();
@@ -17,3 +17,4 @@ export default async function PricingPlansPage() {
         />
     );
 }
+

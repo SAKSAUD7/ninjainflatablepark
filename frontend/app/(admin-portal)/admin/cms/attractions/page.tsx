@@ -1,67 +1,48 @@
-'use client';
+import React from 'react';
+import { getPageSections } from '@/app/actions/page-sections';
+import { getActivities } from '@/app/actions/activities';
+import { getFacilityItems } from '@/app/actions/facility-items';
+import { HeroEditor } from '@/components/admin/cms/home/HeroEditor';
+import { AttractionsManager } from '@/components/admin/cms/attractions/AttractionsManager';
+import { FacilitiesManager } from '@/components/admin/cms/attractions/FacilitiesManager';
+import { CMSBackLink } from '@/components/admin/cms/CMSBackLink';
 
-import React, { useEffect, useState } from 'react';
-import { getActivities, deleteActivity } from '@/app/actions/activities';
-import { CollectionList } from '@/components/admin/cms/CollectionList';
-import { schemas } from '@/lib/cms/schema';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+export default async function AttractionsAdminPage() {
+    // Fetch all data in parallel
+    const [sections, activities, facilities] = await Promise.all([
+        getPageSections('attractions'),
+        getActivities(),
+        getFacilityItems()
+    ]) as [any[], any[], any[]];
 
-export default function AttractionsPage() {
-    const [loading, setLoading] = useState(true);
-    const [items, setItems] = useState<any[]>([]);
-
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    async function loadData() {
-        try {
-            const data = await getActivities() as any[];
-            setItems(data);
-        } catch (error) {
-            toast.error('Failed to load attractions');
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this attraction?')) return { success: false };
-
-        const result = await deleteActivity(id);
-        if (result.success) {
-            setItems(prev => prev.filter(item => item.id !== id));
-            toast.success('Attraction deleted');
-        } else {
-            toast.error('Failed to delete attraction');
-        }
-        return result;
-    };
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-96">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-        );
-    }
+    // Find hero section
+    const heroSection = sections.find((s: any) => s.section_key === 'hero');
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 max-w-5xl mx-auto pb-20">
+            <CMSBackLink />
+            <div>
+                <h1 className="text-2xl font-bold text-slate-900">Attractions Page Editing</h1>
+                <p className="text-slate-500">Manage content for the attractions page</p>
+            </div>
 
+            <div className="grid gap-8">
+                {/* Hero Section Editor */}
+                <section>
+                    <HeroEditor section={heroSection} pageSlug="attractions" />
+                </section>
 
-            <CollectionList
-                title="Attractions"
-                description="Manage park attractions and activities."
-                schema={schemas.activity}
-                items={items}
-                onDelete={handleDelete}
-                basePath="/admin/cms/attractions"
-                titleField="name"
-                imageField="image_url"
-                subtitleField="description"
-            />
+                {/* Attractions Manager */}
+                <section>
+                    <AttractionsManager items={activities} />
+                </section>
+
+                {/* Facilities Manager */}
+                <section>
+                    <FacilitiesManager items={facilities} />
+                </section>
+            </div>
         </div>
     );
 }
+

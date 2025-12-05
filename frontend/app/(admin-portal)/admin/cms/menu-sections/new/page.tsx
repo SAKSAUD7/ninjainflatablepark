@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createMenuSection } from '../../../../actions/menu-sections';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createMenuSection } from '@/app/actions/menu-sections';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewMenuSectionPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewMenuSectionPage() {
         </div>
     );
 }
+

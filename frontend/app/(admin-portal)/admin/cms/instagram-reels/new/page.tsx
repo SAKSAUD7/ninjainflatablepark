@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createInstagramReel } from '../../../../actions/instagram-reels';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createInstagramReel } from '@/app/actions/instagram-reels';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewInstagramReelPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewInstagramReelPage() {
         </div>
     );
 }
+

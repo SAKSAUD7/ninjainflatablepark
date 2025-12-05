@@ -92,19 +92,7 @@ const navigation: NavGroup[] = [
             { name: "Vouchers", href: "/admin/vouchers", icon: Ticket, permission: { entity: 'vouchers', action: 'read' } },
         ]
     },
-    {
-        name: "Content Management",
-        items: [
-            { name: "Activities", href: "/admin/activities", icon: Zap, permission: { entity: 'cms', action: 'read' } },
-            { name: "Banners", href: "/admin/banners", icon: Image, permission: { entity: 'cms', action: 'read' } },
-            { name: "FAQ's", href: "/admin/faqs", icon: HelpCircle, permission: { entity: 'cms', action: 'read' } },
-            { name: "Invitation Templates", href: "/admin/invitation-templates", icon: Mail, permission: { entity: 'cms', action: 'read' } },
-            { name: "Misc Contents", href: "/admin/misc-content", icon: FileText, permission: { entity: 'cms', action: 'read' } },
-            { name: "Static Pages", href: "/admin/static-pages", icon: Globe, permission: { entity: 'cms', action: 'read' } },
-            { name: "Social Media", href: "/admin/social-media", icon: MessageSquare, permission: { entity: 'cms', action: 'read' } },
-            { name: "Testimonies", href: "/admin/testimonials", icon: Star, permission: { entity: 'cms', action: 'read' } },
-        ]
-    },
+    // Content Management section removed - use CMS section instead to avoid duplicates
     {
         name: "E-commerce",
         items: [

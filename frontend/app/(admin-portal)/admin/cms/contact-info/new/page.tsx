@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createContactInfo } from '../../../../actions/contact-info';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createContactInfo } from '@/app/actions/contact-info';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewContactInfoPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewContactInfoPage() {
         </div>
     );
 }
+

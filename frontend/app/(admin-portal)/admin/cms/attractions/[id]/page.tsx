@@ -34,14 +34,27 @@ export default function EditAttractionPage({ params }: { params: { id: string } 
     }
 
     const handleSubmit = async (data: any) => {
-        const result = await updateActivity(params.id, data);
-        if (result.success) {
-            toast.success('Attraction updated successfully');
-            router.push('/admin/cms/attractions');
-        } else {
-            toast.error('Failed to update attraction');
+        console.log('Submitting attraction update:', { id: params.id, data });
+
+        try {
+            const result = await updateActivity(params.id, data);
+            console.log('Update result:', result);
+
+            if (result.success) {
+                toast.success('Attraction updated successfully');
+                router.push('/admin/cms/attractions');
+                router.refresh();
+            } else {
+                const errorMsg = result.error || 'Failed to update attraction';
+                console.error('Update failed:', errorMsg);
+                toast.error(errorMsg);
+            }
+            return result;
+        } catch (error) {
+            console.error('Submit error:', error);
+            toast.error('An unexpected error occurred');
+            return { success: false, error: 'Unexpected error' };
         }
-        return result;
     };
 
     if (loading) {

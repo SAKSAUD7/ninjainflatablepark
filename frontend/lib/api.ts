@@ -27,6 +27,8 @@ export const API_ENDPOINTS = {
         guideline_categories: `${API_BASE_URL}/cms/guideline-categories/`,
         legal_documents: `${API_BASE_URL}/cms/legal-documents/`,
         menu_sections: `${API_BASE_URL}/cms/menu-sections/`,
+        group_packages: `${API_BASE_URL}/cms/group-packages/`,
+        group_benefits: `${API_BASE_URL}/cms/group-benefits/`,
     },
 
     // Core Endpoints

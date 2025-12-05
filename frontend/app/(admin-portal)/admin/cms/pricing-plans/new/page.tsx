@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createPricingPlan } from '../../../../actions/pricing-plans';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createPricingPlan } from '@/app/actions/pricing-plans';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewPricingPlanPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewPricingPlanPage() {
         </div>
     );
 }
+

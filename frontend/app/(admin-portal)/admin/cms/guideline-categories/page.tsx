@@ -1,7 +1,7 @@
 import React from 'react';
-import { getGuidelineCategories, deleteGuidelineCategory } from '../../../../actions/guideline-categories';
-import { CollectionList } from '../../../../components/admin/cms/CollectionList';
-import { schemas } from '../../../../lib/cms/schema';
+import { getGuidelineCategories, deleteGuidelineCategory } from '@/app/actions/guideline-categories';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
+import { schemas } from '@/lib/cms/schema';
 
 export default async function GuidelineCategoriesPage() {
     const items = await getGuidelineCategories();
@@ -17,3 +17,4 @@ export default async function GuidelineCategoriesPage() {
         />
     );
 }
+

@@ -21,7 +21,7 @@ export async function createTestimonial(data: any) {
         return { success: true, item: result };
     } catch (error) {
         console.error('Failed to create testimonial:', error);
-        return { success: false, error };
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to create testimonial' };
     }
 }
 
@@ -32,7 +32,7 @@ export async function updateTestimonial(id: string, data: any) {
         return { success: true, item: result };
     } catch (error) {
         console.error(`Failed to update testimonial ${id}:`, error);
-        return { success: false, error };
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to update testimonial' };
     }
 }
 
@@ -43,6 +43,6 @@ export async function deleteTestimonial(id: string) {
         return { success: true };
     } catch (error) {
         console.error(`Failed to delete testimonial ${id}:`, error);
-        return { success: false, error };
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to delete testimonial' };
     }
 }

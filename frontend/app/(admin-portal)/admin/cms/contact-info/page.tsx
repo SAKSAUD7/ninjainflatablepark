@@ -1,7 +1,7 @@
 import React from 'react';
-import { getContactInfos, deleteContactInfo } from '../../../../actions/contact-info';
-import { CollectionList } from '../../../../components/admin/cms/CollectionList';
-import { schemas } from '../../../../lib/cms/schema';
+import { getContactInfos, deleteContactInfo } from '@/app/actions/contact-info';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
+import { schemas } from '@/lib/cms/schema';
 
 export default async function ContactInfoPage() {
     const items = await getContactInfos();
@@ -17,3 +17,4 @@ export default async function ContactInfoPage() {
         />
     );
 }
+

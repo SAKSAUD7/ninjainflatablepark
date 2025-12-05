@@ -17,7 +17,7 @@ export default async function Parties() {
     ] = await Promise.all([
         getPartyPackages(),
         getMenuSections(),
-        getPageSections('parties'),
+        getPageSections('party-booking'),
         getSettings()
     ]) as [any[], any[], any[], any];
 
@@ -30,13 +30,13 @@ export default async function Parties() {
         image: heroSection.image_url
     } : undefined;
 
-    return (
-        <PartyContent
-            packages={partyPackages}
-            menus={menuSections}
-            hero={hero}
-            settings={settings}
-            terms={termsSection?.content}
-        />
-    );
+return (
+    <PartyContent
+        packages={partyPackages}
+        menus={menuSections}
+        hero={hero}
+        settings={settings}
+        terms={termsSection?.content}
+    />
+);
 }

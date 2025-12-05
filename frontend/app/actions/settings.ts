@@ -6,12 +6,17 @@ import { logActivity } from "../lib/audit-log";
 import { revalidatePath } from "next/cache";
 
 export async function getSettings() {
-    await requirePermission('settings', 'read');
-    const res = await fetchAPI("/core/settings/");
-    if (!res || !res.ok) return null;
-    const data = await res.json();
-    // Assuming settings is a singleton, get first item
-    return data[0] || null;
+    // Public function - no auth required (used in public layout)
+    try {
+        const res = await fetchAPI("/core/settings/");
+        if (!res || !res.ok) return null;
+        const data = await res.json();
+        // Assuming settings is a singleton, get first item
+        return data[0] || null;
+    } catch (error) {
+        console.error('Failed to fetch settings:', error);
+        return null;
+    }
 }
 
 export async function updateSettings(id: string, data: any) {

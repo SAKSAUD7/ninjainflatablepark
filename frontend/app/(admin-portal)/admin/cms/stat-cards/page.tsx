@@ -1,7 +1,7 @@
 import React from 'react';
-import { getStatCards, deleteStatCard } from '../../../../actions/stat-cards';
-import { CollectionList } from '../../../../components/admin/cms/CollectionList';
-import { schemas } from '../../../../lib/cms/schema';
+import { getStatCards, deleteStatCard } from '@/app/actions/stat-cards';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
+import { schemas } from '@/lib/cms/schema';
 
 export default async function StatCardsPage() {
     const items = await getStatCards();
@@ -17,3 +17,4 @@ export default async function StatCardsPage() {
         />
     );
 }
+

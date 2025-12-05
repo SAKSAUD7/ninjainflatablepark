@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createGalleryItem } from '../../../../actions/gallery';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createGalleryItem } from '@/app/actions/gallery';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewGalleryItemPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewGalleryItemPage() {
         </div>
     );
 }
+

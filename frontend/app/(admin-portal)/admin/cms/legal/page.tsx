@@ -60,3 +60,4 @@ export default function LegalDocumentsPage() {
         </div>
     );
 }
+

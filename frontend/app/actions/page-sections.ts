@@ -6,9 +6,10 @@ import { logActivity } from "../lib/audit-log";
 import { revalidatePath } from "next/cache";
 import { transformCmsItem } from "../lib/transformers";
 
-export async function getPageSections(page?: string) {
+export async function getPageSections(page: string) {
     await requirePermission('cms', 'read');
-    const endpoint = page ? `/cms/page-sections/?page=${page}` : "/cms/page-sections/";
+    if (!page) return []; // Fail safe or throw error
+    const endpoint = `/cms/page-sections/?page=${page}`;
     const res = await fetchAPI(endpoint);
     if (!res || !res.ok) return [];
     const data = await res.json();

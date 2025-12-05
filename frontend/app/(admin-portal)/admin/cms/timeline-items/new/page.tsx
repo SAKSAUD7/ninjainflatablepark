@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createTimelineItem } from '../../../../actions/timeline-items';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createTimelineItem } from '@/app/actions/timeline-items';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewTimelineItemPage() {
     return (
@@ -22,3 +22,4 @@ export default function NewTimelineItemPage() {
         </div>
     );
 }
+

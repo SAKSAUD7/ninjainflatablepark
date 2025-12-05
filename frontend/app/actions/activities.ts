@@ -30,7 +30,11 @@ export async function createActivity(data: any) {
         return { success: true, item: result };
     } catch (error) {
         console.error('Failed to create activity:', error);
-        return { success: false, error };
+        // Return plain object instead of Error instance
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to create activity'
+        };
     }
 }
 
@@ -38,10 +42,15 @@ export async function updateActivity(id: string, data: any) {
     try {
         const result = await putAPI(`${ENDPOINT}${id}/`, data);
         revalidatePath('/admin/cms/attractions');
+        revalidatePath(`/admin/cms/attractions/${id}`);
         return { success: true, item: result };
     } catch (error) {
         console.error(`Failed to update activity ${id}:`, error);
-        return { success: false, error };
+        // Return plain object instead of Error instance
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to update activity'
+        };
     }
 }
 
@@ -52,6 +61,10 @@ export async function deleteActivity(id: string) {
         return { success: true };
     } catch (error) {
         console.error(`Failed to delete activity ${id}:`, error);
-        return { success: false, error };
+        // Return plain object instead of Error instance
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Failed to delete activity'
+        };
     }
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import { createFacilityItem } from '../../../../actions/facility-items';
-import { CMSForm } from '../../../../components/admin/cms/CMSForm';
-import { schemas } from '../../../../lib/cms/schema';
+import { createFacilityItem } from '@/app/actions/facility-items';
+import { CMSForm } from '@/components/admin/cms/CMSForm';
+import { schemas } from '@/lib/cms/schema';
 
 export default function NewFacilityItemPage() {
     return (
@@ -17,8 +17,9 @@ export default function NewFacilityItemPage() {
                 schema={schemas.facility_item}
                 onSubmit={createFacilityItem}
                 submitLabel="Create Facility Item"
-                backUrl="/admin/cms/facility-items"
+                backUrl="/admin/cms/attractions"
             />
         </div>
     );
 }
+
