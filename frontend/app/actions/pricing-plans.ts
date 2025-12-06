@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import { fetchAPI, postAPI, putAPI, deleteAPI, API_ENDPOINTS } from '@/lib/api';
 
 const ENDPOINT = API_ENDPOINTS.cms.pricing_plans;
@@ -23,8 +24,11 @@ export async function getPricingPlan(id: string) {
 
 export async function createPricingPlan(data: any) {
     try {
-        const result = await postAPI(ENDPOINT, data);
-        revalidatePath('/admin/cms/pricing');
+        const token = cookies().get('admin_token')?.value;
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : undefined;
+
+        const result = await postAPI(ENDPOINT, data, { headers });
+        revalidatePath('/admin/cms/pricing-plans');
         revalidatePath('/pricing');
         return { success: true, item: result };
     } catch (error) {
@@ -34,8 +38,11 @@ export async function createPricingPlan(data: any) {
 
 export async function updatePricingPlan(id: string, data: any) {
     try {
-        const result = await putAPI(`${ENDPOINT}${id}/`, data);
-        revalidatePath('/admin/cms/pricing');
+        const token = cookies().get('admin_token')?.value;
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : undefined;
+
+        const result = await putAPI(`${ENDPOINT}${id}/`, data, { headers });
+        revalidatePath('/admin/cms/pricing-plans');
         revalidatePath('/pricing');
         return { success: true, item: result };
     } catch (error) {
@@ -45,8 +52,11 @@ export async function updatePricingPlan(id: string, data: any) {
 
 export async function deletePricingPlan(id: string) {
     try {
-        await deleteAPI(`${ENDPOINT}${id}/`);
-        revalidatePath('/admin/cms/pricing');
+        const token = cookies().get('admin_token')?.value;
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : undefined;
+
+        await deleteAPI(`${ENDPOINT}${id}/`, { headers });
+        revalidatePath('/admin/cms/pricing-plans');
         revalidatePath('/pricing');
         return { success: true };
     } catch (error) {

@@ -6,7 +6,7 @@ from .views import (
     GuidelineCategoryViewSet, LegalDocumentViewSet,
     PageSectionViewSet, PricingPlanViewSet, ContactInfoViewSet, PartyPackageViewSet,
     TimelineItemViewSet, ValueItemViewSet, FacilityItemViewSet,
-    PageViewSet, UploadView, ReorderView
+    PageViewSet, UploadView, ReorderView, ContactMessageViewSet
 )
 
 router = DefaultRouter()
@@ -29,6 +29,7 @@ router.register(r'party-packages', PartyPackageViewSet)
 router.register(r'timeline-items', TimelineItemViewSet)
 router.register(r'value-items', ValueItemViewSet)
 router.register(r'facility-items', FacilityItemViewSet)
+router.register(r'contact-messages', ContactMessageViewSet)
 router.register(r'pages', PageViewSet)
 
 urlpatterns = [

@@ -82,8 +82,8 @@ export default function AttractionsContent({ activities, facilities, hero }: Att
                                 <div className="bg-surface-800 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors flex flex-col overflow-hidden group">
                                     <div className="h-48 overflow-hidden relative flex-shrink-0">
                                         <img
-                                            src={facility.image || `/images/uploads/img-${(index % 10) + 1}.jpg`}
-                                            alt={facility.name}
+                                            src={facility.image_url || `/images/uploads/img-${(index % 6) + 1}.jpg`}
+                                            alt={facility.title}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             onError={(e) => {
                                                 e.currentTarget.src = "/images/hero-background.jpg";
@@ -91,28 +91,28 @@ export default function AttractionsContent({ activities, facilities, hero }: Att
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-surface-800 to-transparent opacity-60" />
                                         <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-md p-2 rounded-xl">
-                                            {// Render icon based on mapping or facility data
-                                                facility.icon_name ? getIcon(facility.icon_name) : getIcon(facility.name)
+                                            {
+                                                getIcon(facility.icon || facility.icon_name || facility.name)
                                             }
                                         </div>
                                     </div>
                                     <div className="p-6 flex-grow flex flex-col">
                                         <h3 className="text-2xl font-display font-bold mb-3 text-white">
-                                            {facility.name}
+                                            {facility.title || facility.name}
                                         </h3>
                                         <p className="text-white/70 mb-6">
                                             {facility.description}
                                         </p>
                                         <ul className="space-y-2 mt-auto">
                                             {/* Handle items if they are array or separated string */}
-                                            {Array.isArray(facility.features) ? facility.features.map((item: string, i: number) => (
+                                            {Array.isArray(facility.items) ? facility.items.map((item: string, i: number) => (
                                                 <li key={i} className="flex items-center gap-2 text-sm text-white/60">
                                                     <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                                                     {typeof item === 'string' ? item : (item as any).value || (item as any).name || ""}
                                                 </li>
                                             )) : (
-                                                // Fallback if features is just comma separated string or null
-                                                (facility.features || "").split(',').filter((x: string) => x.trim()).map((item: string, i: number) => (
+                                                // Fallback if items/features is just comma separated string or null or using 'features' key
+                                                (facility.items || facility.features || "").toString().split(',').filter((x: string) => x.trim()).map((item: string, i: number) => (
                                                     <li key={i} className="flex items-center gap-2 text-sm text-white/60">
                                                         <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                                                         {item.trim()}

@@ -33,10 +33,19 @@ export async function getAdminSession(): Promise<AdminSession | null> {
         let permissions: Permission[] = [];
         if (user.is_superuser || user.role === 'SUPER_ADMIN') {
             permissions = ['*:*'];
+        } else if (user.role === 'ADMIN' || user.is_staff) {
+            // Admin users get full CMS and bookings access
+            permissions = [
+                'cms:read',
+                'cms:write',
+                'cms:delete',
+                'bookings:read',
+                'bookings:write',
+                'bookings:delete'
+            ];
         } else {
             // Default permissions for other roles
-            // This logic should match what was in the DB or be fetched from backend
-            permissions = ['bookings:read', 'bookings:write'];
+            permissions = ['bookings:read'];
         }
 
         return {

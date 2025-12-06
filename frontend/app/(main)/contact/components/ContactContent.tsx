@@ -24,12 +24,30 @@ export default function ContactContent({ settings, hero, defaultConfig }: Contac
         message: "",
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement form submission logic or server action call
-        console.log("Form submitted:", formData);
-        alert("Thanks for contacting us! We'll get back to you soon.");
-        setFormData({ name: "", email: "", phone: "", message: "" });
+        setIsSubmitting(true);
+
+        try {
+            const { createContactMessage } = await import("@/app/actions/contact-messages");
+            const { toast } = await import("sonner");
+
+            const result = await createContactMessage(formData);
+
+            if (result.success) {
+                toast.success("Message sent! We'll get back to you soon.");
+                setFormData({ name: "", email: "", phone: "", message: "" });
+            } else {
+                toast.error(result.error || "Failed to send message");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Something went wrong. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const phone = settings?.contact_phone || defaultConfig?.contact?.phone || "+91 98454 71611";
@@ -187,10 +205,16 @@ export default function ContactContent({ settings, hero, defaultConfig }: Contac
                                     </div>
                                     <div className="w-full">
                                         {/* Using custom wrapper or div for BouncyButton */}
-                                        <BouncyButton type="submit" variant="primary" className="w-full" size="lg">
+                                        <BouncyButton type="submit" variant="primary" className="w-full" size="lg" disabled={isSubmitting}>
                                             <div className="flex items-center justify-center">
-                                                <Send className="w-5 h-5 mr-2" />
-                                                Send Message
+                                                {isSubmitting ? (
+                                                    <span>Sending...</span>
+                                                ) : (
+                                                    <>
+                                                        <Send className="w-5 h-5 mr-2" />
+                                                        Send Message
+                                                    </>
+                                                )}
                                             </div>
                                         </BouncyButton>
                                     </div>

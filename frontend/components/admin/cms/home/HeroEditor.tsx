@@ -41,10 +41,14 @@ export function HeroEditor({ section: initialSection, pageSlug }: HeroEditorProp
                 toast.success('Hero section saved');
                 if (result.item) setSection(result.item);
             } else {
-                toast.error('Failed to save hero section');
+                const errorMsg = result.error || 'Failed to save hero section';
+                toast.error(errorMsg);
+                console.error('Save failed:', errorMsg);
             }
-        } catch (error) {
-            toast.error('An error occurred');
+        } catch (error: any) {
+            const errorMsg = error.message || 'An error occurred';
+            toast.error(errorMsg);
+            console.error('Save error:', error);
         } finally {
             setLoading(false);
         }

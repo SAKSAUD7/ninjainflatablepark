@@ -153,7 +153,7 @@ export const schemas: SchemaMap = {
                 ]
             },
             { name: "title", label: "Title", type: "text", required: true },
-            { name: "intro", label: "Introduction", type: "textarea" },
+            { name: "intro", label: "Document Content", type: "textarea", helpText: "Full text of the document" },
             { name: "sections", label: "Sections (JSON)", type: "json_list" }, // TODO: Better JSON editor
             { name: "active", label: "Active", type: "boolean", defaultValue: true },
         ],
@@ -287,28 +287,7 @@ export const schemas: SchemaMap = {
             { name: "active", label: "Active", type: "boolean", defaultValue: true },
         ],
     },
-    group_package: {
-        name: "Group Package",
-        fields: [
-            { name: "name", label: "Package Name", type: "text", required: true },
-            { name: "description", label: "Description", type: "textarea", required: true },
-            { name: "min_size", label: "Minimum Group Size", type: "text", required: true },
-            { name: "price", label: "Price", type: "number", required: true },
-            { name: "price_note", label: "Price Note", type: "text" },
-            { name: "features", label: "Features (JSON list)", type: "json_list", required: true },
-            { name: "icon", label: "Icon Name", type: "text" },
-            {
-                name: "color", label: "Color Variant", type: "select", options: [
-                    { label: "Primary", value: "primary" },
-                    { label: "Secondary", value: "secondary" },
-                    { label: "Accent", value: "accent" }
-                ]
-            },
-            { name: "popular", label: "Mark as Popular", type: "boolean", defaultValue: false },
-            { name: "order", label: "Order", type: "number", defaultValue: 0 },
-            { name: "active", label: "Active", type: "boolean", defaultValue: true },
-        ],
-    },
+
     group_benefit: {
         name: "Group Benefit",
         fields: [
@@ -317,6 +296,17 @@ export const schemas: SchemaMap = {
             { name: "icon", label: "Icon Name (Lucide)", type: "text", required: true },
             { name: "order", label: "Order", type: "number", defaultValue: 0 },
             { name: "active", label: "Active", type: "boolean", defaultValue: true },
+        ],
+    },
+    contact_message: {
+        name: "Contact Message",
+        fields: [
+            { name: "name", label: "Name", type: "text", required: true, readOnly: true },
+            { name: "email", label: "Email", type: "text", required: true, readOnly: true },
+            { name: "phone", label: "Phone", type: "text", readOnly: true },
+            { name: "message", label: "Message", type: "textarea", required: true, readOnly: true },
+            { name: "created_at", label: "Submitted On", type: "text", readOnly: true },
+            { name: "is_read", label: "Read Status", type: "boolean", defaultValue: false },
         ],
     }
 };

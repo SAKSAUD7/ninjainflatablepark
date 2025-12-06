@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { FieldSchema } from '../../../lib/cms/types';
+import { FieldSchema } from '@/lib/cms/types';
 import { Upload, X, Image as ImageIcon, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
+
 
 interface ImageUploadFieldProps {
     field: FieldSchema;
@@ -49,55 +50,41 @@ export function ImageUploadField({ field, value, onChange, error }: ImageUploadF
         setUploading(true);
         setUploadProgress(0);
 
-        const formData = new FormData();
-        formData.append('file', file);
+        // Faster progress simulation for better UX
+        const progressInterval = setInterval(() => {
+            setUploadProgress(prev => {
+                if (prev >= 90) return prev; // Stop at 90%, wait for actual response
+                return Math.min(prev + 15, 90); // Faster increments
+            });
+        }, 150); // Faster updates
 
         try {
-            // Simulate progress for better UX
-            const progressInterval = setInterval(() => {
-                setUploadProgress(prev => Math.min(prev + 10, 90));
-            }, 200);
+            const formData = new FormData();
+            formData.append('file', file);
 
-            const res = await fetch('http://localhost:8000/api/v1/cms/upload/', {
-                method: 'POST',
-                body: formData,
-                // Note: For development, backend allows all origins
-                // In production, add proper authentication:
-                // headers: {
-                //     'Authorization': `Bearer ${getAuthToken()}`
-                // }
-            });
+            console.log('[ImageUploadField] Starting upload:', file.name);
+
+            // Use server action that can read httpOnly cookie
+            const { uploadImage } = await import('@/app/actions/upload-image');
+            const result = await uploadImage(formData);
 
             clearInterval(progressInterval);
             setUploadProgress(100);
 
-            if (res.ok) {
-                const data = await res.json();
-                onChange(data.url);
-                toast.success('Image uploaded successfully!', {
-                    icon: <CheckCircle className="w-4 h-4" />,
-                });
-                router.refresh(); // Refresh to show updated image
-                e.target.value = ''; // Clear input for next upload
+            if (result.success && result.url) {
+                console.log('[ImageUploadField] Upload successful:', result.url);
+                onChange(result.url);
+                toast.success('Image uploaded successfully!');
+                router.refresh();
+                e.target.value = '';
             } else {
-                const errorData = await res.json().catch(() => ({ error: 'Upload failed' }));
-                const errorMessage = errorData.error || `Upload failed with status ${res.status}`;
-
-                if (res.status === 401) {
-                    toast.error('Authentication required. Please log in again.');
-                } else if (res.status === 413) {
-                    toast.error('File too large. Maximum size is 5MB.');
-                } else {
-                    toast.error(errorMessage);
-                }
-
-                console.error('Upload failed:', errorData);
+                console.error('[ImageUploadField] Upload failed:', result.error);
+                toast.error(result.error || 'Upload failed');
             }
-        } catch (err) {
-            console.error('Upload error:', err);
-            toast.error('Network error. Please check your connection and try again.', {
-                icon: <AlertCircle className="w-4 h-4" />,
-            });
+        } catch (error: any) {
+            clearInterval(progressInterval);
+            console.error('[ImageUploadField] Upload exception:', error);
+            toast.error(error.message || 'Upload failed. Please try again.');
         } finally {
             setUploading(false);
             setUploadProgress(0);
@@ -155,17 +142,17 @@ export function ImageUploadField({ field, value, onChange, error }: ImageUploadF
                             accept="image/*"
                             onChange={handleUpload}
                             disabled={uploading}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                            className="hidden"
                             id={`file-upload-${field.name}`}
                         />
-                        <button
-                            type="button"
-                            disabled={uploading}
-                            className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        <label
+                            htmlFor={`file-upload-${field.name}`}
+                            className={`w-full px-4 py-3 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] ${uploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                                }`}
                         >
                             <Upload className="w-4 h-4" />
                             {uploading ? `Uploading... ${uploadProgress}%` : 'Upload Image'}
-                        </button>
+                        </label>
 
                         {/* Progress bar */}
                         {uploading && (

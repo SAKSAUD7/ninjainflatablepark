@@ -25,14 +25,23 @@ export async function getPageSection(id: string) {
 }
 
 export async function createPageSection(data: any) {
-    await requirePermission('cms', 'write');
+    try {
+        await requirePermission('cms', 'write');
+    } catch (error: any) {
+        console.error('Permission error:', error.message);
+        return { success: false, error: error.message || 'Permission denied' };
+    }
 
     const res = await fetchAPI("/cms/page-sections/", {
         method: "POST",
         body: JSON.stringify(data)
     });
 
-    if (!res || !res.ok) return { success: false };
+    if (!res || !res.ok) {
+        const errorText = res ? await res.text().catch(() => 'Unknown error') : 'No response';
+        console.error('API error:', errorText);
+        return { success: false, error: `Failed to create: ${errorText}` };
+    }
 
     const item = await res.json();
 
@@ -48,14 +57,23 @@ export async function createPageSection(data: any) {
 }
 
 export async function updatePageSection(id: string, data: any) {
-    await requirePermission('cms', 'write');
+    try {
+        await requirePermission('cms', 'write');
+    } catch (error: any) {
+        console.error('Permission error:', error.message);
+        return { success: false, error: error.message || 'Permission denied' };
+    }
 
     const res = await fetchAPI(`/cms/page-sections/${id}/`, {
         method: "PATCH",
         body: JSON.stringify(data)
     });
 
-    if (!res || !res.ok) return { success: false };
+    if (!res || !res.ok) {
+        const errorText = res ? await res.text().catch(() => 'Unknown error') : 'No response';
+        console.error('API error:', errorText);
+        return { success: false, error: `Failed to update: ${errorText}` };
+    }
 
     const item = await res.json();
 

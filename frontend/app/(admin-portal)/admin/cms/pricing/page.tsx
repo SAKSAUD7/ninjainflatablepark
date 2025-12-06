@@ -19,7 +19,17 @@ export default async function PricingAdminPage() {
     return (
         <div className="space-y-8 max-w-5xl mx-auto pb-20">
             <CMSBackLink />
-            <div>
+            <div className="space-y-12">
+                {/* Session Pricing */}
+                <section>
+                    <PricingPlansManager items={plans} />
+                </section>
+
+                {/* Party Packages */}
+                <section>
+                    <PartyPackagesManager items={partyPackages} />
+                </section>
+
                 {/* Group Packages Manager */}
                 <section>
                     <GroupPackagesManager items={groupPackages} />

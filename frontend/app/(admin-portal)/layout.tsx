@@ -2,6 +2,7 @@ import { getAdminSession } from "../lib/admin-auth";
 import { redirect } from "next/navigation";
 import { AdminSidebar } from "./admin/components/AdminSidebar";
 import { AdminHeader } from "./admin/components/AdminHeader";
+import { Toaster } from 'sonner';
 
 export default async function AdminPortalLayout({
     children,
@@ -13,7 +14,12 @@ export default async function AdminPortalLayout({
 
     // If not authenticated, just render the login page
     if (!isAuthenticated) {
-        return children;
+        return (
+            <>
+                {children}
+                <Toaster position="top-right" richColors />
+            </>
+        );
     }
 
     const user = {
@@ -38,6 +44,9 @@ export default async function AdminPortalLayout({
                     {children}
                 </main>
             </div>
+
+            {/* Toast Notifications */}
+            <Toaster position="top-right" richColors />
         </div>
     );
 }

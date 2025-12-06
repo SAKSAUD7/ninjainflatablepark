@@ -3,7 +3,7 @@ from .models import (
     Banner, Activity, Faq, Testimonial, SocialLink, GalleryItem,
     StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
     PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
-    Page
+    Page, ContactMessage
 )
 
 class PageSerializer(serializers.ModelSerializer):
@@ -72,6 +72,11 @@ class LegalDocumentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PageSectionSerializer(serializers.ModelSerializer):
+    # Override URL fields to allow blank values and relative URLs
+    image_url = serializers.CharField(max_length=500, required=False, allow_blank=True, allow_null=True)
+    video_url = serializers.CharField(max_length=500, required=False, allow_blank=True, allow_null=True)
+    cta_link = serializers.CharField(max_length=500, required=False, allow_blank=True, allow_null=True)
+    
     class Meta:
         model = PageSection
         fields = '__all__'
@@ -105,3 +110,9 @@ class FacilityItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = FacilityItem
         fields = '__all__'
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = '__all__'
+        read_only_fields = ['is_read', 'created_at']

@@ -97,7 +97,7 @@ export async function loginAdmin(formData: FormData) {
         const token = data.access;
 
         cookies().set("admin_token", token, {
-            httpOnly: true,
+            httpOnly: true, // Keep secure
             secure: process.env.NODE_ENV === "production",
             maxAge: 60 * 60 * 24 * 7, // 7 days
             path: "/",

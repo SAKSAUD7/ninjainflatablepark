@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { Edit, Plus, Trash2, Eye } from 'lucide-react';
 import { CMSBackLink } from './CMSBackLink';
 import { PermissionGate } from '../../PermissionGate';
 import { ModelSchema } from '@/lib/cms/types';
@@ -20,9 +20,10 @@ interface CollectionListProps {
     subtitleField?: string;
     imageField?: string;
     showBackButton?: boolean;
+    viewOnly?: boolean;
 }
 
-export function CollectionList({ title, description, items, schema, basePath, onDelete, titleField, subtitleField, imageField, showBackButton = true }: CollectionListProps) {
+export function CollectionList({ title, description, items, schema, basePath, onDelete, titleField, subtitleField, imageField, showBackButton = true, viewOnly = false }: CollectionListProps) {
     const router = useRouter();
 
     const handleDelete = async (id: string) => {
@@ -50,15 +51,17 @@ export function CollectionList({ title, description, items, schema, basePath, on
                     <h1 className="text-2xl font-bold text-slate-900">{title}</h1>
                     <p className="text-slate-500">{description}</p>
                 </div>
-                <PermissionGate entity="cms" action="write">
-                    <Link
-                        href={`${basePath}/new`}
-                        className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-                    >
-                        <Plus className="w-4 h-4" />
-                        New {schema.name}
-                    </Link>
-                </PermissionGate>
+                {!viewOnly && (
+                    <PermissionGate entity="cms" action="write">
+                        <Link
+                            href={`${basePath}/new`}
+                            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+                        >
+                            <Plus className="w-4 h-4" />
+                            New {schema.name}
+                        </Link>
+                    </PermissionGate>
+                )}
             </div>
 
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -107,10 +110,12 @@ export function CollectionList({ title, description, items, schema, basePath, on
                                                 <Link
                                                     href={`${basePath}/${item.id}`}
                                                     className="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                                    title={viewOnly ? "View Details" : "Edit"}
                                                 >
-                                                    <Edit className="w-4 h-4" />
+                                                    {viewOnly ? <Eye className="w-4 h-4" /> : <Edit className="w-4 h-4" />}
                                                 </Link>
                                             </PermissionGate>
+
                                             {onDelete && (
                                                 <PermissionGate entity="cms" action="delete">
                                                     <button

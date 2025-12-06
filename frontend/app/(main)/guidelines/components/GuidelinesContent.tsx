@@ -37,6 +37,7 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
     // Filter legal documents
     const termsDoc = legalDocuments.find(doc => doc.document_type === 'TERMS' || doc.slug === 'terms-and-conditions');
     const waiverDoc = legalDocuments.find(doc => doc.document_type === 'WAIVER' || doc.slug === 'liability-waiver');
+    const privacyDoc = legalDocuments.find(doc => doc.document_type === 'PRIVACY' || doc.slug === 'privacy-policy');
 
     return (
         <main className="bg-background text-white min-h-screen pt-24">
@@ -75,8 +76,8 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
                         <button
                             onClick={() => setActiveTab("safety")}
                             className={`px-6 py-3 rounded-xl font-bold transition-all ${activeTab === "safety"
-                                    ? "bg-primary text-black"
-                                    : "bg-surface-800/50 text-white/70 hover:bg-surface-800"
+                                ? "bg-primary text-black"
+                                : "bg-surface-800/50 text-white/70 hover:bg-surface-800"
                                 }`}
                         >
                             <Shield className="w-5 h-5 inline mr-2" />
@@ -86,8 +87,8 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
                             <button
                                 onClick={() => setActiveTab("terms")}
                                 className={`px-6 py-3 rounded-xl font-bold transition-all ${activeTab === "terms"
-                                        ? "bg-primary text-black"
-                                        : "bg-surface-800/50 text-white/70 hover:bg-surface-800"
+                                    ? "bg-primary text-black"
+                                    : "bg-surface-800/50 text-white/70 hover:bg-surface-800"
                                     }`}
                             >
                                 <FileText className="w-5 h-5 inline mr-2" />
@@ -98,12 +99,24 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
                             <button
                                 onClick={() => setActiveTab("waiver")}
                                 className={`px-6 py-3 rounded-xl font-bold transition-all ${activeTab === "waiver"
-                                        ? "bg-primary text-black"
-                                        : "bg-surface-800/50 text-white/70 hover:bg-surface-800"
+                                    ? "bg-primary text-black"
+                                    : "bg-surface-800/50 text-white/70 hover:bg-surface-800"
                                     }`}
                             >
                                 <FileText className="w-5 h-5 inline mr-2" />
                                 Waiver
+                            </button>
+                        )}
+                        {privacyDoc && (
+                            <button
+                                onClick={() => setActiveTab("privacy")}
+                                className={`px-6 py-3 rounded-xl font-bold transition-all ${activeTab === "privacy"
+                                    ? "bg-primary text-black"
+                                    : "bg-surface-800/50 text-white/70 hover:bg-surface-800"
+                                    }`}
+                            >
+                                <Shield className="w-5 h-5 inline mr-2" />
+                                Privacy Policy
                             </button>
                         )}
                     </div>
@@ -145,7 +158,7 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
                         <ScrollReveal animation="fade">
                             <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10 prose prose-invert max-w-none">
                                 <div className="whitespace-pre-wrap text-white/80 leading-relaxed">
-                                    {termsDoc.content}
+                                    {termsDoc.intro || termsDoc.content}
                                 </div>
                             </div>
                         </ScrollReveal>
@@ -155,7 +168,17 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
                         <ScrollReveal animation="fade">
                             <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10 prose prose-invert max-w-none">
                                 <div className="whitespace-pre-wrap text-white/80 leading-relaxed">
-                                    {waiverDoc.content}
+                                    {waiverDoc.intro || waiverDoc.content}
+                                </div>
+                            </div>
+                        </ScrollReveal>
+                    )}
+
+                    {activeTab === "privacy" && privacyDoc && (
+                        <ScrollReveal animation="fade">
+                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10 prose prose-invert max-w-none">
+                                <div className="whitespace-pre-wrap text-white/80 leading-relaxed">
+                                    {privacyDoc.intro || privacyDoc.content}
                                 </div>
                             </div>
                         </ScrollReveal>

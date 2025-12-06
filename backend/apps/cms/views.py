@@ -6,7 +6,7 @@ from .models import (
     Banner, Activity, Faq, Testimonial, SocialLink, GalleryItem,
     StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
     PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
-    Page
+    Page, ContactMessage
 )
 from .serializers import (
     BannerSerializer, ActivitySerializer, FaqSerializer, TestimonialSerializer, 
@@ -15,7 +15,7 @@ from .serializers import (
     GuidelineCategorySerializer, LegalDocumentSerializer,
     PageSectionSerializer, PricingPlanSerializer, ContactInfoSerializer, PartyPackageSerializer,
     TimelineItemSerializer, ValueItemSerializer, FacilityItemSerializer,
-    PageSerializer
+    PageSerializer, ContactMessageSerializer
 )
 
 class BaseCmsViewSet(viewsets.ModelViewSet):
@@ -173,6 +173,18 @@ class FacilityItemViewSet(BaseCmsViewSet):
     ordering_fields = ['order']
     ordering = ['order']
 
+class ContactMessageViewSet(viewsets.ModelViewSet):
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer
+    filterset_fields = ['is_read']
+    ordering_fields = ['created_at']
+    ordering = ['-created_at']
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
+
 class PageViewSet(BaseCmsViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
@@ -184,7 +196,7 @@ class UploadView(APIView):
     Handle file uploads for CMS images.
     Validates file type, size, and saves to media storage.
     """
-    permission_classes = [permissions.AllowAny]  # For development - change to IsAdminUser in production
+    permission_classes = [permissions.IsAdminUser]  # Require admin authentication
     parser_classes = (MultiPartParser, FormParser)
     
     # Configuration

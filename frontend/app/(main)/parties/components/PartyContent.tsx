@@ -62,7 +62,7 @@ export default function PartyContent({ packages, menus, hero, settings, terms }:
             {/* Dynamic Packages */}
             <section className="relative px-4 py-12 bg-background">
                 <div className="max-w-7xl mx-auto">
-                    <div className={`grid grid-cols-1 ${packages.length > 1 ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-1 max-w-4xl mx-auto'} gap-8`}>
+                    <div className={`grid grid-cols-1 ${packages.length > 1 ? 'md:grid-cols-2 lg:grid-cols-3' : 'md:grid-cols-1 max-w-md mx-auto'} gap-8`}>
                         {packages.length > 0 ? (
                             packages.map((pkg, index) => (
                                 <ScrollReveal key={pkg.id} animation="scale" delay={index * 0.1}>
@@ -85,18 +85,24 @@ export default function PartyContent({ packages, menus, hero, settings, terms }:
                                             </div>
                                         </div>
 
-                                        {/* Features List */}
                                         <div className="flex-grow mb-6">
                                             <div className="grid grid-cols-1 gap-y-2 text-sm">
-                                                {Array.isArray(pkg.features) && pkg.features.map((feature: string, idx: number) => (
-                                                    <div key={idx} className="flex items-center gap-2 text-white/80">
-                                                        <Check className="w-4 h-4 text-primary shrink-0" />
-                                                        <span>{feature}</span>
-                                                    </div>
-                                                ))}
-                                                {(!pkg.features || pkg.features.length === 0) && (
-                                                    <p className="text-white/60 italic text-center">Contact for details</p>
-                                                )}
+                                                {/* Handle both features (frontend prop) and includes (backend model field) */}
+                                                {(() => {
+                                                    const items = pkg.features || pkg.includes || [];
+                                                    const displayItems = Array.isArray(items) ? items : [];
+
+                                                    if (displayItems.length === 0) {
+                                                        return <p className="text-white/60 italic text-center">Contact for details</p>;
+                                                    }
+
+                                                    return displayItems.map((feature: string, idx: number) => (
+                                                        <div key={idx} className="flex items-center gap-2 text-white/80">
+                                                            <Check className="w-4 h-4 text-primary shrink-0" />
+                                                            <span>{feature}</span>
+                                                        </div>
+                                                    ));
+                                                })()}
                                             </div>
                                         </div>
 

@@ -1,13 +1,15 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { fetchAPI, postAPI, putAPI, deleteAPI, API_ENDPOINTS } from '@/lib/api';
+import { fetchAPI, postAPI, putAPI, deleteAPI } from '@/app/lib/server-api';
 
-const ENDPOINT = API_ENDPOINTS.cms.activities;
+const ENDPOINT = '/cms/activities/';
 
 export async function getActivities() {
     try {
-        return await fetchAPI(ENDPOINT, { cache: 'no-store' });
+        const res = await fetchAPI(ENDPOINT, { cache: 'no-store' });
+        if (!res || !res.ok) return [];
+        return await res.json();
     } catch (error) {
         console.error('Failed to fetch activities:', error);
         return [];
@@ -16,7 +18,9 @@ export async function getActivities() {
 
 export async function getActivity(id: string) {
     try {
-        return await fetchAPI(`${ENDPOINT}${id}/`, { cache: 'no-store' });
+        const res = await fetchAPI(`${ENDPOINT}${id}/`, { cache: 'no-store' });
+        if (!res || !res.ok) return null;
+        return await res.json();
     } catch (error) {
         console.error(`Failed to fetch activity ${id}:`, error);
         return null;

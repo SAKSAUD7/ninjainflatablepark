@@ -1,47 +1,23 @@
-"use client";
-
 import { ScrollReveal, SectionDivider } from "@repo/ui";
-import { Coffee, Car, Shield, Wifi, ShoppingBag, Utensils, Users, Baby, Lock } from "lucide-react";
+import { Coffee, Car, Shield, Wifi, ShoppingBag, Utensils, Users, Baby, Lock, Zap } from "lucide-react";
+import { getFacilityItems } from "@/app/actions/facility-items";
 
-export default function FacilitiesPage() {
-    const facilities = [
-        {
-            title: "Play Zones",
-            description: "Separate age-appropriate play areas including ninja obstacle courses, climbing walls, and giant slides.",
-            icon: <Users className="w-8 h-8 text-primary" />,
-            items: ["Ninja Course", "Toddler Zone", "Giant Slides", "Wipeout Challenge"]
-        },
-        {
-            title: "Ninja Café",
-            description: "Refuel after your adventure with our selection of hot & cold drinks, meals, and snacks.",
-            icon: <Coffee className="w-8 h-8 text-secondary" />,
-            items: ["Hot & Cold Drinks", "Fresh Snacks", "Meals", "Seating Area"]
-        },
-        {
-            title: "Party Rooms",
-            description: "Private party rooms available for birthdays and special events with customizable packages.",
-            icon: <Utensils className="w-8 h-8 text-accent" />,
-            items: ["Private Space", "Decorations", "Hosting Staff", "Catering"]
-        },
-        {
-            title: "Parking & Access",
-            description: "Convenient access for all visitors with ample parking space.",
-            icon: <Car className="w-8 h-8 text-primary" />,
-            items: ["Free Parking (2 Hrs)", "Accessible Entry", "Drop-off Zone"]
-        },
-        {
-            title: "Health & Safety",
-            description: "Your safety is our priority with trained staff and first-aid facilities.",
-            icon: <Shield className="w-8 h-8 text-secondary" />,
-            items: ["First Aid Staff", "CCTV Surveillance", "Hygiene Stations", "Daily Cleaning"]
-        },
-        {
-            title: "Amenities",
-            description: "Everything you need for a comfortable visit.",
-            icon: <Wifi className="w-8 h-8 text-accent" />,
-            items: ["Free Wi-Fi", "Lockers", "Baby Care Room", "Merchandise Store"]
-        }
-    ];
+export const dynamic = 'force-dynamic';
+
+export default async function FacilitiesPage() {
+    const facilities = await getFacilityItems();
+
+    // Helper to map icon string to Lucide component
+    const getIcon = (iconName: string) => {
+        const lower = (iconName || "").toLowerCase();
+        if (lower.includes("user")) return <Users className="w-8 h-8 text-primary" />;
+        if (lower.includes("coffee") || lower.includes("cafe")) return <Coffee className="w-8 h-8 text-secondary" />;
+        if (lower.includes("party") || lower.includes("utensil")) return <Utensils className="w-8 h-8 text-accent" />;
+        if (lower.includes("car") || lower.includes("parking")) return <Car className="w-8 h-8 text-primary" />;
+        if (lower.includes("shield") || lower.includes("safety")) return <Shield className="w-8 h-8 text-secondary" />;
+        if (lower.includes("wifi") || lower.includes("amenit")) return <Wifi className="w-8 h-8 text-accent" />;
+        return <Zap className="w-8 h-8 text-primary" />;
+    };
 
     return (
         <main className="bg-background text-white min-h-screen pt-24">
@@ -65,12 +41,12 @@ export default function FacilitiesPage() {
             <section className="relative px-4 pb-32 md:pb-40">
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {facilities.map((facility, index) => (
-                            <ScrollReveal key={index} animation="fade" delay={index * 0.1}>
+                        {facilities.map((facility: any, index: number) => (
+                            <ScrollReveal key={facility.id || index} animation="fade" delay={index * 0.1}>
                                 <div className="bg-surface-800 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors flex flex-col overflow-hidden group">
                                     <div className="h-48 overflow-hidden relative flex-shrink-0">
                                         <img
-                                            src={`/images/uploads/img-${(index % 10) + 1}.jpg`}
+                                            src={facility.image_url || `/images/uploads/img-${(index % 6) + 1}.jpg`}
                                             alt={facility.title}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             onError={(e) => {
@@ -79,7 +55,7 @@ export default function FacilitiesPage() {
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-surface-800 to-transparent opacity-60" />
                                         <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-md p-2 rounded-xl">
-                                            {facility.icon}
+                                            {getIcon(facility.icon)}
                                         </div>
                                     </div>
                                     <div className="p-6 flex-grow flex flex-col">
@@ -90,12 +66,17 @@ export default function FacilitiesPage() {
                                             {facility.description}
                                         </p>
                                         <ul className="space-y-2 mt-auto">
-                                            {facility.items.map((item, i) => (
+                                            {Array.isArray(facility.items) ? facility.items.map((item: string, i: number) => (
                                                 <li key={i} className="flex items-center gap-2 text-sm text-white/60">
                                                     <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                                                     {item}
                                                 </li>
-                                            ))}
+                                            )) : (
+                                                <li className="flex items-center gap-2 text-sm text-white/60">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                                                    {facility.items}
+                                                </li>
+                                            )}
                                         </ul>
                                     </div>
                                 </div>

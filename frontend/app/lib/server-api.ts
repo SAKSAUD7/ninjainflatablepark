@@ -29,3 +29,53 @@ export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
 
     return res;
 }
+
+export async function postAPI(endpoint: string, data: any) {
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+    };
+
+    const res = await fetch(`${API_URL}${endpoint}`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(data),
+        cache: "no-store",
+    });
+
+    if (res.status === 401) return null;
+    return res.json();
+}
+
+export async function putAPI(endpoint: string, data: any) {
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+    };
+
+    const res = await fetch(`${API_URL}${endpoint}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(data),
+        cache: "no-store",
+    });
+
+    if (res.status === 401) return null;
+    return res.json();
+}
+
+export async function deleteAPI(endpoint: string) {
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+    };
+
+    const res = await fetch(`${API_URL}${endpoint}`, {
+        method: "DELETE",
+        headers,
+        cache: "no-store",
+    });
+
+    if (res.status === 401) return null;
+    return res.status === 204;
+}

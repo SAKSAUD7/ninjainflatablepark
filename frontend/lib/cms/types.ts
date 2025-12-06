@@ -20,6 +20,7 @@ export interface FieldSchema {
     defaultValue?: any;
     min?: number;
     max?: number;
+    readOnly?: boolean;
 }
 
 export interface ModelSchema {
