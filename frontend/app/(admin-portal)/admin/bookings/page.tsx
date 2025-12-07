@@ -5,6 +5,7 @@ import { getSessionBookings } from "../../../actions/admin";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
 import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";
+import { getCachedData, setCachedData, clearCacheByPrefix } from "@/lib/admin-cache";
 import {
     Search,
     Download,
@@ -34,9 +35,21 @@ export default function AdminBookings() {
 
     async function loadBookings() {
         try {
+            // Check cache first
+            const cached = getCachedData<any[]>('session-bookings');
+            if (cached) {
+                setBookings(cached);
+                setFilteredBookings(cached);
+                setLoading(false);
+                return;
+            }
+
             const data = await getSessionBookings();
             setBookings(data);
             setFilteredBookings(data);
+
+            // Cache the data
+            setCachedData('session-bookings', data);
         } catch (error) {
             console.error("Error loading bookings:", error);
         } finally {

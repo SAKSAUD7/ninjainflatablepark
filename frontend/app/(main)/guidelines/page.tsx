@@ -4,7 +4,6 @@ import { getGuidelineCategories } from '@/app/actions/guideline-categories';
 import { getLegalDocuments } from '@/app/actions/legal-documents';
 import GuidelinesContent from "./components/GuidelinesContent";
 
-export const dynamic = 'force-dynamic';
 
 export default async function GuidelinesPage() {
     // Fetch all data in parallel

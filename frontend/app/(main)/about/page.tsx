@@ -7,7 +7,6 @@ import { getValueItems } from "../../actions/value-items";
 import { getFaqs } from "../../actions/faqs";
 import { getInstagramReels } from "../../actions/instagram-reels";
 
-export const dynamic = 'force-dynamic';
 
 export default async function AboutPage() {
     const [

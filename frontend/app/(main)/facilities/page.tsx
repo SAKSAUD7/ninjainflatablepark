@@ -2,7 +2,6 @@ import { ScrollReveal, SectionDivider } from "@repo/ui";
 import { Coffee, Car, Shield, Wifi, ShoppingBag, Utensils, Users, Baby, Lock, Zap } from "lucide-react";
 import { getFacilityItems } from "@/app/actions/facility-items";
 
-export const dynamic = 'force-dynamic';
 
 export default async function FacilitiesPage() {
     const facilities = await getFacilityItems() as any[];

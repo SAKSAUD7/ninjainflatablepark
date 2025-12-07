@@ -86,11 +86,13 @@ export default function ParticipantCollection({ onSubmit, onBack, totalParticipa
             return;
         }
 
-        const totalAdded = adults.length + minors.length;
-        if (totalAdded < totalParticipants) {
-            setError(`Please add details for all ${totalParticipants} participants (currently ${totalAdded})`);
-            return;
-        }
+        // REMOVED: Strict participant count validation
+        // Allow booking with just primary contact info
+        // const totalAdded = adults.length + minors.length;
+        // if (totalAdded < totalParticipants) {
+        //     setError(`Please add details for all ${totalParticipants} participants (currently ${totalAdded})`);
+        //     return;
+        // }
 
         if (!waiverSigned) {
             setError('Please agree to the waiver terms');
@@ -122,8 +124,8 @@ export default function ParticipantCollection({ onSubmit, onBack, totalParticipa
             <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
                 <h2 className="text-3xl font-display font-bold mb-2 text-primary">Participant Details</h2>
                 <p className="text-white/70 mb-6">
-                    Please provide details for all {totalParticipants} participants
-                    <span className="ml-2 text-sm">({totalAdded}/{totalParticipants} added)</span>
+                    Please provide details for the primary contact. You can add more participants now or later.
+                    <span className="ml-2 text-sm">({totalAdded} added)</span>
                 </p>
 
                 {error && (

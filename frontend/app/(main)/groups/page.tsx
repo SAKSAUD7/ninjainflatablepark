@@ -4,7 +4,6 @@ import { getGroupPackages } from '@/app/actions/group-packages';
 import { getGroupBenefits } from '@/app/actions/group-benefits';
 import GroupsContent from './components/GroupsContent';
 
-export const dynamic = 'force-dynamic';
 
 export default async function GroupsPage() {
     // Fetch all data in parallel

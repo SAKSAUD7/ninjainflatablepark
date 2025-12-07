@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { getCachedData, setCachedData } from "@/lib/admin-cache";
 import {
     Search,
     Download,
@@ -32,9 +33,20 @@ export default function AdminWaivers() {
 
     async function loadWaivers() {
         try {
+            // Check cache first
+            const cached = getCachedData<any[]>('waivers');
+            if (cached) {
+                setWaivers(cached);
+                setLoading(false);
+                return;
+            }
+
             const response = await fetch(`${API_URL}/bookings/waivers/`);
             const data = await response.json();
             setWaivers(data);
+
+            // Cache the data
+            setCachedData('waivers', data);
         } catch (error) {
             console.error('Failed to load waivers:', error);
         } finally {
