@@ -1,71 +1,93 @@
-# Admin Credentials - SUPER_ADMIN Access
+# Ninja Inflatable Park - Admin Login Instructions
 
-## 🔑 Login Credentials
+## 🔐 **Admin Panel Access**
 
-### Email
-```
-admin@ninja.com
-```
+### **Custom Admin (Frontend)**
+**URL**: `http://localhost:5000/admin`
 
-### Password  
+**Credentials**:
 ```
-admin123
-```
-
-### Alternative Account
-```
-Email: superadmin@ninja.com
-Password: SuperAdmin@123
+Email: superadmin@ninjapark.com
+Password: [Your actual password]
 ```
 
-## ⚠️ IMPORTANT STEPS TO FIX THE ISSUE
+---
 
-The database has been updated, but you're seeing "VIEWER" because:
-1. The JWT session cookie is caching the old role
-2. The dev server might be locking the database
+### **Django Admin (Backend)**
+**URL**: `http://localhost:8000/admin`
 
-### Solution:
+**Superuser Accounts**:
+```
+Email: superadmin@ninjapark.com
+Password: [Your actual password]
+```
 
-1. **Stop the dev server** (if running)
-   - Press `Ctrl+C` in the terminal where `npm run dev` is running
+---
 
-2. **Clear browser cookies** for localhost:3000/admin
-   - Or use Incognito/Private browsing mode
+## 📋 **What You Can Access**
 
-3. **Restart the dev server**
+### Frontend Admin (`/admin`)
+- Dashboard with stats
+- All Bookings management
+- Session Bookings
+- Party Bookings
+- Waivers management
+- Customers
+- CMS content editing
+- Settings
+
+### Django Admin (`/admin`)
+- Full database access
+- All models (Bookings, Waivers, CMS, etc.)
+- User management
+- Direct database editing
+
+---
+
+## 🚀 **Quick Start**
+
+1. **Start Backend**:
+   ```bash
+   cd backend
+   python manage.py runserver
    ```
+
+2. **Start Frontend**:
+   ```bash
+   cd frontend
    npm run dev
    ```
 
-4. **Login again** with the credentials above
+3. **Access Admin**:
+   - Frontend: `http://localhost:5000/admin`
+   - Backend: `http://localhost:8000/admin`
 
-5. You should now see **ALL** sidebar navigation options with SUPER_ADMIN access
+---
 
-## 🔧 If Still Not Working
+## ⚠️ **Important Notes**
 
-Run this command to force-update the database:
+- **Production**: Change these credentials before deploying!
+- **Security**: Never commit passwords to git
+- **Backup**: Keep admin credentials in a secure location
+- **Access**: Only share with authorized personnel
+
+---
+
+## 🔧 **Troubleshooting**
+
+### Can't Login?
+1. Clear browser cookies
+2. Try incognito mode
+3. Verify backend is running
+4. Check database has superuser
+
+### Forgot Password?
 ```bash
-node packages/database/force-fix-admin.js
+cd backend
+python manage.py changepassword superadmin@ninjapark.com
 ```
 
-Then repeat steps 1-4 above.
+---
 
-## 📋 What You Should See After Login
-
-With SUPER_ADMIN access, the sidebar will show:
-- ✅ Dashboard
-- ✅ All Bookings  
-- ✅ Session Bookings
-- ✅ Party Bookings
-- ✅ Customers
-- ✅ Waivers
-- ✅ Vouchers
-- ✅ Activities
-- ✅ Banners
-- ✅ FAQs
-- ✅ Settings
-- ✅ Admin Users
-- ✅ Activity Logs
-- ✅ And all other options
-
-The role shown in the header should be "SUPER_ADMIN" not "VIEWER".
+**Last Updated**: December 2025
+**Project**: Ninja Inflatable Park Management System
