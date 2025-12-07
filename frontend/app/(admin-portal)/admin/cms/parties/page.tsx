@@ -3,6 +3,7 @@ import { getPageSections } from '@/app/actions/page-sections';
 import { getPartyPackages } from '@/app/actions/party-packages';
 import { HeroEditor } from '@/components/admin/cms/home/HeroEditor';
 import { TermsEditor } from '@/components/admin/cms/parties/TermsEditor';
+import { PartyAvailabilityEditor } from '@/components/admin/cms/parties/PartyAvailabilityEditor';
 import { CMSBackLink } from '@/components/admin/cms/CMSBackLink';
 import Link from 'next/link';
 import { Package, Settings } from 'lucide-react';
@@ -32,9 +33,9 @@ export default async function PartiesAdminPage() {
                     <HeroEditor section={heroSection} pageSlug="party-booking" />
                 </section>
 
-                {/* Terms Section Editor */}
+                {/* Party Availability Editor */}
                 <section>
-                    <TermsEditor section={termsSection} pageSlug="party-booking" />
+                    <PartyAvailabilityEditor />
                 </section>
 
                 {/* Terms Section Editor */}

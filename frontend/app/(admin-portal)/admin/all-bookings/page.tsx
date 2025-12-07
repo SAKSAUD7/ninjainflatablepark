@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getAllBookings } from "../../../actions/admin";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
+import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";
 import {
     Search,
     Download,
@@ -22,6 +23,7 @@ export default function AllBookingsPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [typeFilter, setTypeFilter] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+    const [dateFilter, setDateFilter] = useState("all");
 
     useEffect(() => {
         loadBookings();
@@ -29,7 +31,7 @@ export default function AllBookingsPage() {
 
     useEffect(() => {
         filterBookings();
-    }, [searchTerm, typeFilter, statusFilter, allBookings]);
+    }, [searchTerm, typeFilter, statusFilter, dateFilter, allBookings]);
 
     async function loadBookings() {
         try {
@@ -72,6 +74,9 @@ export default function AllBookingsPage() {
                 booking.booking_status?.toUpperCase() === statusFilter.toUpperCase()
             );
         }
+
+        // Date filter
+        filtered = filterBookingsByDate(filtered, dateFilter);
 
         setFilteredBookings(filtered);
     }
@@ -135,6 +140,7 @@ export default function AllBookingsPage() {
                         <option value="CANCELLED">Cancelled</option>
                         <option value="COMPLETED">Completed</option>
                     </select>
+                    <DateFilter value={dateFilter} onChange={setDateFilter} />
                 </div>
             </div>
 

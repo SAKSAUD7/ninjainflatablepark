@@ -79,7 +79,7 @@ export default function AttractionsContent({ activities, facilities, hero }: Att
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {facilities.length > 0 ? facilities.map((facility, index) => (
                             <ScrollReveal key={facility.id || index} animation="fade" delay={index * 0.1}>
-                                <div className="bg-surface-800 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors flex flex-col overflow-hidden group">
+                                <div className="bg-surface-800 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors flex flex-col overflow-hidden group h-full">
                                     <div className="h-48 overflow-hidden relative flex-shrink-0">
                                         <img
                                             src={facility.image_url || `/images/uploads/img-${(index % 6) + 1}.jpg`}
@@ -100,19 +100,19 @@ export default function AttractionsContent({ activities, facilities, hero }: Att
                                         <h3 className="text-2xl font-display font-bold mb-3 text-white">
                                             {facility.title || facility.name}
                                         </h3>
-                                        <p className="text-white/70 mb-6">
+                                        <p className="text-white/70 mb-6 line-clamp-3">
                                             {facility.description}
                                         </p>
                                         <ul className="space-y-2 mt-auto">
                                             {/* Handle items if they are array or separated string */}
-                                            {Array.isArray(facility.items) ? facility.items.map((item: string, i: number) => (
+                                            {Array.isArray(facility.items) ? facility.items.slice(0, 4).map((item: string, i: number) => (
                                                 <li key={i} className="flex items-center gap-2 text-sm text-white/60">
                                                     <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                                                     {typeof item === 'string' ? item : (item as any).value || (item as any).name || ""}
                                                 </li>
                                             )) : (
                                                 // Fallback if items/features is just comma separated string or null or using 'features' key
-                                                (facility.items || facility.features || "").toString().split(',').filter((x: string) => x.trim()).map((item: string, i: number) => (
+                                                (facility.items || facility.features || "").toString().split(',').filter((x: string) => x.trim()).slice(0, 4).map((item: string, i: number) => (
                                                     <li key={i} className="flex items-center gap-2 text-sm text-white/60">
                                                         <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
                                                         {item.trim()}

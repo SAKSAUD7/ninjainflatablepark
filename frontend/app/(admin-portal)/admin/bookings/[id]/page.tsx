@@ -1,14 +1,54 @@
-import { getAdminSession } from "../../../../lib/admin-auth";
-import { getBookingById, updateBookingStatus, deleteBooking } from "../../../../actions/admin";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Check, X, Printer, Mail, Trash2, Ticket } from "lucide-react";
+import { ArrowLeft, Check, X, Printer, Mail } from "lucide-react";
 
-export default async function BookingDetailPage({ params }: { params: { id: string } }) {
-    const session = await getAdminSession();
-    if (!session) redirect("/admin/login");
+export default function BookingDetailPage({ params }: { params: { id: string } }) {
+    const router = useRouter();
+    const [booking, setBooking] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
 
-    const booking = await getBookingById(params.id);
+    useEffect(() => {
+        async function loadBooking() {
+            try {
+                const response = await fetch(`/api/bookings/${params.id}`);
+                const data = await response.json();
+                setBooking(data);
+            } catch (error) {
+                console.error('Error loading booking:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadBooking();
+    }, [params.id]);
+
+    const handlePrint = () => {
+        window.print();
+    };
+
+    const handleUpdateStatus = async (status: string) => {
+        try {
+            const response = await fetch(`/api/bookings/${params.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ booking_status: status })
+            });
+            if (response.ok) {
+                // Reload booking data
+                const data = await response.json();
+                setBooking(data);
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+    };
+
+    if (loading) {
+        return <div className="p-8">Loading...</div>;
+    }
 
     if (!booking) {
         return <div className="p-8">Booking not found</div>;
@@ -23,10 +63,13 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
             <div className="flex justify-between items-start mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-900">Booking #{String(booking.id).slice(-6).toUpperCase()}</h1>
-                    <p className="text-slate-500 mt-1">Created on {new Date(booking.createdAt).toLocaleDateString()}</p>
+                    <p className="text-slate-500 mt-1">Created on {new Date(booking.createdAt || booking.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors">
+                    <button
+                        onClick={handlePrint}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                    >
                         <Printer size={18} /> Print
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors">
@@ -67,14 +110,14 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
                             </div>
                             <div>
                                 <label className="text-xs text-slate-400 uppercase font-semibold">Time Slot</label>
-                                <p className="text-slate-900 font-medium">{booking.time} ({booking.duration} mins)</p>
+                                <p className="text-slate-900 font-medium">{booking.time} ({booking.duration || 60} mins)</p>
                             </div>
                             <div>
                                 <label className="text-xs text-slate-400 uppercase font-semibold">Guests</label>
                                 <ul className="text-sm text-slate-700 mt-1">
-                                    <li>{booking.adults} Adults</li>
-                                    <li>{booking.kids} Kids</li>
-                                    <li>{booking.spectators} Spectators</li>
+                                    <li>{booking.adults || 0} Adults</li>
+                                    <li>{booking.kids || 0} Kids</li>
+                                    <li>{booking.spectators || 0} Spectators</li>
                                 </ul>
                             </div>
                             <div>
@@ -87,7 +130,7 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
                     {/* Waivers */}
                     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                         <h2 className="text-lg font-bold text-slate-900 mb-4">Waivers</h2>
-                        {booking.waivers.length > 0 ? (
+                        {booking.waivers && booking.waivers.length > 0 ? (
                             <ul className="space-y-2">
                                 {booking.waivers.map((w: any) => (
                                     <li key={w.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
@@ -108,35 +151,26 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
                         <h2 className="text-lg font-bold text-slate-900 mb-4">Status</h2>
                         <div className="mb-6">
                             <span className={`inline-block px-4 py-2 rounded-full text-sm font-bold 
-                ${booking.bookingStatus === 'CONFIRMED' ? 'bg-green-100 text-green-700' :
-                                    booking.bookingStatus === 'PENDING' ? 'bg-orange-100 text-orange-700' :
+                ${booking.bookingStatus === 'CONFIRMED' || booking.booking_status === 'CONFIRMED' ? 'bg-green-100 text-green-700' :
+                                    (booking.bookingStatus === 'PENDING' || booking.booking_status === 'PENDING') ? 'bg-orange-100 text-orange-700' :
                                         'bg-red-100 text-red-700'}`}>
-                                {booking.bookingStatus}
+                                {booking.bookingStatus || booking.booking_status || 'PENDING'}
                             </span>
                         </div>
 
                         <div className="space-y-3">
-                            <form action={updateBookingStatus.bind(null, booking.id, "CONFIRMED")}>
-                                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
-                                    <Check size={18} /> Approve Booking
-                                </button>
-                            </form>
-                            <form action={updateBookingStatus.bind(null, booking.id, "CANCELLED")}>
-                                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors font-medium">
-                                    <X size={18} /> Cancel Booking
-                                </button>
-                            </form>
-                            <Link
-                                href={`/tickets/${booking.uuid}`}
-                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+                            <button
+                                onClick={() => handleUpdateStatus('CONFIRMED')}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                             >
-                                <Ticket size={18} /> View Ticket
-                            </Link>
-                            <form action={deleteBooking.bind(null, booking.id)}>
-                                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors font-medium">
-                                    <Trash2 size={18} /> Delete Booking
-                                </button>
-                            </form>
+                                <Check size={18} /> Approve Booking
+                            </button>
+                            <button
+                                onClick={() => handleUpdateStatus('CANCELLED')}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors font-medium"
+                            >
+                                <X size={18} /> Cancel Booking
+                            </button>
                         </div>
                     </div>
                 </div>

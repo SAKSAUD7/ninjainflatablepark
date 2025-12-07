@@ -2,15 +2,64 @@
 
 import { useState } from "react";
 import { ScrollReveal, BouncyButton } from "@repo/ui";
-import { FileSignature, CheckCircle } from "lucide-react";
+import { FileSignature, CheckCircle, User, Mail, Phone, AlertCircle } from "lucide-react";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 export default function KioskWaiverPage() {
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        dob: "",
+        participant_type: "ADULT",
+        emergency_contact: "",
+    });
+    const [submitting, setSubmitting] = useState(false);
     const [signed, setSigned] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleSign = (e: React.FormEvent) => {
+    const handleSign = async (e: React.FormEvent) => {
         e.preventDefault();
-        // In a real implementation, this would submit the waiver
-        setSigned(true);
+        setSubmitting(true);
+        setError("");
+
+        try {
+            const response = await fetch(`${API_URL}/bookings/waivers/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    version: "1.0",
+                    is_primary_signer: true,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || "Failed to submit waiver");
+            }
+
+            setSigned(true);
+            // Reset form after 3 seconds
+            setTimeout(() => {
+                setSigned(false);
+                setFormData({
+                    name: "",
+                    email: "",
+                    phone: "",
+                    dob: "",
+                    participant_type: "ADULT",
+                    emergency_contact: "",
+                });
+            }, 3000);
+        } catch (err: any) {
+            setError(err.message || "Failed to submit waiver");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     if (signed) {
@@ -26,9 +75,9 @@ export default function KioskWaiverPage() {
                     <p className="text-xl text-white/80 mb-8">
                         Thank you for signing. You may now proceed to the check-in counter.
                     </p>
-                    <BouncyButton onClick={() => setSigned(false)} variant="secondary">
-                        Sign Another Waiver
-                    </BouncyButton>
+                    <p className="text-sm text-white/50">
+                        Redirecting to new form in 3 seconds...
+                    </p>
                 </div>
             </main>
         );
@@ -48,50 +97,157 @@ export default function KioskWaiverPage() {
                             </span>
                         </h1>
                         <p className="text-xl text-white/70">
-                            Please sign your waiver below
+                            Digital Liability Waiver
                         </p>
                     </div>
                 </ScrollReveal>
 
                 <ScrollReveal animation="scale">
-                    <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10 text-center">
-                        <div className="py-12 border-2 border-dashed border-white/20 rounded-2xl mb-8 bg-black/20">
-                            <p className="text-white/50 text-lg">
-                                Digital Signature Pad Coming Soon
-                            </p>
-                        </div>
+                    <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
+                        {error && (
+                            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl flex items-start gap-3">
+                                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                                <p className="text-red-200 text-sm">{error}</p>
+                            </div>
+                        )}
 
-                        <form onSubmit={handleSign} className="max-w-md mx-auto">
-                            <div className="mb-6 text-left">
+                        <form onSubmit={handleSign} className="space-y-6">
+                            {/* Participant Type */}
+                            <div>
+                                <label className="block text-sm font-bold mb-3 text-white/80">
+                                    Participant Type *
+                                </label>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, participant_type: "ADULT" })}
+                                        className={`p-4 rounded-xl border-2 transition-all ${formData.participant_type === "ADULT"
+                                                ? "border-primary bg-primary/20"
+                                                : "border-white/20 hover:border-white/40"
+                                            }`}
+                                    >
+                                        <User className="w-6 h-6 mx-auto mb-2 text-white" />
+                                        <span className="font-medium text-white">Adult</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, participant_type: "MINOR" })}
+                                        className={`p-4 rounded-xl border-2 transition-all ${formData.participant_type === "MINOR"
+                                                ? "border-primary bg-primary/20"
+                                                : "border-white/20 hover:border-white/40"
+                                            }`}
+                                    >
+                                        <User className="w-6 h-6 mx-auto mb-2 text-white" />
+                                        <span className="font-medium text-white">Minor</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Name */}
+                            <div>
                                 <label className="block text-sm font-bold mb-2 text-white/80">
-                                    Full Name
+                                    Full Name *
                                 </label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white"
-                                    placeholder="Enter your full name"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
+                                    placeholder="Enter full name"
                                 />
                             </div>
 
-                            <div className="flex items-center gap-3 mb-8 text-left bg-primary/10 p-4 rounded-xl border border-primary/20">
-                                <input
-                                    type="checkbox"
-                                    required
-                                    id="kiosk-agree"
-                                    className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary"
-                                />
-                                <label htmlFor="kiosk-agree" className="text-sm text-white/90">
-                                    I agree to the <a href="/waiver-terms" target="_blank" className="text-primary hover:underline">Terms & Conditions</a>
+                            {/* Email */}
+                            <div>
+                                <label className="block text-sm font-bold mb-2 text-white/80">
+                                    Email Address {formData.participant_type === "ADULT" && "*"}
                                 </label>
+                                <input
+                                    type="email"
+                                    required={formData.participant_type === "ADULT"}
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
+                                    placeholder="email@example.com"
+                                />
+                            </div>
+
+                            {/* Phone */}
+                            <div>
+                                <label className="block text-sm font-bold mb-2 text-white/80">
+                                    Phone Number {formData.participant_type === "ADULT" && "*"}
+                                </label>
+                                <input
+                                    type="tel"
+                                    required={formData.participant_type === "ADULT"}
+                                    value={formData.phone}
+                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
+                                    placeholder="(123) 456-7890"
+                                />
+                            </div>
+
+                            {/* Date of Birth */}
+                            <div>
+                                <label className="block text-sm font-bold mb-2 text-white/80">
+                                    Date of Birth
+                                </label>
+                                <input
+                                    type="date"
+                                    value={formData.dob}
+                                    onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
+                                />
+                            </div>
+
+                            {/* Emergency Contact */}
+                            <div>
+                                <label className="block text-sm font-bold mb-2 text-white/80">
+                                    Emergency Contact {formData.participant_type === "MINOR" && "*"}
+                                </label>
+                                <input
+                                    type="text"
+                                    required={formData.participant_type === "MINOR"}
+                                    value={formData.emergency_contact}
+                                    onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })}
+                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
+                                    placeholder="Guardian name and phone"
+                                />
+                            </div>
+
+                            {/* Agreement */}
+                            <div className="bg-black/30 p-6 rounded-xl border border-white/10">
+                                <h3 className="font-bold text-white mb-3">Liability Waiver Agreement</h3>
+                                <div className="text-sm text-white/60 space-y-2 max-h-32 overflow-y-auto">
+                                    <p>
+                                        I acknowledge that participation involves inherent risks and voluntarily assume all risks.
+                                        I release Ninja Inflatable Park from any liability for injury or loss.
+                                    </p>
+                                </div>
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full px-8 py-4 bg-primary hover:bg-primary-light text-black font-bold rounded-xl transition-all"
+                                disabled={submitting}
+                                className="w-full px-8 py-4 bg-primary hover:bg-primary-light text-black font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-lg"
                             >
-                                Sign Waiver
+                                {submitting ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                                        Submitting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <FileSignature className="w-6 h-6" />
+                                        Sign Waiver
+                                    </>
+                                )}
                             </button>
+
+                            <p className="text-xs text-white/40 text-center">
+                                By clicking "Sign Waiver", you agree to the terms outlined above.
+                            </p>
                         </form>
                     </div>
                 </ScrollReveal>

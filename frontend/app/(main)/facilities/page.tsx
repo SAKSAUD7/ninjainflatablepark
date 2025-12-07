@@ -5,7 +5,7 @@ import { getFacilityItems } from "@/app/actions/facility-items";
 export const dynamic = 'force-dynamic';
 
 export default async function FacilitiesPage() {
-    const facilities = await getFacilityItems();
+    const facilities = await getFacilityItems() as any[];
 
     // Helper to map icon string to Lucide component
     const getIcon = (iconName: string) => {

@@ -156,9 +156,18 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
 
                     {activeTab === "terms" && termsDoc && (
                         <ScrollReveal animation="fade">
-                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10 prose prose-invert max-w-none">
-                                <div className="whitespace-pre-wrap text-white/80 leading-relaxed">
-                                    {termsDoc.intro || termsDoc.content}
+                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
+                                <h2 className="text-3xl font-bold mb-4">{termsDoc.title}</h2>
+                                {termsDoc.intro && (
+                                    <p className="text-white/70 mb-8 text-lg">{termsDoc.intro}</p>
+                                )}
+                                <div className="space-y-8">
+                                    {(termsDoc.sections || []).map((section: any, index: number) => (
+                                        <div key={index} className="border-l-4 border-primary pl-6">
+                                            <h3 className="text-xl font-bold mb-3 text-primary">{section.title}</h3>
+                                            <p className="text-white/80 leading-relaxed">{section.content}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </ScrollReveal>
@@ -166,9 +175,18 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
 
                     {activeTab === "waiver" && waiverDoc && (
                         <ScrollReveal animation="fade">
-                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10 prose prose-invert max-w-none">
-                                <div className="whitespace-pre-wrap text-white/80 leading-relaxed">
-                                    {waiverDoc.intro || waiverDoc.content}
+                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
+                                <h2 className="text-3xl font-bold mb-4">{waiverDoc.title}</h2>
+                                {waiverDoc.intro && (
+                                    <p className="text-white/70 mb-8 text-lg">{waiverDoc.intro}</p>
+                                )}
+                                <div className="space-y-8">
+                                    {(waiverDoc.sections || []).map((section: any, index: number) => (
+                                        <div key={index} className="border-l-4 border-secondary pl-6">
+                                            <h3 className="text-xl font-bold mb-3 text-secondary">{section.title}</h3>
+                                            <p className="text-white/80 leading-relaxed">{section.content}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </ScrollReveal>
@@ -176,9 +194,18 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
 
                     {activeTab === "privacy" && privacyDoc && (
                         <ScrollReveal animation="fade">
-                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10 prose prose-invert max-w-none">
-                                <div className="whitespace-pre-wrap text-white/80 leading-relaxed">
-                                    {privacyDoc.intro || privacyDoc.content}
+                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
+                                <h2 className="text-3xl font-bold mb-4">{privacyDoc.title}</h2>
+                                {privacyDoc.intro && (
+                                    <p className="text-white/70 mb-8 text-lg">{privacyDoc.intro}</p>
+                                )}
+                                <div className="space-y-8">
+                                    {(privacyDoc.sections || []).map((section: any, index: number) => (
+                                        <div key={index} className="border-l-4 border-accent pl-6">
+                                            <h3 className="text-xl font-bold mb-3 text-accent">{section.title}</h3>
+                                            <p className="text-white/80 leading-relaxed">{section.content}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </ScrollReveal>

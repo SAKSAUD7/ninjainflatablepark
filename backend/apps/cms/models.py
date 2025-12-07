@@ -51,6 +51,26 @@ class Faq(models.Model):
     def __str__(self):
         return self.question[:50]
 
+class Testimonial(models.Model):
+    TYPE_CHOICES = [
+        ('TEXT', 'Text'),
+        ('VIDEO', 'Video'),
+    ]
+    name = models.CharField(max_length=255)
+    role = models.CharField(max_length=100, null=True, blank=True)
+    content = models.TextField()
+    rating = models.IntegerField(default=5)
+    image_url = models.URLField(null=True, blank=True)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='TEXT')
+    video_url = models.URLField(null=True, blank=True)
+    thumbnail_url = models.URLField(null=True, blank=True)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
 class SocialLink(models.Model):
     platform = models.CharField(max_length=50)
     url = models.URLField()

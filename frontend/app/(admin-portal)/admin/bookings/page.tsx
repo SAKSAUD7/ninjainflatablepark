@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { getSessionBookings } from "../../../actions/admin";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
+import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";
 import {
     Search,
     Download,
@@ -21,6 +22,7 @@ export default function AdminBookings() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
+    const [dateFilter, setDateFilter] = useState("all");
 
     useEffect(() => {
         loadBookings();
@@ -28,7 +30,7 @@ export default function AdminBookings() {
 
     useEffect(() => {
         filterBookings();
-    }, [searchTerm, statusFilter, bookings]);
+    }, [searchTerm, statusFilter, dateFilter, bookings]);
 
     async function loadBookings() {
         try {
@@ -63,6 +65,16 @@ export default function AdminBookings() {
                 (booking.bookingStatus || booking.status) === statusFilter.toUpperCase()
             );
         }
+
+        // Date filter
+        filtered = filterBookingsByDate(filtered, dateFilter);
+
+        // Sort by created_at descending (newest first)
+        filtered.sort((a, b) => {
+            const dateA = new Date(a.createdAt || a.created_at || 0).getTime();
+            const dateB = new Date(b.createdAt || b.created_at || 0).getTime();
+            return dateB - dateA; // Descending order (newest first)
+        });
 
         setFilteredBookings(filtered);
     }
@@ -120,6 +132,7 @@ export default function AdminBookings() {
                         <option value="cancelled">Cancelled</option>
                         <option value="completed">Completed</option>
                     </select>
+                    <DateFilter value={dateFilter} onChange={setDateFilter} />
                 </div>
             </div>
 

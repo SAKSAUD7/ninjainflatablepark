@@ -14,6 +14,7 @@ import {
 import { StatusBadge } from "./StatusBadge";
 import Link from "next/link";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
+import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";
 
 interface Booking {
     id: string;
@@ -47,8 +48,9 @@ interface BookingTableProps {
 export function BookingTable({ bookings, title, type, readOnly = false }: BookingTableProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
+    const [dateFilter, setDateFilter] = useState("all");
 
-    const filteredBookings = bookings.filter(booking => {
+    let filteredBookings = bookings.filter(booking => {
         const matchesSearch =
             booking.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -58,6 +60,9 @@ export function BookingTable({ bookings, title, type, readOnly = false }: Bookin
 
         return matchesSearch && matchesStatus;
     });
+
+    // Apply date filter
+    filteredBookings = filterBookingsByDate(filteredBookings, dateFilter);
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200">
@@ -111,6 +116,7 @@ export function BookingTable({ bookings, title, type, readOnly = false }: Bookin
                             <option value="CANCELLED">Cancelled</option>
                         </select>
                     </div>
+                    <DateFilter value={dateFilter} onChange={setDateFilter} />
                 </div>
             </div>
 

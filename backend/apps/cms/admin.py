@@ -13,13 +13,24 @@ class BannerAdmin(admin.ModelAdmin):
     search_fields = ['title']
     ordering = ['order', '-created_at']
 
-# Activity admin registration removed - use Attractions in frontend CMS instead
-# @admin.register(Activity)
-# class ActivityAdmin(admin.ModelAdmin):
-#     list_display = ['name', 'active', 'order', 'created_at']
-#     list_filter = ['active', 'created_at']
-#     search_fields = ['name', 'description']
-#     ordering = ['order', '-created_at']
+@admin.register(Activity)
+class ActivityAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'active', 'order', 'created_at']
+    list_filter = ['active', 'created_at']
+    search_fields = ['name', 'description', 'short_description']
+    ordering = ['order', '-created_at']
+    prepopulated_fields = {'slug': ('name',)}
+    fieldsets = (
+        ('Basic Info', {
+            'fields': ('name', 'slug', 'active', 'order')
+        }),
+        ('Content', {
+            'fields': ('short_description', 'description')
+        }),
+        ('Media', {
+            'fields': ('image_url', 'gallery')
+        }),
+    )
 
 @admin.register(Faq)
 class FaqAdmin(admin.ModelAdmin):
@@ -97,10 +108,60 @@ class GuidelineCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(LegalDocument)
 class LegalDocumentAdmin(admin.ModelAdmin):
-    list_display = ['document_type', 'title', 'active', 'updated_at']
+    list_display = ['document_type', 'title', 'section_count', 'active', 'updated_at']
     list_filter = ['document_type', 'active']
-    search_fields = ['title']
+    search_fields = ['title', 'intro']
     ordering = ['document_type']
+    readonly_fields = ['sections_preview']
+    fieldsets = (
+        ('Document Info', {
+            'fields': ('document_type', 'title', 'active')
+        }),
+        ('Content', {
+            'fields': ('intro', 'sections', 'sections_preview'),
+            'description': 'Intro is optional introduction text. Sections is a JSON array of {title, content} objects.'
+        }),
+    )
+    
+    def get_readonly_fields(self, request, obj=None):
+        # Make document_type readonly after creation to prevent changing type
+        if obj:
+            return ['document_type', 'sections_preview']
+        return ['sections_preview']
+    
+    def section_count(self, obj):
+        """Display number of sections"""
+        return len(obj.sections) if obj.sections else 0
+    section_count.short_description = 'Sections'
+    
+    def sections_preview(self, obj):
+        """Display formatted preview of all sections"""
+        from django.utils.html import format_html
+        if not obj.sections:
+            return "No sections"
+        
+        html = '<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; max-width: 900px;">'
+        html += f'<h2 style="color: #2c3e50; margin-bottom: 20px;">{obj.title}</h2>'
+        
+        if obj.intro:
+            html += f'<div style="background: #e3f2fd; padding: 15px; border-left: 4px solid #2196f3; margin-bottom: 25px;">'
+            html += f'<strong style="color: #1976d2;">Introduction:</strong><br>'
+            html += f'<p style="margin: 10px 0 0 0; color: #424242;">{obj.intro}</p>'
+            html += '</div>'
+        
+        for i, section in enumerate(obj.sections, 1):
+            html += f'<div style="background: white; padding: 15px; margin-bottom: 15px; border-left: 4px solid #4caf50; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">'
+            html += f'<h3 style="color: #2e7d32; margin: 0 0 10px 0;">{i}. {section.get("title", "Untitled")}</h3>'
+            html += f'<p style="color: #424242; line-height: 1.6; margin: 0;">{section.get("content", "No content")}</p>'
+            html += '</div>'
+        
+        html += f'<div style="margin-top: 20px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107;">'
+        html += f'<strong>Total Sections: {len(obj.sections)}</strong>'
+        html += '</div>'
+        html += '</div>'
+        
+        return format_html(html)
+    sections_preview.short_description = 'Content Preview (Read-Only)'
 
 @admin.register(PageSection)
 class PageSectionAdmin(admin.ModelAdmin):

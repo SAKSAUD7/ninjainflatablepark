@@ -21,6 +21,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1
 export default function WaiverDetailsPage({ params }: { params: { id: string } }) {
     const router = useRouter();
     const [waiver, setWaiver] = useState<any>(null);
+    const [allWaivers, setAllWaivers] = useState<any[]>([]);
+    const [relatedWaivers, setRelatedWaivers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -29,9 +31,40 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
 
     async function loadWaiver() {
         try {
+            // Load the primary waiver
             const response = await fetch(`${API_URL}/bookings/waivers/${params.id}/`);
             const data = await response.json();
             setWaiver(data);
+
+            console.log('Primary waiver data:', data); // Debug log
+
+            // Load all waivers to find related ones
+            const allResponse = await fetch(`${API_URL}/bookings/waivers/`);
+            const allData = await allResponse.json();
+            setAllWaivers(allData);
+
+            console.log('All waivers:', allData); // Debug log
+
+            // Extract booking ID - handle both object and direct ID
+            const bookingId = typeof data.booking === 'object' ? data.booking?.id : data.booking;
+            const partyBookingId = typeof data.party_booking === 'object' ? data.party_booking?.id : data.party_booking;
+            const actualBookingId = bookingId || partyBookingId;
+            const bookingType = bookingId ? 'SESSION' : 'PARTY';
+
+            console.log('Looking for booking:', { actualBookingId, bookingType }); // Debug log
+
+            // Find all waivers for the same booking
+            const related = allData.filter((w: any) => {
+                const wBookingId = typeof w.booking === 'object' ? w.booking?.id : w.booking;
+                const wPartyBookingId = typeof w.party_booking === 'object' ? w.party_booking?.id : w.party_booking;
+                const wActualBookingId = wBookingId || wPartyBookingId;
+                const wBookingType = wBookingId ? 'SESSION' : 'PARTY';
+
+                return wActualBookingId === actualBookingId && wBookingType === bookingType && actualBookingId != null;
+            });
+
+            console.log('Found related waivers:', related); // Debug log
+            setRelatedWaivers(related);
         } catch (error) {
             console.error('Failed to load waiver:', error);
         } finally {
@@ -41,7 +74,7 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
 
     async function handleDownloadPDF() {
         try {
-            const response = await fetch(`${API_URL}/bookings/waivers-old/${params.id}/download_pdf/`);
+            const response = await fetch(`${API_URL}/bookings/waivers/${params.id}/download_pdf/`);
             const data = await response.json();
             alert(data.message || 'PDF download not yet implemented');
         } catch (error) {
@@ -66,8 +99,11 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
         );
     }
 
+    const adults = relatedWaivers.filter(w => w.participant_type === 'ADULT');
+    const minors = relatedWaivers.filter(w => w.participant_type === 'MINOR');
+
     return (
-        <div className="p-8 max-w-4xl mx-auto">
+        <div className="p-8 max-w-6xl mx-auto">
             {/* Header */}
             <div className="mb-6">
                 <Link
@@ -79,195 +115,165 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
                 </Link>
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900">Liability Waiver</h1>
-                        <p className="text-slate-500 mt-1">Waiver ID: #{waiver.id}</p>
+                        <h1 className="text-3xl font-bold text-slate-900">Booking Participants</h1>
+                        <p className="text-slate-500 mt-1">
+                            {waiver.booking_reference || 'Walk-in'} • {relatedWaivers.length} Total Participant{relatedWaivers.length !== 1 ? 's' : ''}
+                        </p>
                     </div>
-                    <button
-                        onClick={handleDownloadPDF}
-                        className="flex items-center gap-2 px-4 py-2 bg-neon-blue text-slate-900 rounded-lg hover:bg-blue-400 transition-colors font-bold"
-                    >
-                        <Download size={18} />
-                        Download PDF
-                    </button>
+                    <span className="px-3 py-1.5 rounded-full text-sm font-bold border bg-emerald-100 text-emerald-700 border-emerald-200 inline-flex items-center gap-2">
+                        <CheckCircle size={16} />
+                        All Signed
+                    </span>
                 </div>
             </div>
 
-            {/* Status Badge */}
+            {/* Related Booking Info */}
+            {(waiver.booking || waiver.party_booking) && (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">Booking Details</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <label className="text-xs font-medium text-slate-500 uppercase">Type</label>
+                            <p className="text-sm font-medium text-slate-900 mt-1">
+                                {waiver.booking ? 'Session Booking' : 'Party Booking'}
+                            </p>
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-slate-500 uppercase">Date</label>
+                            <p className="text-sm font-medium text-slate-900 mt-1">
+                                {typeof waiver.booking === 'object' ? waiver.booking?.date :
+                                    typeof waiver.party_booking === 'object' ? waiver.party_booking?.date : 'N/A'}
+                            </p>
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-slate-500 uppercase">Time</label>
+                            <p className="text-sm font-medium text-slate-900 mt-1">
+                                {typeof waiver.booking === 'object' ? waiver.booking?.time :
+                                    typeof waiver.party_booking === 'object' ? waiver.party_booking?.time : 'N/A'}
+                            </p>
+                        </div>
+                        <div>
+                            <label className="text-xs font-medium text-slate-500 uppercase">Booking ID</label>
+                            <p className="text-sm font-medium text-slate-900 mt-1">
+                                #{typeof waiver.booking === 'object' ? waiver.booking?.id :
+                                    typeof waiver.party_booking === 'object' ? waiver.party_booking?.id :
+                                        waiver.booking || waiver.party_booking}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Adults Section */}
             <div className="mb-6">
-                <span className="px-3 py-1.5 rounded-full text-sm font-bold border bg-emerald-100 text-emerald-700 border-emerald-200 inline-flex items-center gap-2">
-                    <CheckCircle size={16} />
-                    Signed & Verified
-                </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Signer Information */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                    <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                        <User className="w-5 h-5 text-neon-blue" />
-                        Signer Information
-                    </h3>
-
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-xs font-medium text-slate-500 uppercase">Full Name</label>
-                            <p className="text-sm font-medium text-slate-900 mt-1">{waiver.name}</p>
-                        </div>
-
-                        {waiver.email && (
-                            <div>
-                                <label className="text-xs font-medium text-slate-500 uppercase">Email Address</label>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <Mail size={14} className="text-slate-400" />
-                                    <p className="text-sm text-slate-900">{waiver.email}</p>
+                <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <User className="w-5 h-5 text-blue-600" />
+                    Adults ({adults.length})
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {adults.map((adult: any) => (
+                        <div key={adult.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                            <div className="flex items-start justify-between mb-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-lg">
+                                        {(adult.name || 'U').charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold text-slate-900">{adult.name}</p>
+                                        {adult.is_primary_signer && (
+                                            <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-700 font-medium">
+                                                Primary Signer
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-
-                        {waiver.phone && (
-                            <div>
-                                <label className="text-xs font-medium text-slate-500 uppercase">Phone Number</label>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <Phone size={14} className="text-slate-400" />
-                                    <p className="text-sm text-slate-900">{waiver.phone}</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {waiver.dob && (
-                            <div>
-                                <label className="text-xs font-medium text-slate-500 uppercase">Date of Birth</label>
-                                <p className="text-sm text-slate-900 mt-1">
-                                    {new Date(waiver.dob).toLocaleDateString()}
-                                </p>
-                            </div>
-                        )}
-
-                        <div>
-                            <label className="text-xs font-medium text-slate-500 uppercase">Participant Type</label>
-                            <div className="mt-1">
-                                <span className={`px-2.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${waiver.participant_type === 'ADULT'
-                                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                    : 'bg-purple-100 text-purple-700 border border-purple-200'
-                                    }`}>
-                                    {waiver.participant_type === 'ADULT' ? <User size={12} /> : <Users size={12} />}
-                                    {waiver.participant_type === 'ADULT' ? 'Adult' : 'Minor'}
+                                <span className="px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                    <CheckCircle size={12} className="inline mr-1" />
+                                    Signed
                                 </span>
                             </div>
-                        </div>
-
-                        {waiver.emergency_contact && (
-                            <div>
-                                <label className="text-xs font-medium text-slate-500 uppercase">Emergency Contact</label>
-                                <p className="text-sm text-slate-900 mt-1">{waiver.emergency_contact}</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Signing Details */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                    <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-neon-blue" />
-                        Signing Details
-                    </h3>
-
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-xs font-medium text-slate-500 uppercase">Signed On</label>
-                            <div className="flex items-center gap-2 mt-1">
-                                <Calendar size={14} className="text-slate-400" />
-                                <p className="text-sm text-slate-900">
-                                    {new Date(waiver.signed_at).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-2 mt-1">
-                                <Clock size={14} className="text-slate-400" />
-                                <p className="text-sm text-slate-500">
-                                    {new Date(waiver.signed_at).toLocaleTimeString()}
-                                </p>
+                            <div className="space-y-2 text-sm">
+                                {adult.email && (
+                                    <div className="flex items-center gap-2 text-slate-600">
+                                        <Mail size={14} className="text-slate-400" />
+                                        {adult.email}
+                                    </div>
+                                )}
+                                {adult.phone && (
+                                    <div className="flex items-center gap-2 text-slate-600">
+                                        <Phone size={14} className="text-slate-400" />
+                                        {adult.phone}
+                                    </div>
+                                )}
+                                {adult.dob && (
+                                    <div className="flex items-center gap-2 text-slate-600">
+                                        <Calendar size={14} className="text-slate-400" />
+                                        DOB: {new Date(adult.dob).toLocaleDateString()}
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-2 text-slate-500 text-xs pt-2 border-t border-slate-100">
+                                    <Clock size={12} />
+                                    Signed: {new Date(adult.signed_at).toLocaleString()}
+                                </div>
                             </div>
                         </div>
-
-                        {waiver.ip_address && (
-                            <div>
-                                <label className="text-xs font-medium text-slate-500 uppercase">IP Address</label>
-                                <p className="text-sm text-slate-900 mt-1 font-mono">{waiver.ip_address}</p>
-                            </div>
-                        )}
-
-                        <div>
-                            <label className="text-xs font-medium text-slate-500 uppercase">Waiver Version</label>
-                            <p className="text-sm text-slate-900 mt-1">{waiver.version}</p>
-                        </div>
-
-                        {waiver.is_primary_signer && (
-                            <div>
-                                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">
-                                    Primary Signer
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Related Booking */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:col-span-2">
-                    <h3 className="text-lg font-bold text-slate-900 mb-4">Related Booking</h3>
-
-                    {waiver.booking && (
-                        <div className="space-y-2">
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Booking Type:</span> Session Booking
-                            </p>
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Booking ID:</span> #{waiver.booking.id}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Date:</span> {waiver.booking.date}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Time:</span> {waiver.booking.time}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Participants:</span> {waiver.booking.adults} Adults, {waiver.booking.kids} Kids
-                            </p>
-                        </div>
-                    )}
-
-                    {waiver.party_booking && (
-                        <div className="space-y-2">
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Booking Type:</span> Party Booking
-                            </p>
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Booking ID:</span> #{waiver.party_booking.id}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Package:</span> {waiver.party_booking.package_name}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Date:</span> {waiver.party_booking.date}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Time:</span> {waiver.party_booking.time}
-                            </p>
-                            <p className="text-sm text-slate-600">
-                                <span className="font-medium">Participants:</span> {waiver.party_booking.adults} Adults, {waiver.party_booking.kids} Kids
-                            </p>
-                            {waiver.party_booking.birthday_child_name && (
-                                <p className="text-sm text-slate-600">
-                                    <span className="font-medium">Birthday Child:</span> {waiver.party_booking.birthday_child_name} (Age {waiver.party_booking.birthday_child_age})
-                                </p>
-                            )}
-                        </div>
-                    )}
-
-                    {!waiver.booking && !waiver.party_booking && (
-                        <p className="text-sm text-slate-500 italic">Walk-in waiver (no booking associated)</p>
-                    )}
+                    ))}
                 </div>
             </div>
+
+            {/* Minors Section */}
+            {minors.length > 0 && (
+                <div>
+                    <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <Users className="w-5 h-5 text-purple-600" />
+                        Minors ({minors.length})
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {minors.map((minor: any) => (
+                            <div key={minor.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-lg">
+                                            {(minor.name || 'U').charAt(0)}
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-slate-900">{minor.name}</p>
+                                            <span className="text-xs text-purple-600">Minor</span>
+                                        </div>
+                                    </div>
+                                    <span className="px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                        <CheckCircle size={12} className="inline mr-1" />
+                                        Signed
+                                    </span>
+                                </div>
+                                <div className="space-y-2 text-sm">
+                                    {minor.dob && (
+                                        <div className="flex items-center gap-2 text-slate-600">
+                                            <Calendar size={14} className="text-slate-400" />
+                                            DOB: {new Date(minor.dob).toLocaleDateString()}
+                                        </div>
+                                    )}
+                                    {minor.emergency_contact && (
+                                        <div className="text-slate-600">
+                                            <span className="text-xs text-slate-500">Guardian:</span> {minor.emergency_contact}
+                                        </div>
+                                    )}
+                                    <div className="flex items-center gap-2 text-slate-500 text-xs pt-2 border-t border-slate-100">
+                                        <Clock size={12} />
+                                        Signed: {new Date(minor.signed_at).toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {relatedWaivers.length === 0 && (
+                <div className="text-center text-slate-500 py-12">
+                    No participants found for this booking
+                </div>
+            )}
         </div>
     );
 }

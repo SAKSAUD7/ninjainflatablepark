@@ -36,6 +36,9 @@ class GlobalSettings(models.Model):
     maintenance_mode = models.BooleanField(default=False)
     waiver_required = models.BooleanField(default=True)
     
+    # Party Settings
+    party_availability = models.CharField(max_length=100, default="Thursday - Sunday", help_text="Party booking availability days")
+    
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

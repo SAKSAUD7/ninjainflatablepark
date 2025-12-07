@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+saftey guidlies the terms waivers privacy policyfrom django.core.management.base import BaseCommand
 from apps.cms.models import (
     PageSection, Activity, StatCard, TimelineItem, ValueItem, 
     Faq, ContactInfo, FacilityItem, GalleryItem, Testimonial, InstagramReel
