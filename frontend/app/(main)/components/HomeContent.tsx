@@ -21,7 +21,7 @@ interface HomeContentProps {
     stats: Stat[];
     gallery: GalleryItem[];
     banners: any[];
-    reviews: Array<{ id: string; url: string; img: string }>;
+
     settings?: any;
     activities: Activity[];
     hero?: {
@@ -36,7 +36,7 @@ interface HomeContentProps {
     };
 }
 
-export default function HomeContent({ stats, gallery, banners, reviews, settings, activities, hero, about }: HomeContentProps) {
+export default function HomeContent({ stats, gallery, banners, settings, activities, hero, about }: HomeContentProps) {
     const aboutText = about?.content || settings?.aboutText || "Ninja Inflatable Park was born from a simple idea: create a space where people of all ages can unleash their inner ninja, challenge themselves, and have an absolute blast doing it.";
     const aboutTitle = about?.title || "India's Biggest Inflatable Park";
     const aboutImage = about?.image || "/park-slides-action.jpg";
@@ -206,59 +206,7 @@ export default function HomeContent({ stats, gallery, banners, reviews, settings
                 <SectionDivider position="bottom" variant="wave" color="fill-background" />
             </section>
 
-            {/* Instagram Reels Section */}
-            <section className="relative py-12 md:py-20 px-4 bg-background">
-                <div className="max-w-7xl mx-auto">
-                    <ScrollReveal animation="fade" className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl lg:text-7xl font-display font-black mb-4">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-primary to-secondary">
-                                What Our Visitors Say
-                            </span>
-                        </h2>
-                        <p className="text-base md:text-xl text-white/70 max-w-2xl mx-auto">
-                            Real experiences from real people who've bounced with us!
-                        </p>
-                    </ScrollReveal>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        {reviews.length > 0 ? reviews.map((review, index) => (
-                            <ScrollReveal key={review.id} animation="scale" delay={index * 0.1}>
-                                <motion.a
-                                    href={review.url !== '#' ? review.url : undefined}
-                                    target={review.url !== '#' ? "_blank" : undefined}
-                                    rel={review.url !== '#' ? "noopener noreferrer" : undefined}
-                                    whileHover={{ scale: 1.05, y: -5 }}
-                                    className={`block relative aspect-[9/16] rounded-2xl overflow-hidden group ${review.url !== '#' ? 'cursor-pointer' : 'cursor-default'}`}
-                                >
-                                    <img
-                                        src={review.img}
-                                        alt={`Customer testimonial ${index + 1}`}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                        onError={(e) => {
-                                            e.currentTarget.src = "/park-slides-action.jpg";
-                                        }}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                    {review.url !== '#' && (
-                                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                                                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M8 5v14l11-7z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    )}
-                                </motion.a>
-                            </ScrollReveal>
-                        )) : (
-                            <div className="col-span-full text-center py-12">
-                                <p className="text-white/60 text-lg">No testimonials available yet. Be the first to share your experience!</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <SectionDivider position="bottom" variant="diagonal" color="fill-background-light" />
-            </section>
 
             {/* CTA Section */}
             <section className="relative py-16 md:py-32 px-4 bg-background-light">

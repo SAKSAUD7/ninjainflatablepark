@@ -1,16 +1,15 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { getPageSections, updatePageSection } from '@/app/actions/page-sections';
+import { getPageSections } from '@/app/actions/page-sections';
 import { getStatCards } from '@/app/actions/stat-cards';
 import { getTimelineItems } from '@/app/actions/timeline-items';
 import { getValueItems } from '@/app/actions/value-items';
 import { getFaqs } from '@/app/actions/faqs';
-import { AboutEditor } from '@/components/admin/cms/home/AboutEditor'; // Reusing this components
-import { CollectionList } from '@/components/admin/cms/CollectionList'; // For lists
-import { CMSBackLink } from '@/components/admin/cms/CMSBackLink';
+import { CollectionList } from '@/components/admin/cms/CollectionList';
 import { schemas } from '@/lib/cms/schema';
 import { Loader2 } from 'lucide-react';
+import { PageSectionEditor } from '@/app/(admin-portal)/admin/components/PageSectionEditor';
 
 export default function AboutAdminPage() {
     const [loading, setLoading] = useState(true);
@@ -63,16 +62,24 @@ export default function AboutAdminPage() {
                 <p className="text-slate-500">Manage content for the about us page</p>
             </div>
 
-            {/* Hero Section (Reusing structure but mapping accurately) */}
+            {/* Hero Section */}
             <section>
-                <h2 className="text-lg font-semibold text-slate-900 mb-4">Hero Section</h2>
-                {/* Note: AboutEditor is hardcoded for Home currently. We might need a GenericSectionEditor or create a specific AboutHeroEditor. 
-                    For now, asking user permission/plan to generalize editors is better, but I will use a placeholder or generic editor if available.
-                    Actually, I'll create a new component `PageSectionEditor` which is generic. 
-                 */}
-                <div className="p-4 bg-yellow-50 text-yellow-800 rounded-lg">
-                    TODO: Implement Generic PageSectionEditor for Hero & Story
-                </div>
+                <PageSectionEditor
+                    page="about"
+                    sectionKey="hero"
+                    sectionTitle="Hero Section"
+                    initialData={heroSection}
+                />
+            </section>
+
+            {/* Story Section */}
+            <section>
+                <PageSectionEditor
+                    page="about"
+                    sectionKey="story"
+                    sectionTitle="Our Story Section"
+                    initialData={storySection}
+                />
             </section>
 
             {/* Stats */}
@@ -83,8 +90,7 @@ export default function AboutAdminPage() {
                 <CollectionList
                     schema={schemas.stat_card}
                     items={stats}
-                    basePath="/admin/cms/stats" // Nested route or modal? User asked for single page editor mostly. 
-                    // Ideally handled via modal or inline. For now, list view.
+                    basePath="/admin/cms/stats"
                     titleField="label"
                     subtitleField="value"
                     showBackButton={false}
@@ -132,4 +138,3 @@ export default function AboutAdminPage() {
         </div>
     );
 }
-

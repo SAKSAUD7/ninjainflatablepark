@@ -3,13 +3,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import (
-    Banner, Activity, Faq, Testimonial, SocialLink, GalleryItem,
+    Banner, Activity, Faq, SocialLink, GalleryItem,
     StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
     PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
     Page, ContactMessage
 )
 from .serializers import (
-    BannerSerializer, ActivitySerializer, FaqSerializer, TestimonialSerializer, 
+    BannerSerializer, ActivitySerializer, FaqSerializer, 
     SocialLinkSerializer, GalleryItemSerializer,
     StatCardSerializer, InstagramReelSerializer, MenuSectionSerializer, GroupPackageSerializer,
     GuidelineCategorySerializer, LegalDocumentSerializer,
@@ -44,13 +44,6 @@ class FaqViewSet(BaseCmsViewSet):
     filterset_fields = ['active', 'category']
     ordering_fields = ['order']
     ordering = ['order']
-
-class TestimonialViewSet(BaseCmsViewSet):
-    queryset = Testimonial.objects.all()
-    serializer_class = TestimonialSerializer
-    filterset_fields = ['active', 'type']
-    ordering_fields = ['created_at']
-    ordering = ['-created_at']
 
 class SocialLinkViewSet(BaseCmsViewSet):
     queryset = SocialLink.objects.all()
@@ -290,7 +283,6 @@ class ReorderView(APIView):
             'banner': Banner,
             'activity': Activity,
             'faq': Faq,
-            'testimonial': Testimonial,
             'social-link': SocialLink,
             'gallery-item': GalleryItem,
             'stat-card': StatCard,

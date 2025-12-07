@@ -9,16 +9,56 @@ import { formatCurrency } from "@repo/utils";
 interface PricingContentProps {
     plans: any[];
     settings?: any;
-    info?: any; // For additional info section
+    info?: any;
+    hero?: {
+        title: string;
+        subtitle: string;
+        image: string;
+    };
 }
 
-export default function PricingContent({ plans, settings, info }: PricingContentProps) {
+export default function PricingContent({ plans, settings, info, hero }: PricingContentProps) {
     // Sort plans by price or some order field if available, otherwise assume backend order
     // Ensure active plans only
     const activePlans = plans.filter(p => !p.hasOwnProperty('active') || p.active);
 
+    const heroTitle = hero?.title || "Pricing Plans";
+    const heroSubtitle = hero?.subtitle || "Choose the perfect package for your ninja adventure.";
+
     return (
-        <main className="bg-background text-white min-h-screen pt-24">
+        <main className="bg-background text-white min-h-screen">
+            {/* Hero */}
+            <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-background-dark to-background">
+                <div className="max-w-7xl mx-auto text-center">
+                    <ScrollReveal animation="fade">
+                        <span className="inline-block py-1 px-3 rounded-full bg-primary text-black font-bold text-sm mb-6 tracking-wider uppercase">
+                            Pricing
+                        </span>
+                    </ScrollReveal>
+                    <ScrollReveal animation="slideUp" delay={0.2}>
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-black mb-6 leading-tight">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
+                                {heroTitle}
+                            </span>
+                        </h1>
+                        {hero?.image && (
+                            <div className="relative w-full max-w-4xl mx-auto h-64 md:h-96 rounded-3xl overflow-hidden mb-8 shadow-2xl border border-white/10">
+                                <img
+                                    src={hero.image}
+                                    alt={heroTitle}
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+                            </div>
+                        )}
+                        <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto">
+                            {heroSubtitle}
+                        </p>
+                    </ScrollReveal>
+                </div>
+                <SectionDivider position="bottom" variant="curve" color="fill-background" />
+            </section>
+
             {/* Pricing Cards */}
             <section className="relative px-4 pb-32 md:pb-40 pt-16">
                 <div className="max-w-7xl mx-auto">

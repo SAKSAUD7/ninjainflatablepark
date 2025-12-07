@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import (
-    Banner, Activity, Faq, Testimonial, SocialLink, GalleryItem,
+    Banner, Activity, Faq, SocialLink, GalleryItem,
     StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
     PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
     Page, ContactMessage
@@ -24,11 +24,6 @@ class ActivitySerializer(serializers.ModelSerializer):
 class FaqSerializer(serializers.ModelSerializer):
     class Meta:
         model = Faq
-        fields = '__all__'
-
-class TestimonialSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Testimonial
         fields = '__all__'
 
 class SocialLinkSerializer(serializers.ModelSerializer):

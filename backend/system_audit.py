@@ -11,7 +11,7 @@ django.setup()
 from apps.core.models import User
 from apps.cms.models import (
     Page, Activity, Banner, ContactMessage, PartyPackage, 
-    Testimonial, Faq
+    Faq
 )
 from apps.bookings.models import Booking, PartyBooking, Customer
 
@@ -35,7 +35,6 @@ audit_model("Activities (Attractions)", Activity)
 audit_model("Banners", Banner)
 audit_model("Contact Messages", ContactMessage)
 audit_model("Party Packages", PartyPackage)
-audit_model("Testimonials", Testimonial)
 audit_model("FAQs", Faq)
 audit_model("Session Bookings", Booking)
 audit_model("Party Bookings", PartyBooking)

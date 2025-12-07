@@ -34,28 +34,7 @@ export const schemas: SchemaMap = {
             { name: "order", label: "Order", type: "number", defaultValue: 0 },
         ],
     },
-    testimonial: {
-        name: "Testimonial",
-        fields: [
-            { name: "name", label: "Customer Name", type: "text", required: true },
-            { name: "role", label: "Role", type: "text" },
-            { name: "content", label: "Review Content", type: "textarea", required: true },
-            { name: "rating", label: "Rating (1-5)", type: "number", min: 1, max: 5, defaultValue: 5 },
-            { name: "image_url", label: "Customer Photo", type: "image" },
-            {
-                name: "type",
-                label: "Type",
-                type: "select",
-                options: [
-                    { label: "Text", value: "TEXT" },
-                    { label: "Video", value: "VIDEO" }
-                ],
-                defaultValue: "TEXT"
-            },
-            { name: "video_url", label: "Video URL", type: "url" },
-            { name: "active", label: "Active", type: "boolean", defaultValue: true },
-        ],
-    },
+
     social_link: {
         name: "Social Link",
         fields: [

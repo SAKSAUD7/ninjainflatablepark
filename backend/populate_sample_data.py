@@ -1,4 +1,4 @@
-from apps.cms.models import Banner, Activity, Testimonial, GalleryItem, SocialLink
+from apps.cms.models import Banner, Activity, GalleryItem, SocialLink
 from apps.core.models import GlobalSettings
 
 # Create sample banners
@@ -41,36 +41,7 @@ Activity.objects.create(
     order=3
 )
 
-# Create sample testimonials
-Testimonial.objects.create(
-    name="Priya Sharma",
-    role="Parent",
-    content="Amazing experience! My kids had the time of their lives. The staff was friendly and the place was clean and safe.",
-    rating=5,
-    image_url="https://i.pravatar.cc/150?img=1",
-    type="TEXT",
-    active=True
-)
 
-Testimonial.objects.create(
-    name="Rahul Verma",
-    role="Birthday Party Host",
-    content="Hosted my son's 8th birthday here and it was perfect! The party package was great value and all the kids loved it.",
-    rating=5,
-    image_url="https://i.pravatar.cc/150?img=2",
-    type="TEXT",
-    active=True
-)
-
-Testimonial.objects.create(
-    name="Anita Desai",
-    role="Visitor",
-    content="Great place for family fun! Adults can enjoy too. Highly recommend for a weekend outing.",
-    rating=5,
-    image_url="https://i.pravatar.cc/150?img=3",
-    type="TEXT",
-    active=True
-)
 
 # Create sample gallery items
 GalleryItem.objects.create(

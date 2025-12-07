@@ -3,14 +3,14 @@ import { Navbar } from "../../features/navigation/Navbar";
 import { Footer } from "../../components/Footer";
 import { ToastProvider } from "../../components/ToastProvider";
 import { getSettings } from "@/app/actions/settings";
-import { getSocialLinks } from "@/app/actions/social-links";
+import { getPublicSocialLinks } from "@/lib/public-api";
 
 // Server Layout
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
     // Fetch data in parallel
     const [settingsData, socialLinksData] = await Promise.all([
         getSettings(),
-        getSocialLinks()
+        getPublicSocialLinks()
     ]) as [any[], any[]];
 
     // Extract first settings object if available

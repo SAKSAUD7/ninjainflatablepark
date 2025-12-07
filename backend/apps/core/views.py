@@ -11,7 +11,7 @@ from .serializers import UserSerializer, GlobalSettingsSerializer
 from apps.bookings.models import Booking, Waiver, Customer, PartyBooking
 from apps.bookings.serializers import BookingSerializer, PartyBookingSerializer
 from apps.shop.models import Voucher
-from apps.cms.models import Activity, Testimonial, Faq, Banner
+from apps.cms.models import Activity, Faq, Banner
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -26,6 +26,39 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def me(self, request):
         serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        total = User.objects.count()
+        active = User.objects.filter(is_active=True).count()
+        inactive = total - active
+        
+        # Mock recent logins for now if not tracked, or use last_login
+        # Assuming last_login is standard Django field
+        today = timezone.now().date()
+        recent_logins = User.objects.filter(last_login__date=today).count()
+
+        # Role distribution
+        roles = User.objects.values('role').annotate(count=Count('id'))
+        role_distribution = [
+            {'role': r['role'] or 'No Role', 'count': r['count']} 
+            for r in roles
+        ]
+
+        return Response({
+            'totalUsers': total,
+            'activeUsers': active,
+            'inactiveUsers': inactive,
+            'recentLogins': recent_logins,
+            'roleDistribution': role_distribution
+        })
+
+    @action(detail=False, methods=['get'])
+    def recent_activity(self, request):
+        limit = int(request.query_params.get('limit', 5))
+        users = User.objects.order_by('-last_login')[:limit]
+        serializer = self.get_serializer(users, many=True)
         return Response(serializer.data)
 
 class GlobalSettingsViewSet(viewsets.ModelViewSet):
@@ -128,7 +161,6 @@ class DashboardViewSet(viewsets.ViewSet):
 
         # Content
         total_activities = Activity.objects.filter(active=True).count()
-        total_testimonials = Testimonial.objects.filter(active=True).count()
         total_faqs = Faq.objects.filter(active=True).count()
         total_banners = Banner.objects.filter(active=True).count()
 
@@ -154,7 +186,6 @@ class DashboardViewSet(viewsets.ViewSet):
             "activeVouchers": active_vouchers,
             "redeemedVouchers": total_voucher_redemptions,
             "totalActivities": total_activities,
-            "totalTestimonials": total_testimonials,
             "totalFaqs": total_faqs,
             "totalBanners": total_banners,
             "avgBookingValue": round(avg_booking_value),

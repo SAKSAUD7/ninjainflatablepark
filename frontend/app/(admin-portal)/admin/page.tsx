@@ -1,5 +1,5 @@
 import { getDashboardStats } from "../../actions/admin";
-import { getAdminSession } from "../../lib/admin-auth";
+import { getAdminSession, requirePermission } from "../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -26,6 +26,12 @@ export default async function AdminDashboard() {
     const session = await getAdminSession() as { email: string; role: string } | null;
     if (!session) {
         redirect("/admin/login");
+    }
+
+    try {
+        await requirePermission('dashboard', 'read');
+    } catch (e) {
+        redirect("/admin/cms"); // Fallback for Content Managers
     }
 
     const stats = await getDashboardStats();
@@ -107,7 +113,7 @@ export default async function AdminDashboard() {
                     {/* Content Stats */}
                     <SummaryCard category="Content Overview" icon={<Image size={16} />} items={[
                         { label: "Activities", value: stats.totalActivities },
-                        { label: "Testimonials", value: stats.totalTestimonials },
+
                         { label: "FAQs", value: stats.totalFaqs },
                         { label: "Banners", value: stats.totalBanners }
                     ]} />

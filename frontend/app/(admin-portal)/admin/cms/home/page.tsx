@@ -1,22 +1,18 @@
-import React from 'react';
 import { getPageSections } from '@/app/actions/page-sections';
 import { getGalleryItems } from '@/app/actions/gallery';
 import { getInstagramReels } from '@/app/actions/instagram-reels';
-import { getTestimonials } from '@/app/actions/testimonials';
 import { HeroEditor } from '@/components/admin/cms/home/HeroEditor';
 import { AboutEditor } from '@/components/admin/cms/home/AboutEditor';
 import { GalleryManager } from '@/components/admin/cms/home/GalleryManager';
 import { ReelsManager } from '@/components/admin/cms/home/ReelsManager';
-import { TestimonialsManager } from '@/components/admin/cms/home/TestimonialsManager';
 import { CMSBackLink } from '@/components/admin/cms/CMSBackLink';
 
 export default async function HomeAdminPage() {
     // Fetch all data in parallel
-    const [sections, gallery, reels, testimonials] = await Promise.all([
+    const [sections, gallery, reels] = await Promise.all([
         getPageSections('home'),
         getGalleryItems(),
-        getInstagramReels(),
-        getTestimonials()
+        getInstagramReels()
     ]);
 
     // Find specific sections or use undefined (editors will handle defaults)
@@ -44,9 +40,7 @@ export default async function HomeAdminPage() {
                     <GalleryManager items={gallery} />
                 </section>
 
-                <section>
-                    <TestimonialsManager items={testimonials} />
-                </section>
+
 
                 <section>
                     <ReelsManager items={reels} />

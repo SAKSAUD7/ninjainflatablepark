@@ -32,11 +32,11 @@ export default function NewUserPage() {
                 name: formData.get("name") as string,
                 email: formData.get("email") as string,
                 password: formData.get("password") as string,
-                roleId: formData.get("roleId") as string,
+                role: formData.get("roleId") as string,
             };
 
             // Validation
-            if (!data.name || !data.email || !data.password || !data.roleId) {
+            if (!data.name || !data.email || !data.password || !data.role) {
                 toast.error("All fields are required");
                 setLoading(false);
                 return;

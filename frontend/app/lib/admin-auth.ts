@@ -33,19 +33,29 @@ export async function getAdminSession(): Promise<AdminSession | null> {
         let permissions: Permission[] = [];
         if (user.is_superuser || user.role === 'SUPER_ADMIN') {
             permissions = ['*:*'];
-        } else if (user.role === 'ADMIN' || user.is_staff) {
-            // Admin users get full CMS and bookings access
+        } else if (user.role === 'ADMIN' || user.role === 'CONTENT_MANAGER') {
+            // Content Manager: Website Content ONLY
             permissions = [
                 'cms:read',
                 'cms:write',
                 'cms:delete',
+            ];
+        } else if (user.role === 'EMPLOYEE' || user.role === 'STAFF') {
+            // Employee: Dashboard, Bookings, Waivers
+            permissions = [
+                'dashboard:read',
                 'bookings:read',
                 'bookings:write',
-                'bookings:delete'
+                'bookings:delete',
+                'waivers:read',
+                'waivers:write',
+                'customers:read',
+                'parties:read',
+                'parties:write'
             ];
         } else {
-            // Default permissions for other roles
-            permissions = ['bookings:read'];
+            // Fallback
+            permissions = ['dashboard:read']; // Minimal access
         }
 
         return {

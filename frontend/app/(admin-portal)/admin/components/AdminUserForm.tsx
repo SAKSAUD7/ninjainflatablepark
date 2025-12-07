@@ -59,8 +59,9 @@ export function AdminUserForm({ user, roles, isNew = false }: AdminUserFormProps
                 await updateAdminUser(user.id, {
                     name: data.name,
                     email: data.email,
-                    roleId: data.roleId,
-                    isActive: data.isActive
+                    role: data.roleId, // Map roleId to role for backend
+                    isActive: data.isActive,
+                    password: data.password || undefined // Only send if provided
                 });
             }
             router.push("/admin/users");

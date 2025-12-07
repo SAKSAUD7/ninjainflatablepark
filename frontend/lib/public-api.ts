@@ -25,10 +25,7 @@ export async function getPublicBanners() {
     return banners.filter((b: any) => b.active);
 }
 
-export async function getPublicTestimonials() {
-    const testimonials = await fetchFromAPI('/cms/testimonials/');
-    return testimonials.filter((t: any) => t.active).slice(0, 6);
-}
+
 
 export async function getPublicActivities() {
     const activities = await fetchFromAPI('/cms/activities/');
@@ -94,4 +91,64 @@ export async function getGlobalSettings() {
 export async function getPublicSocialLinks() {
     const socialLinks = await fetchFromAPI('/cms/social-links/');
     return socialLinks.filter((s: any) => s.active);
+}
+
+export async function getPublicGallery() {
+    const gallery = await fetchFromAPI('/cms/gallery/');
+    return gallery.filter((g: any) => g.active);
+}
+
+export async function getPublicPageSections(page: string) {
+    const sections = await fetchFromAPI(`/cms/page-sections/?page=${page}`);
+    return sections.filter((s: any) => s.active);
+}
+
+export async function getPublicInstagramReels() {
+    const reels = await fetchFromAPI('/cms/instagram-reels/');
+    return reels.filter((r: any) => r.active);
+}
+
+export async function getPublicStatCards(page: string) {
+    const cards = await fetchFromAPI(`/cms/stat-cards/?page=${page}`);
+    return cards.filter((c: any) => c.active);
+}
+
+export async function getPublicPartyPackages() {
+    const packages = await fetchFromAPI('/cms/party-packages/');
+    return packages.filter((p: any) => p.active);
+}
+
+export async function getPublicPricingPlans() {
+    const plans = await fetchFromAPI('/cms/pricing-plans/');
+    return plans.filter((p: any) => p.active);
+}
+
+export async function getPublicMenuSections() {
+    const menus = await fetchFromAPI('/cms/menu-sections/');
+    return menus.filter((m: any) => m.active);
+}
+
+export async function getPublicGroupPackages() {
+    const packages = await fetchFromAPI('/cms/group-packages/');
+    return packages.filter((g: any) => g.active);
+}
+
+export async function getPublicTimelineItems() {
+    const items = await fetchFromAPI('/cms/timeline-items/');
+    return items.filter((i: any) => i.active);
+}
+
+export async function getPublicValueItems() {
+    const items = await fetchFromAPI('/cms/value-items/');
+    return items.filter((v: any) => v.active);
+}
+
+export async function getPublicFacilities() {
+    const facilities = await fetchFromAPI('/cms/facility-items/');
+    return facilities.filter((f: any) => f.active);
+}
+
+export async function getPublicGuidelines() {
+    const guidelines = await fetchFromAPI('/cms/guideline-categories/');
+    return guidelines.filter((g: any) => g.active);
 }

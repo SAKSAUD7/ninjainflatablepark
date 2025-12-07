@@ -32,7 +32,7 @@ export default async function AdminPortalLayout({
     return (
         <div className="min-h-screen bg-slate-50 text-slate-900">
             {/* Sidebar */}
-            <AdminSidebar permissions={['*']} />
+            <AdminSidebar permissions={session.permissions || []} />
 
             {/* Main Content Area */}
             <div className="lg:pl-72">

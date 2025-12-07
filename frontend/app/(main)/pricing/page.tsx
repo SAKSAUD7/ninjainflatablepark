@@ -5,19 +5,32 @@ import { getSettings } from "../../actions/settings";
 
 export const dynamic = 'force-dynamic';
 
+import { getPublicPageSections } from "@/lib/public-api";
+
 export default async function Pricing() {
     const [
         plans,
-        settings
+        settings,
+        sections
     ] = await Promise.all([
         getPricingPlans(),
-        getSettings()
-    ]) as [any[], any];
+        getSettings(),
+        getPublicPageSections('pricing')
+    ]) as [any[], any[], any[]];
+
+    const heroSection = sections.find((s: any) => s.section_key === 'hero');
+
+    const hero = heroSection ? {
+        title: heroSection.title,
+        subtitle: heroSection.content || heroSection.subtitle, // support both fields
+        image: heroSection.image_url
+    } : undefined;
 
     return (
         <PricingContent
             plans={plans}
             settings={settings}
+            hero={hero}
         />
     );
 }

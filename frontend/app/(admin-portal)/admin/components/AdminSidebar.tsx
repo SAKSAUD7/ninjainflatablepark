@@ -54,7 +54,7 @@ const navigation: NavGroup[] = [
     {
         name: "Overview",
         items: [
-            { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+            { name: "Dashboard", href: "/admin", icon: LayoutDashboard, permission: { entity: 'dashboard', action: 'read' } },
             { name: "Website Content", href: "/admin/cms", icon: Globe, permission: { entity: 'cms', action: 'read' } },
             { name: "Contact Messages", href: "/admin/cms/contact-messages", icon: MessageSquare, permission: { entity: 'cms', action: 'read' } },
         ]

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (
-    Banner, Activity, Faq, Testimonial, SocialLink, GalleryItem,
+    Banner, Activity, Faq, SocialLink, GalleryItem,
     StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
     PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
     Page
@@ -28,12 +28,7 @@ class FaqAdmin(admin.ModelAdmin):
     search_fields = ['question', 'answer']
     ordering = ['order']
 
-@admin.register(Testimonial)
-class TestimonialAdmin(admin.ModelAdmin):
-    list_display = ['name', 'rating', 'type', 'active', 'created_at']
-    list_filter = ['active', 'type', 'rating']
-    search_fields = ['name', 'content']
-    ordering = ['-created_at']
+
 
 @admin.register(SocialLink)
 class SocialLinkAdmin(admin.ModelAdmin):

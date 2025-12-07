@@ -13,7 +13,7 @@ export default async function CmsDashboard() {
 
     const collections = [
         { name: 'Banners', href: '/admin/banners', icon: Image, description: 'Homepage hero sliders' },
-        { name: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare, description: 'Customer reviews' },
+
         { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle, description: 'Questions and answers' },
         { name: 'Social Links', href: '/admin/cms/social-links', icon: Users, description: 'Social media profiles' },
         { name: 'Gallery', href: '/admin/cms/gallery', icon: Image, description: 'Photo gallery items' },

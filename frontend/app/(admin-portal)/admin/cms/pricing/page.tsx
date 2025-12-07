@@ -8,18 +8,40 @@ import { PartyPackagesManager } from '@/components/admin/cms/pricing/PartyPackag
 import { GroupPackagesManager } from '@/components/admin/cms/pricing/GroupPackagesManager';
 import { CMSBackLink } from '@/components/admin/cms/CMSBackLink';
 
+import { PageSectionEditor } from '@/app/(admin-portal)/admin/components/PageSectionEditor';
+
 export default async function PricingAdminPage() {
-    // Fetch all data in parallel
-    const [plans, partyPackages, groupPackages] = await Promise.all([
+    // Fetch all data in parallel: Page Sections, Pricing Plans, Party Packages, Group Packages
+    const [sections, plans, partyPackages, groupPackages] = await Promise.all([
         getPageSections('pricing'),
+        getPricingPlans(),
         getPartyPackages(),
         getGroupPackages()
-    ]) as [any[], any[], any[]];
+    ]) as [any[], any[], any[], any[]];
+
+    const heroSection = sections.find((s: any) => s.section_key === 'hero');
 
     return (
         <div className="space-y-8 max-w-5xl mx-auto pb-20">
             <CMSBackLink />
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-900">Pricing Page Content</h1>
+                    <p className="text-slate-500">Manage Hero section and pricing packages</p>
+                </div>
+            </div>
+
             <div className="space-y-12">
+                {/* Pricing Hero Section */}
+                <section>
+                    <PageSectionEditor
+                        page="pricing"
+                        sectionKey="hero"
+                        sectionTitle="Pricing Page Hero"
+                        initialData={heroSection}
+                    />
+                </section>
+
                 {/* Session Pricing */}
                 <section>
                     <PricingPlansManager items={plans} />

@@ -208,18 +208,27 @@ export default async function UsersPage() {
                                     )}
                                 </td>
                                 <td className="px-6 py-4 text-right">
-                                    <Link
-                                        href={`/admin/users/${user.id}`}
-                                        className="text-primary hover:text-primary-dark font-medium text-sm transition-colors"
-                                    >
-                                        Edit
-                                    </Link>
+                                    <div className="flex justify-end gap-3">
+                                        <Link
+                                            href={`/admin/users/${user.id}`}
+                                            className="text-primary hover:text-primary-dark font-medium text-sm transition-colors"
+                                        >
+                                            Edit
+                                        </Link>
+                                        <Link
+                                            href={`/admin/users/${user.id}`}
+                                            className="text-slate-500 hover:text-slate-700 font-medium text-sm transition-colors flex items-center gap-1"
+                                        >
+                                            <UserCheck size={16} />
+                                            Reset Pass
+                                        </Link>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     );
 }
