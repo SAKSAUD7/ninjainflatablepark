@@ -69,6 +69,7 @@ const navigation: NavGroup[] = [
             { name: "Party Bookings", href: "/admin/party-bookings", icon: PartyPopper, permission: { entity: 'parties', action: 'read' } },
             { name: "Manual Party Booking", href: "/admin/party-bookings/new", icon: PartyPopper, permission: { entity: 'parties', action: 'write' } },
             { name: "Party Booking History", href: "/admin/party-bookings/history", icon: Clock, permission: { entity: 'parties', action: 'read' } },
+            { name: "Invitation Templates", href: "/admin/invitations", icon: Image },
             { name: "Booking Blocks", href: "/admin/booking-blocks", icon: Calendar, permission: { entity: 'bookings', action: 'read' } },
             { name: "Customers", href: "/admin/customers", icon: Users, permission: { entity: 'customers', action: 'read' } },
         ]

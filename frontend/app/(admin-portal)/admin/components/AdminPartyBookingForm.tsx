@@ -2,10 +2,17 @@
 
 import { useState } from "react";
 import { createPartyBooking } from "../../../actions/createPartyBooking";
+import { updatePartyBooking } from "../../../actions/admin";
 import { useRouter } from "next/navigation";
 import { Calendar, Clock, Users, User, Mail, Phone, Baby, Info, Gift } from "lucide-react";
+import { toast } from "sonner";
 
-export function AdminPartyBookingForm() {
+interface AdminPartyBookingFormProps {
+    initialData?: any;
+    isEditing?: boolean;
+}
+
+export function AdminPartyBookingForm({ initialData, isEditing = false }: AdminPartyBookingFormProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -34,18 +41,27 @@ export function AdminPartyBookingForm() {
                 cake: formData.get("cake") === "true",
                 photographer: formData.get("photographer") === "true",
                 partyFavors: formData.get("partyFavors") === "true",
+                booking_status: formData.get("bookingStatus"), // Add status support
             };
 
-            const result = await createPartyBooking(data);
+            let result;
+            if (isEditing && initialData?.id) {
+                result = await updatePartyBooking(initialData.id, data);
+            } else {
+                result = await createPartyBooking(data);
+            }
 
             if (result.success) {
+                toast.success(isEditing ? "Booking updated successfully" : "Booking created successfully");
                 router.push("/admin/party-bookings");
                 router.refresh();
             } else {
-                setError(result.error || "Failed to create booking");
+                setError(result.error || `Failed to ${isEditing ? "update" : "create"} booking`);
+                toast.error(result.error || "Operation failed");
             }
         } catch (err) {
             setError("An unexpected error occurred");
+            toast.error("An unexpected error occurred");
         } finally {
             setLoading(false);
         }
@@ -74,7 +90,8 @@ export function AdminPartyBookingForm() {
                                 name="name"
                                 type="text"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                defaultValue={initialData?.name}
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                                 placeholder="John Doe"
                             />
                         </div>
@@ -87,7 +104,8 @@ export function AdminPartyBookingForm() {
                                 name="email"
                                 type="email"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                defaultValue={initialData?.email}
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                                 placeholder="john@example.com"
                             />
                         </div>
@@ -100,7 +118,8 @@ export function AdminPartyBookingForm() {
                                 name="phone"
                                 type="tel"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                defaultValue={initialData?.phone}
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                                 placeholder="+91 98765 43210"
                             />
                         </div>
@@ -121,6 +140,7 @@ export function AdminPartyBookingForm() {
                             name="childName"
                             type="text"
                             required
+                            defaultValue={initialData?.childName || initialData?.birthday_child_name}
                             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="Child's Name"
                         />
@@ -133,6 +153,7 @@ export function AdminPartyBookingForm() {
                             required
                             min="1"
                             max="18"
+                            defaultValue={initialData?.childAge || initialData?.birthday_child_age}
                             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="Age"
                         />
@@ -155,7 +176,8 @@ export function AdminPartyBookingForm() {
                                 name="date"
                                 type="date"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                defaultValue={initialData?.date}
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             />
                         </div>
                     </div>
@@ -166,14 +188,15 @@ export function AdminPartyBookingForm() {
                             <select
                                 name="time"
                                 required
-                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-white"
+                                defaultValue={initialData?.time}
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent appearance-none bg-white text-slate-900"
                             >
                                 <option value="">Select Time</option>
-                                <option value="10:00">10:00 AM</option>
-                                <option value="12:00">12:00 PM</option>
-                                <option value="14:00">02:00 PM</option>
-                                <option value="16:00">04:00 PM</option>
-                                <option value="18:00">06:00 PM</option>
+                                <option value="10:00:00">10:00 AM</option>
+                                <option value="12:00:00">12:00 PM</option>
+                                <option value="14:00:00">02:00 PM</option>
+                                <option value="16:00:00">04:00 PM</option>
+                                <option value="18:00:00">06:00 PM</option>
                             </select>
                         </div>
                     </div>
@@ -194,6 +217,7 @@ export function AdminPartyBookingForm() {
                             type="number"
                             required
                             min="10"
+                            defaultValue={initialData?.participants || initialData?.kids}
                             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="Min 10"
                         />
@@ -206,6 +230,7 @@ export function AdminPartyBookingForm() {
                             type="number"
                             required
                             min="0"
+                            defaultValue={initialData?.spectators || initialData?.adults}
                             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                             placeholder="0"
                         />
@@ -225,6 +250,7 @@ export function AdminPartyBookingForm() {
                         <label className="block text-sm font-medium text-slate-700 mb-1">Party Package</label>
                         <select
                             name="partyPackage"
+                            defaultValue={initialData?.partyPackage || initialData?.party_package}
                             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                         >
                             <option value="STANDARD">Standard</option>
@@ -236,6 +262,7 @@ export function AdminPartyBookingForm() {
                         <label className="block text-sm font-medium text-slate-700 mb-1">Theme</label>
                         <select
                             name="theme"
+                            defaultValue={initialData?.theme}
                             className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                         >
                             <option value="">No Theme</option>
@@ -252,23 +279,23 @@ export function AdminPartyBookingForm() {
                     <label className="block text-sm font-medium text-slate-700">Add-ons</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
-                            <input type="checkbox" name="decorations" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <input type="checkbox" name="decorations" value="true" defaultChecked={initialData?.decorations} className="w-4 h-4 text-primary rounded focus:ring-primary" />
                             <span className="text-sm text-slate-700">Decorations</span>
                         </label>
                         <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
-                            <input type="checkbox" name="catering" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <input type="checkbox" name="catering" value="true" defaultChecked={initialData?.catering} className="w-4 h-4 text-primary rounded focus:ring-primary" />
                             <span className="text-sm text-slate-700">Catering</span>
                         </label>
                         <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
-                            <input type="checkbox" name="cake" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <input type="checkbox" name="cake" value="true" defaultChecked={initialData?.cake} className="w-4 h-4 text-primary rounded focus:ring-primary" />
                             <span className="text-sm text-slate-700">Cake</span>
                         </label>
                         <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
-                            <input type="checkbox" name="photographer" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <input type="checkbox" name="photographer" value="true" defaultChecked={initialData?.photographer} className="w-4 h-4 text-primary rounded focus:ring-primary" />
                             <span className="text-sm text-slate-700">Photographer</span>
                         </label>
                         <label className="flex items-center gap-2 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50">
-                            <input type="checkbox" name="partyFavors" value="true" className="w-4 h-4 text-primary rounded focus:ring-primary" />
+                            <input type="checkbox" name="partyFavors" value="true" defaultChecked={initialData?.partyFavors || initialData?.party_favors} className="w-4 h-4 text-primary rounded focus:ring-primary" />
                             <span className="text-sm text-slate-700">Party Favors</span>
                         </label>
                     </div>
@@ -286,6 +313,7 @@ export function AdminPartyBookingForm() {
                     <textarea
                         name="specialRequests"
                         rows={3}
+                        defaultValue={initialData?.specialRequests || initialData?.special_requests}
                         className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-slate-900"
                         placeholder="Any dietary requirements, decorations, etc."
                     ></textarea>
@@ -299,7 +327,7 @@ export function AdminPartyBookingForm() {
                     disabled={loading}
                     className="px-6 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {loading ? "Creating Booking..." : "Create Party Booking"}
+                    {loading ? (isEditing ? "Updating..." : "Creating...") : (isEditing ? "Update Booking" : "Create Party Booking")}
                 </button>
             </div>
         </form>

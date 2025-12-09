@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getCachedData, setCachedData } from "@/lib/admin-cache";
+import { verifyWaiver } from "../../../actions/admin";
 import {
     Search,
     Download,
@@ -307,9 +308,12 @@ export default function AdminWaivers() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="px-2.5 py-1 rounded-full text-xs font-bold border bg-emerald-100 text-emerald-700 border-emerald-200 inline-flex items-center gap-1">
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border inline-flex items-center gap-1 
+                                                ${waiver.is_verified 
+                                                    ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
+                                                    : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
                                                 <CheckCircle size={12} />
-                                                Signed
+                                                {waiver.is_verified ? 'Verified' : 'Signed'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -318,8 +322,22 @@ export default function AdminWaivers() {
                                                 className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-neon-blue hover:bg-slate-100 rounded-lg transition-colors font-medium"
                                             >
                                                 <Eye size={16} />
-                                                View All ({waiver.totalParticipants})
+                                                View
                                             </Link>
+                                            {!waiver.is_verified && (
+                                                <button
+                                                    onClick={async () => {
+                                                        if (confirm("Confirm this waiver manually?")) {
+                                                            await verifyWaiver(waiver.id);
+                                                            loadWaivers(); // Reload to refresh UI
+                                                        }
+                                                    }}
+                                                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors font-medium ml-2"
+                                                >
+                                                    <CheckCircle size={16} />
+                                                    Confirm
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))
@@ -376,9 +394,12 @@ export default function AdminWaivers() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="px-2.5 py-1 rounded-full text-xs font-bold border bg-emerald-100 text-emerald-700 border-emerald-200 inline-flex items-center gap-1">
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border inline-flex items-center gap-1 
+                                                ${waiver.is_verified 
+                                                    ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
+                                                    : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
                                                 <CheckCircle size={12} />
-                                                Signed
+                                                {waiver.is_verified ? 'Verified' : 'Signed'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -390,6 +411,20 @@ export default function AdminWaivers() {
                                                 >
                                                     <Eye size={18} />
                                                 </Link>
+                                                {!waiver.is_verified && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (confirm("Confirm this waiver manually?")) {
+                                                                await verifyWaiver(waiver.id);
+                                                                loadWaivers();
+                                                            }
+                                                        }}
+                                                        className="p-2 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
+                                                        title="Manual Confirm"
+                                                    >
+                                                        <CheckCircle size={18} />
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={() => handleDownloadPDF(waiver.id)}
                                                     className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"

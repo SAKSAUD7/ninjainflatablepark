@@ -193,6 +193,38 @@ export async function deletePartyBooking(id: string) {
     if (res && res.ok) {
         revalidatePath("/admin/party-bookings");
     }
+
+    return res?.ok;
+}
+
+export async function resendPartyBookingEmail(id: string) {
+    const res = await fetchAPI(`/bookings/party-bookings/${id}/resend_confirmation_email/`, {
+        method: "POST"
+    });
+
+    if (res && res.ok) {
+        const data = await res.json();
+        return { success: true, message: data.message };
+    }
+
+    return { success: false, message: "Failed to send email" };
+}
+
+export async function updatePartyBooking(id: string, data: any) {
+    const res = await fetchAPI(`/bookings/party-bookings/${id}/`, {
+        method: "PATCH",
+        body: JSON.stringify(data)
+    });
+
+    if (res && res.ok) {
+        revalidatePath("/admin/party-bookings");
+        revalidatePath(`/admin/party-bookings/${id}`);
+        return { success: true };
+    }
+
+    // Try to get error message if available
+    const errorData = await res?.json().catch(() => ({}));
+    return { success: false, error: errorData.detail || "Failed to update booking" };
 }
 
 export async function getSessionBookings(filter?: { status?: string; date?: string; search?: string }) {
@@ -221,21 +253,22 @@ export async function updateBookingStatus(id: string, status: string) {
     }
 }
 
-export async function updateBookingDetails(id: string, data: { date?: string; time?: string; guests?: number; amount?: number }) {
+export async function deleteBooking(id: string) {
     const res = await fetchAPI(`/bookings/bookings/${id}/`, {
-        method: "PATCH",
-        body: JSON.stringify(data)
+        method: "DELETE"
     });
 
     if (res && res.ok) {
         revalidatePath("/admin/bookings");
-        revalidatePath(`/admin/bookings/${id}`);
     }
+
+    return res?.ok;
 }
 
-export async function deleteBooking(id: string) {
+export async function updateBookingDetails(id: string, data: { date?: string; time?: string; guests?: number; amount?: number }) {
     const res = await fetchAPI(`/bookings/bookings/${id}/`, {
-        method: "DELETE"
+        method: "PATCH",
+        body: JSON.stringify(data)
     });
 
     if (res && res.ok) {
@@ -252,6 +285,19 @@ export async function getBookingById(id: string) {
 }
 
 // --- Waiver Actions ---
+
+export async function verifyWaiver(id: string) {
+    const res = await fetchAPI(`/bookings/waivers/${id}/`, {
+        method: "PATCH",
+        body: JSON.stringify({ is_verified: true })
+    });
+
+    if (res && res.ok) {
+        revalidatePath("/admin/waivers");
+        return { success: true };
+    }
+    return { success: false };
+}
 
 export async function getWaivers(search?: string) {
     const params = new URLSearchParams();

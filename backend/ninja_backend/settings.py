@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.bookings',
     'apps.cms',
     'apps.shop',
+    'apps.invitations',
 ]
 
 MIDDLEWARE = [

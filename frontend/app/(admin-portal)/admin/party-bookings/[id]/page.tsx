@@ -2,7 +2,8 @@ import { getAdminSession } from "../../../../lib/admin-auth";
 import { getPartyBookingById, updatePartyBookingStatus, deletePartyBooking } from "../../../../actions/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Check, X, Printer, Mail, Trash2, Calendar, User, Gift, DollarSign } from "lucide-react";
+import { ArrowLeft, Check, X, Mail, Trash2, Calendar, User, Gift, DollarSign } from "lucide-react";
+import { PartyBookingActions } from "./PartyBookingActions";
 
 export default async function PartyBookingDetailPage({ params }: { params: { id: string } }) {
     const session = await getAdminSession();
@@ -25,14 +26,7 @@ export default async function PartyBookingDetailPage({ params }: { params: { id:
                     <h1 className="text-3xl font-bold text-slate-900">Party #{String(booking.id).slice(-6).toUpperCase()}</h1>
                     <p className="text-slate-500 mt-1">Created on {new Date(booking.createdAt).toLocaleDateString()}</p>
                 </div>
-                <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors">
-                        <Printer size={18} /> Print
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors">
-                        <Mail size={18} /> Resend Email
-                    </button>
-                </div>
+                <PartyBookingActions bookingId={booking.id} customerEmail={booking.email} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -167,9 +161,7 @@ export default async function PartyBookingDetailPage({ params }: { params: { id:
                                     <X size={18} /> Cancel Booking
                                 </button>
                             </form>
-                            <Link href={`/tickets/${booking.uuid}`} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors font-medium">
-                                <Printer size={18} /> View Ticket
-                            </Link>
+
                             <form action={deletePartyBooking.bind(null, booking.id)}>
                                 <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors font-medium mt-4">
                                     <Trash2 size={18} /> Delete Booking

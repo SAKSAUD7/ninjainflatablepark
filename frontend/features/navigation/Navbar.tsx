@@ -35,16 +35,19 @@ export function Navbar({ settings }: { settings?: any }) {
             window.addEventListener("popstate", handlePopState);
 
             return () => {
-                document.body.style.overflow = '';
+                document.body.style.overflow = 'auto';
                 window.removeEventListener("popstate", handlePopState);
             };
+        } else {
+            // Always ensure overflow is reset when menu closes
+            document.body.style.overflow = 'auto';
         }
     }, [isMobileMenuOpen, dispatch]);
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-white/10">
-            <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                <Link href="/" className="relative z-50 block">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0118] border-b border-white/10">
+            <div className="w-full max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                <Link href="/" className="relative z-50 block flex-shrink-0">
                     <img
                         src="/logo_transparent.png"
                         alt="Ninja Inflatable Park"
@@ -96,72 +99,81 @@ export function Navbar({ settings }: { settings?: any }) {
 
                 <AnimatePresence>
                     {isMobileMenuOpen && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="fixed inset-0 z-[60] md:hidden"
-                            style={{
-                                backdropFilter: 'blur(50px) saturate(200%)',
-                                WebkitBackdropFilter: 'blur(50px) saturate(200%)',
-                                background: 'rgba(0, 0, 0, 0.85)'
-                            }}
-                        >
-                            <div className="h-full flex flex-col p-4 pt-16">
-                                {/* Close Button Only */}
-                                <div className="flex items-center justify-end mb-6">
-                                    <button
-                                        onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}
-                                        className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-                                        aria-label="Close menu"
-                                    >
-                                        <X className="w-5 h-5 text-white" />
-                                    </button>
-                                </div>
+                        <>
+                            {/* Backdrop - tap to close */}
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="fixed inset-0 z-[60] md:hidden"
+                                style={{
+                                    backdropFilter: 'blur(20px)',
+                                    WebkitBackdropFilter: 'blur(20px)',
+                                    backgroundColor: 'rgba(0, 0, 0, 0.7)'
+                                }}
+                                onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}
+                            />
 
-                                {/* Navigation Links */}
-                                <nav className="flex-1 space-y-1.5">
-                                    {navLinks.map((link) => {
-                                        const isActive = pathname === link.href;
-                                        return (
-                                            <Link
-                                                key={link.href}
-                                                href={link.href}
-                                                onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}
-                                                className={`block px-5 py-3 rounded-lg text-base font-semibold transition-all ${isActive
-                                                    ? "bg-primary/30 text-white"
-                                                    : "text-white/90 hover:bg-white/10"
-                                                    }`}
-                                            >
-                                                {link.label}
+                            {/* Menu Panel */}
+                            <motion.div
+                                initial={{ x: '100%' }}
+                                animate={{ x: 0 }}
+                                exit={{ x: '100%' }}
+                                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                                className="fixed top-0 right-0 bottom-0 w-[280px] z-[70] md:hidden bg-[#261645] shadow-2xl"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="h-full flex flex-col p-5">
+                                    {/* Close Button */}
+                                    <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/20">
+                                        <span className="text-white/70 text-xs font-semibold uppercase tracking-wider">Menu</span>
+                                        <button
+                                            onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}
+                                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                                            aria-label="Close menu"
+                                        >
+                                            <X className="w-5 h-5 text-white" />
+                                        </button>
+                                    </div>
+
+                                    {/* Navigation Links */}
+                                    <nav className="flex-1 space-y-2">
+                                        {navLinks.map((link) => {
+                                            const isActive = pathname === link.href;
+                                            return (
+                                                <Link
+                                                    key={link.href}
+                                                    href={link.href}
+                                                    onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}
+                                                    className={`block px-4 py-3 rounded-lg text-sm font-semibold transition-colors ${isActive
+                                                        ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
+                                                        : "text-white/90 hover:bg-white/10"
+                                                        }`}
+                                                >
+                                                    {link.label}
+                                                </Link>
+                                            );
+                                        })}
+
+                                        {/* Action Buttons - Inline with navigation */}
+                                        <div className="pt-2 space-y-2">
+                                            <Link href="/book" onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}>
+                                                <div className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-semibold text-sm transition-all text-center shadow-md">
+                                                    Book Session
+                                                </div>
                                             </Link>
-                                        );
-                                    })}
-                                </nav>
 
-                                {/* Action Buttons */}
-                                <div className="space-y-2.5 mt-auto">
-                                    <Link href="/book" onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}>
-                                        <div className="w-full py-3 px-5 rounded-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold text-base shadow-lg shadow-pink-500/50 hover:shadow-pink-500/70 transition-all text-center">
-                                            ⚡ Book Your Session
+                                            <Link href="/admin" onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}>
+                                                <div className="w-full py-3 px-4 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm transition-colors text-center">
+                                                    Admin
+                                                </div>
+                                            </Link>
                                         </div>
-                                    </Link>
-
-                                    <Link href="/admin" onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}>
-                                        <div className="w-full py-3 px-5 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold text-sm hover:bg-white/20 transition-all text-center">
-                                            🔒 Admin Login
-                                        </div>
-                                    </Link>
-
-                                    <Link href="/attractions" onClick={() => dispatch({ type: "CLOSE_MOBILE_MENU" })}>
-                                        <div className="w-full py-3 px-5 rounded-full bg-transparent border-2 border-white text-white font-bold text-sm hover:bg-white/10 transition-all text-center">
-                                            View Attractions
-                                        </div>
-                                    </Link>
+                                    </nav>
                                 </div>
-                            </div>
-                        </motion.div>
+                            </motion.div>
+                        </>
                     )}
                 </AnimatePresence>
             </div>

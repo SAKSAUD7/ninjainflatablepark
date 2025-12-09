@@ -4,7 +4,6 @@ import { getActivities } from "../../actions/activities";
 import { getFacilityItems } from "../../actions/facility-items";
 import { getPageSections } from "../../actions/page-sections";
 
-export const dynamic = 'force-dynamic';
 
 export default async function AttractionsPage() {
     const [

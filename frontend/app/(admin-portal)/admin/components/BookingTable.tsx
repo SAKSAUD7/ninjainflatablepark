@@ -9,12 +9,16 @@ import {
     Trash2,
     Search,
     Filter,
-    Download
+    Download,
+    Loader2
 } from "lucide-react";
 import { StatusBadge } from "./StatusBadge";
 import Link from "next/link";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
 import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";
+import { deletePartyBooking, deleteBooking } from "../../../actions/admin";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Booking {
     id: string;
@@ -46,9 +50,11 @@ interface BookingTableProps {
 }
 
 export function BookingTable({ bookings, title, type, readOnly = false }: BookingTableProps) {
+    const router = useRouter();
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [dateFilter, setDateFilter] = useState("all");
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     let filteredBookings = bookings.filter(booking => {
         const matchesSearch =
@@ -63,6 +69,38 @@ export function BookingTable({ bookings, title, type, readOnly = false }: Bookin
 
     // Apply date filter
     filteredBookings = filterBookingsByDate(filteredBookings, dateFilter);
+
+    const handleDelete = async (id: string, bookingName: string) => {
+        if (!confirm(`Are you sure you want to delete the booking for ${bookingName}? This action cannot be undone.`)) {
+            return;
+        }
+
+        setDeletingId(id);
+        try {
+            let success;
+            if (type === "party") {
+                success = await deletePartyBooking(id);
+            } else {
+                success = await deleteBooking(id);
+            }
+
+            if (success) {
+                toast.success("Booking deleted successfully");
+                router.refresh();
+            } else {
+                toast.error("Failed to delete booking");
+            }
+        } catch (error) {
+            toast.error("An error occurred while deleting the booking");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+    const handleEdit = (id: string) => {
+        // Navigate to edit page (you can implement this later)
+        router.push(`/admin/${type}-bookings/${id}/edit`);
+    };
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200">
@@ -190,16 +228,23 @@ export function BookingTable({ bookings, title, type, readOnly = false }: Bookin
                                             {!readOnly && (
                                                 <>
                                                     <button
+                                                        onClick={() => handleEdit(booking.id)}
                                                         className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                         title="Edit"
                                                     >
                                                         <Edit className="w-4 h-4" />
                                                     </button>
                                                     <button
-                                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        onClick={() => handleDelete(booking.id, booking.name)}
+                                                        disabled={deletingId === booking.id}
+                                                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                         title="Delete"
                                                     >
-                                                        <Trash2 className="w-4 h-4" />
+                                                        {deletingId === booking.id ? (
+                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                        ) : (
+                                                            <Trash2 className="w-4 h-4" />
+                                                        )}
                                                     </button>
                                                 </>
                                             )}

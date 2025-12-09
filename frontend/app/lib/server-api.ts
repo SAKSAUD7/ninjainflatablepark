@@ -9,25 +9,36 @@ export function getAuthHeader(): Record<string, string> {
 
 export async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     const headers: Record<string, string> = {
-        "Content-Type": "application/json",
         ...getAuthHeader(),
     };
+
+    // Only set Content-Type for non-FormData requests
+    // FormData needs the browser to set Content-Type with the boundary
+    if (!(options.body instanceof FormData)) {
+        headers["Content-Type"] = "application/json";
+    }
 
     if (options.headers) {
         Object.assign(headers, options.headers);
     }
 
-    const res = await fetch(`${API_URL}${endpoint}`, {
-        ...options,
-        headers,
-        cache: "no-store",
-    });
+    // Add 60s timeout (increased from 15s)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-    if (res.status === 401) {
-        return null;
+    try {
+        const res = await fetch(`${API_URL}${endpoint}`, {
+            ...options,
+            headers,
+            cache: "no-store",
+            signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        return res;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        throw error;
     }
-
-    return res;
 }
 
 export async function postAPI(endpoint: string, data: any) {

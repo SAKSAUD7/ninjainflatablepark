@@ -2,7 +2,7 @@ import { getAdminSession } from "../lib/admin-auth";
 import { redirect } from "next/navigation";
 import { AdminSidebar } from "./admin/components/AdminSidebar";
 import { AdminHeader } from "./admin/components/AdminHeader";
-import { Toaster } from 'sonner';
+import { ToastProvider } from "../../components/ToastProvider";
 
 export default async function AdminPortalLayout({
     children,
@@ -30,23 +30,22 @@ export default async function AdminPortalLayout({
 
     // Pass Super Admin permissions to show all menu items
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900">
-            {/* Sidebar */}
-            <AdminSidebar permissions={session.permissions || []} />
+        <ToastProvider>
+            <div className="min-h-screen bg-slate-50 text-slate-900">
+                {/* Sidebar */}
+                <AdminSidebar permissions={session.permissions || []} />
 
-            {/* Main Content Area */}
-            <div className="lg:pl-72">
-                {/* Header */}
-                <AdminHeader user={user} />
+                {/* Main Content Area */}
+                <div className="lg:pl-72">
+                    {/* Header */}
+                    <AdminHeader user={user} />
 
-                {/* Page Content */}
-                <main className="p-6">
-                    {children}
-                </main>
+                    {/* Page Content */}
+                    <main className="p-6">
+                        {children}
+                    </main>
+                </div>
             </div>
-
-            {/* Toast Notifications */}
-            <Toaster position="top-right" richColors />
-        </div>
+        </ToastProvider>
     );
 }

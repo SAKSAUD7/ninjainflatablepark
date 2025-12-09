@@ -70,6 +70,8 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     }
 }
 
+import { redirect } from 'next/navigation';
+
 /**
  * Require a specific permission for server actions
  * Throws error if user doesn't have permission
@@ -80,7 +82,7 @@ export async function requirePermission(
 ): Promise<void> {
     const session = await getAdminSession();
     if (!session) {
-        throw new Error("Unauthorized: No admin session");
+        redirect('/admin/login');
     }
 
     // Superusers with wildcard permission (*:*) have access to everything
@@ -89,6 +91,8 @@ export async function requirePermission(
     }
 
     if (!hasPermission(session.permissions || [], { entity, action })) {
+        // Keeps the error for specialized permission failure (logged in but unauthorized)
+        // Or could redirect to a 403 page
         throw new Error(`Forbidden: Missing ${entity}:${action} permission`);
     }
 }

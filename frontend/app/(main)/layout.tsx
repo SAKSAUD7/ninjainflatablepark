@@ -27,7 +27,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
 
     return (
         <ToastProvider>
-            <div suppressHydrationWarning className="flex flex-col min-h-screen">
+            <div suppressHydrationWarning className="flex flex-col min-h-screen overflow-x-hidden">
                 <Navbar settings={settings} />
                 <main className="flex-grow">
                     {children}

@@ -130,6 +130,7 @@ class Waiver(models.Model):
     version = models.CharField(max_length=20, default='1.0')
     emergency_contact = models.CharField(max_length=255, null=True, blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
+    is_verified = models.BooleanField(default=False)
     
     # Legacy fields for backward compatibility
     minors = models.JSONField(null=True, blank=True)  # List of {name, dob}

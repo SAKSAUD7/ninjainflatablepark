@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/v1/shop/', include('apps.shop.urls')),
     path('api/v1/cms/', include('apps.cms.urls')),
     path('api/v1/bookings/', include('apps.bookings.urls')),
+    path('api/v1/invitations/', include('apps.invitations.urls')),
     
     # Auth - Using custom email-based token view
     path('api/token/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),

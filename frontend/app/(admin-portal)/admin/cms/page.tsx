@@ -8,7 +8,15 @@ import {
     Settings, Instagram, Utensils, Award
 } from 'lucide-react';
 
+import { redirect } from 'next/navigation';
+import { getAdminSession } from '@/app/lib/admin-auth';
+
 export default async function CmsDashboard() {
+    const session = await getAdminSession();
+    if (!session) {
+        redirect('/admin/login');
+    }
+
     const pages = await getPages();
 
     const collections = [

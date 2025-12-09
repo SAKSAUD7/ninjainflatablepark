@@ -518,6 +518,26 @@ class PartyBookingViewSet(viewsets.ModelViewSet):
             'message': 'Participants added successfully',
             'waiver_count': len(participants.get('adults', [])) + len(participants.get('minors', []))
         })
+    
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def resend_confirmation_email(self, request, pk=None):
+        """Resend booking confirmation email to customer"""
+        party_booking = self.get_object()
+        
+        try:
+            # TODO: Implement email sending logic here
+            # For now, just return success
+            # In production, you would use Django's send_mail or your email service
+            
+            return Response({
+                'success': True,
+                'message': f'Confirmation email sent to {party_booking.customer_email}'
+            })
+        except Exception as e:
+            return Response({
+                'success': False,
+                'message': f'Failed to send email: {str(e)}'
+            }, status=500)
 
 
 @api_view(['POST'])

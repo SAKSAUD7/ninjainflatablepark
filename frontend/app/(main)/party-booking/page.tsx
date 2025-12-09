@@ -6,12 +6,14 @@ import { motion } from "framer-motion";
 import { Calendar, Clock, Users, Mail, Phone, User, Cake, MessageSquare, PartyPopper, CheckCircle } from "lucide-react";
 import { createPartyBooking } from "../../actions/createPartyBooking";
 import ParticipantCollection from "../../../components/ParticipantCollection";
+import EInvitationStep from "./steps/EInvitationStep"; // Import the new step
 
 // Dynamic minimum requirement as requested
 const MIN_PARTICIPANTS = 10;
 
 export default function PartyBookingPage() {
-    const [step, setStep] = useState(1); // 1: Basic Info, 2: Participants, 3: Confirmation
+    // 1: Basic Info, 2: Participants, 3: E-Invitation, 4: Confirmation
+    const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -49,6 +51,12 @@ export default function PartyBookingPage() {
 
             if (result.success) {
                 setTempBookingId(result.bookingId);
+                // Store basic details for invitation step usage
+                setBookingDetails({
+                    ...result, // any extra data from server
+                    ...formData,
+                    bookingId: result.bookingId
+                });
                 setStep(2); // Move to participant collection
             } else {
                 alert(result.error || "Failed to create booking. Please try again.");
@@ -83,10 +91,8 @@ export default function PartyBookingPage() {
             });
 
             if (response.ok) {
-                // Fetch final booking details to ensure we have everything
-                // For now, we can use the stored bookingDetails from step 1 or just proceed
-                // We'll assume bookingDetails was set in step 1 (we need to fix that)
-                setSubmitted(true);
+                // Instead of finishing immediately, we go to Step 3 (Invitation)
+                setStep(3);
             } else {
                 alert("Failed to save participants. Please try again.");
             }
@@ -96,6 +102,12 @@ export default function PartyBookingPage() {
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleInvitationNext = () => {
+        // Step 3 finished, go to Step 4 (Confirmation screen)
+        setSubmitted(true);
+        setStep(4);
     };
 
     const calculateTotal = () => {
@@ -115,6 +127,7 @@ export default function PartyBookingPage() {
 
     const costs = calculateTotal();
 
+    // CONFIRMATION SCREEN (Step 4)
     if (submitted && bookingDetails) {
         return (
             <main className="min-h-screen bg-background py-20">
@@ -135,8 +148,8 @@ export default function PartyBookingPage() {
                                 <h3 className="font-bold text-lg mb-4 text-white">Booking Summary</h3>
                                 <div className="space-y-2 text-white/70">
                                     <p><strong className="text-white">Booking ID:</strong> {bookingDetails.bookingId}</p>
-                                    <p><strong className="text-white">Total Amount:</strong> ₹{bookingDetails.amount.toFixed(2)}</p>
-                                    <p><strong className="text-white">Deposit Required (50%):</strong> ₹{bookingDetails.depositAmount.toFixed(2)}</p>
+                                    <p><strong className="text-white">Total Amount:</strong> ₹{costs.total.toFixed(2)}</p>
+                                    <p><strong className="text-white">Deposit Required (50%):</strong> ₹{costs.deposit.toFixed(2)}</p>
                                     <p><strong className="text-white">Date:</strong> {formData.date}</p>
                                     <p><strong className="text-white">Time:</strong> {formData.time}</p>
                                     <p><strong className="text-white">Participants:</strong> {formData.participants}</p>
@@ -154,6 +167,7 @@ export default function PartyBookingPage() {
                                 <BouncyButton size="lg" variant="primary" onClick={() => window.location.href = `/tickets/${bookingDetails.bookingId}`}>
                                     View Ticket
                                 </BouncyButton>
+                                {/* We could also link to the public invitation page here! */}
                                 <BouncyButton size="lg" variant="secondary" onClick={() => window.location.href = "/"}>
                                     Back to Home
                                 </BouncyButton>
@@ -165,11 +179,12 @@ export default function PartyBookingPage() {
         );
     }
 
+    // MAIN FORM
     return (
         <main className="min-h-screen bg-background py-20">
             <div className="max-w-5xl mx-auto px-4">
                 {/* Header */}
-                <div className="text-center mb-12">
+                <div className="text-center mb-8">
                     <ScrollReveal animation="slideUp">
                         <h1 className="text-4xl md:text-6xl font-display font-black mb-4">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
@@ -182,7 +197,41 @@ export default function PartyBookingPage() {
                     </ScrollReveal>
                 </div>
 
-                {step === 1 ? (
+                {/* Progress Indicator */}
+                <div className="max-w-3xl mx-auto mb-10">
+                    <div className="flex items-center justify-center gap-2">
+                        {/* 1 */}
+                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 1 ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-surface-700 text-white/30'} font-bold transition-all`}>
+                            1
+                        </div>
+                        <div className={`h-1 w-12 ${step >= 2 ? 'bg-primary' : 'bg-surface-700'} transition-all`}></div>
+
+                        {/* 2 */}
+                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 2 ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-surface-700 text-white/30'} font-bold transition-all`}>
+                            2
+                        </div>
+                        <div className={`h-1 w-12 ${step >= 3 ? 'bg-primary' : 'bg-surface-700'} transition-all`}></div>
+
+                        {/* 3 */}
+                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 3 ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-surface-700 text-white/30'} font-bold transition-all`}>
+                            3
+                        </div>
+                        <div className={`h-1 w-12 ${step >= 4 ? 'bg-primary' : 'bg-surface-700'} transition-all`}></div>
+
+                        {/* 4 */}
+                        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 4 ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'bg-surface-700 text-white/30'} font-bold transition-all`}>
+                            4
+                        </div>
+                    </div>
+                    <div className="flex justify-between mt-2 text-xs font-semibold px-4 max-w-lg mx-auto">
+                        <span className={step >= 1 ? 'text-primary' : 'text-white/30'}>Details</span>
+                        <span className={step >= 2 ? 'text-primary' : 'text-white/30'}>Participants</span>
+                        <span className={step >= 3 ? 'text-primary' : 'text-white/30'}>E-Invitation</span>
+                        <span className={step >= 4 ? 'text-primary' : 'text-white/30'}>Confirm</span>
+                    </div>
+                </div>
+
+                {step === 1 && (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Booking Form */}
                         <div className="lg:col-span-2">
@@ -367,11 +416,31 @@ export default function PartyBookingPage() {
 
                                 <button
                                     type="submit"
-                                    disabled={isSubmitting}
-                                    className="w-full mt-8 px-8 py-4 bg-primary hover:bg-primary-light text-black font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled={isSubmitting || formData.participants < MIN_PARTICIPANTS}
+                                    className="w-full mt-8 px-8 py-4 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
-                                    {isSubmitting ? "Processing..." : "Book Party Now"}
+                                    {isSubmitting ? (
+                                        <>
+                                            <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Continue to Participants
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                            </svg>
+                                        </>
+                                    )}
                                 </button>
+                                {formData.participants < MIN_PARTICIPANTS && (
+                                    <p className="text-center text-sm text-yellow-500 mt-2">
+                                        ⚠️ Please add at least {MIN_PARTICIPANTS} participants to continue
+                                    </p>
+                                )}
                             </form>
                         </div>
 
@@ -425,7 +494,9 @@ export default function PartyBookingPage() {
                             </ScrollReveal>
                         </div>
                     </div>
-                ) : (
+                )}
+
+                {step === 2 && (
                     <ScrollReveal animation="slideUp">
                         <ParticipantCollection
                             onSubmit={handleParticipantSubmit}
@@ -433,6 +504,15 @@ export default function PartyBookingPage() {
                             totalParticipants={formData.participants}
                         />
                     </ScrollReveal>
+                )}
+
+                {step === 3 && (
+                    <EInvitationStep
+                        bookingId={tempBookingId!}
+                        bookingDetails={bookingDetails}
+                        onNext={handleInvitationNext}
+                        onSkip={handleInvitationNext}
+                    />
                 )}
             </div>
         </main>

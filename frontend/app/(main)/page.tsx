@@ -10,7 +10,6 @@ import {
     getGlobalSettings
 } from "@/lib/public-api";
 
-export const dynamic = 'force-dynamic';
 
 export const metadata = {
     title: "Ninja Inflatable Park - Bangalore's Ultimate Adventure Destination",
