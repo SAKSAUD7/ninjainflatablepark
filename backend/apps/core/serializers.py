@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import User, GlobalSettings
+from django.utils import timezone
+from .models import User, GlobalSettings, Logo, Notification
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,3 +35,45 @@ class GlobalSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = GlobalSettings
         fields = '__all__'
+
+class LogoSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Logo
+        fields = ['id', 'name', 'image', 'image_url', 'is_active', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']
+    
+    def get_image_url(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+
+class NotificationSerializer(serializers.ModelSerializer):
+    time_ago = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Notification
+        fields = ['id', 'type', 'title', 'message', 'link', 'is_read', 
+                  'created_at', 'time_ago', 'booking_id', 'party_booking_id', 
+                  'contact_message_id']
+        read_only_fields = ['created_at']
+    
+    def get_time_ago(self, obj):
+        diff = timezone.now() - obj.created_at
+        
+        if diff.seconds < 60:
+            return "Just now"
+        elif diff.seconds < 3600:
+            minutes = diff.seconds // 60
+            return f"{minutes} minute{'s' if minutes != 1 else ''} ago"
+        elif diff.seconds < 86400:
+            hours = diff.seconds // 3600
+            return f"{hours} hour{'s' if hours != 1 else ''} ago"
+        else:
+            days = diff.days
+            return f"{days} day{'s' if days != 1 else ''} ago"
+

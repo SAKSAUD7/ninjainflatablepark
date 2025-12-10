@@ -13,6 +13,10 @@ function transformBooking(b: any) {
         updatedAt: b.updated_at,
         voucherCode: b.voucher_code,
         discountAmount: b.discount_amount,
+        // Map fields that might be missing or different in party bookings
+        qrCode: b.qr_code,
+        duration: b.duration || 120,
+        spectators: b.spectators || 0,
         customer: b.customer_details ? transformCustomer(b.customer_details) : null,
         waivers: b.waivers?.map(transformWaiver) || [],
         transactions: b.transactions || []

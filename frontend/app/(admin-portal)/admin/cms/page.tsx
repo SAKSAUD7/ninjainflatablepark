@@ -17,10 +17,13 @@ export default async function CmsDashboard() {
         redirect('/admin/login');
     }
 
-    const pages = await getPages();
+    const pages = (await getPages()).filter((page: any) =>
+        !['facilities', 'privacy', 'waiver-terms'].includes(page.slug)
+    );
 
     const collections = [
         { name: 'Banners', href: '/admin/banners', icon: Image, description: 'Homepage hero sliders' },
+        { name: 'Logos', href: '/admin/cms/logos', icon: Image, description: 'Site logos and branding' },
 
         { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle, description: 'Questions and answers' },
         { name: 'Social Links', href: '/admin/cms/social-links', icon: Users, description: 'Social media profiles' },
@@ -37,6 +40,15 @@ export default async function CmsDashboard() {
         { name: 'Timeline', href: '/admin/cms/timeline-items', icon: Calendar, description: 'Company history' },
         { name: 'Values', href: '/admin/cms/value-items', icon: Award, description: 'Company core values' },
         { name: 'Facilities', href: '/admin/cms/facility-items', icon: Layout, description: 'Park amenities' },
+
+        // Wizards
+        { name: 'Session Booking', href: '/admin/cms/session-booking', icon: FileText, description: 'Session wizard steps' },
+        { name: 'Party Booking', href: '/admin/cms/party-booking', icon: Calendar, description: 'Party wizard steps' },
+
+        // Moved from Pages
+        { name: 'Facilities Page', href: '/admin/cms/facilities', icon: Layout, description: 'Facilities page content' },
+        { name: 'Privacy Policy', href: '/admin/cms/privacy', icon: Shield, description: 'Privacy policy page content' },
+        { name: 'Waiver Terms', href: '/admin/cms/waiver-terms', icon: FileText, description: 'Waiver terms page content' },
     ];
 
     return (
@@ -61,7 +73,7 @@ export default async function CmsDashboard() {
                         >
                             <div className="flex items-center justify-between mb-2">
                                 <span className="font-medium text-slate-900 group-hover:text-primary transition-colors">
-                                    {page.title}
+                                    {page.title.replace(/ - Ninja Inflatable Park|Ninja Inflatable Park - /g, '').trim()}
                                 </span>
                                 <span className={`text-xs px-2 py-1 rounded-full ${page.active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'
                                     }`}>

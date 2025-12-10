@@ -5,13 +5,14 @@ from django.utils import timezone
 from django.db.models import Sum, Count, Avg, Q
 from datetime import timedelta
 
-from .models import User, GlobalSettings
-from .serializers import UserSerializer, GlobalSettingsSerializer
+from .models import User, GlobalSettings, Logo, Notification
+from .serializers import UserSerializer, GlobalSettingsSerializer, LogoSerializer, NotificationSerializer
 
 from apps.bookings.models import Booking, Waiver, Customer, PartyBooking
 from apps.bookings.serializers import BookingSerializer, PartyBookingSerializer
 from apps.shop.models import Voucher
 from apps.cms.models import Activity, Faq, Banner
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -69,6 +70,69 @@ class GlobalSettingsViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
+
+class LogoViewSet(viewsets.ModelViewSet):
+    queryset = Logo.objects.all()
+    serializer_class = LogoSerializer
+    
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve', 'active']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAdminUser()]
+    
+    @action(detail=False, methods=['get'])
+    def active(self, request):
+        """Get the currently active logo"""
+        try:
+            active_logo = Logo.objects.get(is_active=True)
+            serializer = self.get_serializer(active_logo, context={'request': request})
+            return Response(serializer.data)
+        except Logo.DoesNotExist:
+            return Response({'error': 'No active logo found'}, status=404)
+    
+    @action(detail=True, methods=['post'])
+    def set_active(self, request, pk=None):
+        """Set a logo as active"""
+        logo = self.get_object()
+        logo.is_active = True
+        logo.save()
+        serializer = self.get_serializer(logo, context={'request': request})
+        return Response(serializer.data)
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.AllowAny]  # TODO: Change to IsAdminUser in production
+    
+    @action(detail=False, methods=['get'])
+    def unread(self, request):
+        """Get unread notifications"""
+        unread = Notification.objects.filter(is_read=False)
+        serializer = self.get_serializer(unread, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def unread_count(self, request):
+        """Get count of unread notifications"""
+        count = Notification.objects.filter(is_read=False).count()
+        return Response({'count': count})
+    
+    @action(detail=True, methods=['post'])
+    def mark_read(self, request, pk=None):
+        """Mark notification as read"""
+        notification = self.get_object()
+        notification.is_read = True
+        notification.save()
+        serializer = self.get_serializer(notification)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'])
+    def mark_all_read(self, request):
+        """Mark all notifications as read"""
+        Notification.objects.filter(is_read=False).update(is_read=True)
+        return Response({'status': 'success', 'message': 'All notifications marked as read'})
+
+
 
 class DashboardViewSet(viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]  # TODO: Change to IsAdminUser in production

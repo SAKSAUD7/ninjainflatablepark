@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { Zap, Shield, Users, Trophy, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Stat, GalleryItem, Activity } from "../../../lib/api/types";
+import InstagramReels from "./InstagramReels";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Zap,
@@ -21,6 +22,7 @@ interface HomeContentProps {
     stats: Stat[];
     gallery: GalleryItem[];
     banners: any[];
+    reels?: any[];
 
     settings?: any;
     activities: Activity[];
@@ -36,7 +38,7 @@ interface HomeContentProps {
     };
 }
 
-export default function HomeContent({ stats, gallery, banners, settings, activities, hero, about }: HomeContentProps) {
+export default function HomeContent({ stats, gallery, banners, reels, settings, activities, hero, about }: HomeContentProps) {
     const aboutText = about?.content || settings?.aboutText || "Ninja Inflatable Park was born from a simple idea: create a space where people of all ages can unleash their inner ninja, challenge themselves, and have an absolute blast doing it.";
     const aboutTitle = about?.title || "India's Biggest Inflatable Park";
     const aboutImage = about?.image || "/park-slides-action.jpg";
@@ -207,6 +209,9 @@ export default function HomeContent({ stats, gallery, banners, settings, activit
             </section>
 
 
+
+            {/* Instagram Reels Section */}
+            <InstagramReels reels={reels} />
 
             {/* CTA Section */}
             <section className="relative py-16 md:py-32 px-4 bg-background-light">

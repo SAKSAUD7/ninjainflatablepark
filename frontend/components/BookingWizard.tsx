@@ -9,12 +9,14 @@ import { bookingSchema, type BookingFormData, getAvailableTimeSlots, isTimeInPas
 import { useToast } from "./ToastProvider";
 import { WaiverForm } from "./WaiverForm";
 import { validateVoucher } from "../app/actions/validateVoucher";
+import { PageSection } from "../lib/cms/types";
 
 interface BookingWizardProps {
     onSubmit: (data: any) => Promise<{ success: boolean; bookingId?: string; bookingNumber?: string; error?: string }>;
+    cmsContent?: PageSection[];
 }
 
-export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
+export const BookingWizard = ({ onSubmit, cmsContent = [] }: BookingWizardProps) => {
     const [step, setStep] = useState(1);
     const [bookingComplete, setBookingComplete] = useState(false);
     const [bookingId, setBookingId] = useState<string>("");
@@ -58,6 +60,14 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
     } = methods;
 
     const formData = watch();
+
+    const getContent = (key: string, defaultTitle: string, defaultSubtitle: string) => {
+        const section = cmsContent?.find(s => s.section_key === key);
+        return {
+            title: section?.title || defaultTitle,
+            subtitle: section?.subtitle || defaultSubtitle
+        };
+    };
 
     // Update available time slots when date changes
     useEffect(() => {
@@ -369,8 +379,8 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                             <Calendar className="text-primary h-5 w-5 md:h-6 md:w-6" />
                                         </div>
                                         <div>
-                                            <h2 className="text-xl md:text-2xl lg:text-3xl font-display font-black text-white">Select Session</h2>
-                                            <p className="text-white/50 text-xs md:text-sm">Choose your preferred date, time and duration</p>
+                                            <h2 className="text-xl md:text-2xl lg:text-3xl font-display font-black text-white">{getContent('step-1', 'Select Session', '').title}</h2>
+                                            <p className="text-white/50 text-xs md:text-sm">{getContent('step-1', '', 'Choose your preferred date, time and duration').subtitle}</p>
                                         </div>
                                     </div>
 
@@ -478,8 +488,8 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                             <Users className="text-primary h-6 w-6" />
                                         </div>
                                         <div>
-                                            <h2 className="text-2xl md:text-3xl font-display font-black text-white">Select Guests</h2>
-                                            <p className="text-white/50 text-sm">Choose the number of jumpers and spectators</p>
+                                            <h2 className="text-2xl md:text-3xl font-display font-black text-white">{getContent('step-2', 'Select Guests', '').title}</h2>
+                                            <p className="text-white/50 text-sm">{getContent('step-2', '', 'Choose the number of jumpers and spectators').subtitle}</p>
                                         </div>
                                     </div>
 
@@ -510,7 +520,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                     Ninja Warrior (7+ Years)
                                                     {formData.adults > 0 && <Check className="w-5 h-5 text-green-400" />}
                                                 </h3>
-                                                <p className="text-white/50 font-medium">â‚¹ 899 + GST per person</p>
+                                                <p className="text-white/50 font-medium">₹ 899 + GST per person</p>
                                             </div>
                                             <div className="flex items-center space-x-6">
                                                 <motion.button
@@ -546,7 +556,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                     Little Ninjas (1-7 Years)
                                                     {formData.kids > 0 && <Check className="w-5 h-5 text-green-400" />}
                                                 </h3>
-                                                <p className="text-white/50 font-medium">â‚¹ 500 + GST per person</p>
+                                                <p className="text-white/50 font-medium">₹ 500 + GST per person</p>
                                             </div>
                                             <div className="flex items-center space-x-6">
                                                 <motion.button
@@ -582,7 +592,7 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                                     Spectators
                                                     {formData.spectators > 0 && <Check className="w-5 h-5 text-green-400" />}
                                                 </h3>
-                                                <p className="text-white/50 font-medium">â‚¹ 150 + GST per person</p>
+                                                <p className="text-white/50 font-medium">₹ 150 + GST per person</p>
                                             </div>
                                             <div className="flex items-center space-x-6">
                                                 <motion.button
@@ -637,8 +647,8 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                             <FileText className="text-primary h-6 w-6" />
                                         </div>
                                         <div>
-                                            <h2 className="text-2xl md:text-3xl font-display font-black text-white">Your Details</h2>
-                                            <p className="text-white/50 text-sm">We'll send your booking confirmation here</p>
+                                            <h2 className="text-2xl md:text-3xl font-display font-black text-white">{getContent('step-3', 'Your Details', '').title}</h2>
+                                            <p className="text-white/50 text-sm">{getContent('step-3', '', "We'll send your booking confirmation here").subtitle}</p>
                                         </div>
                                     </div>
 
@@ -737,9 +747,16 @@ export const BookingWizard = ({ onSubmit }: BookingWizardProps) => {
                                             <CreditCard className="text-primary h-6 w-6" />
                                         </div>
                                         <div>
-                                            <h2 className="text-2xl md:text-3xl font-display font-black text-white">Summary & Payment</h2>
-                                            <p className="text-white/50 text-sm">Review your booking details</p>
+                                            <h2 className="text-2xl md:text-3xl font-display font-black text-white">{getContent('step-5', 'Summary & Payment', '').title}</h2>
+                                            <p className="text-white/50 text-sm">{getContent('step-5', '', 'Review your booking details').subtitle}</p>
                                         </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setStep(4)}
+                                            className="ml-auto flex items-center gap-2 text-white/50 hover:text-primary transition-colors text-sm font-medium"
+                                        >
+                                            <ChevronLeft className="w-4 h-4" /> Modify
+                                        </button>
                                     </div>
 
                                     <div className="bg-surface-900/50 rounded-[2rem] p-6 md:p-8 space-y-6 border-2 border-white/10">

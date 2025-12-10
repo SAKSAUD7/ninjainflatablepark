@@ -115,17 +115,19 @@ class StatCard(models.Model):
         return f"{self.value} {self.unit} ({self.page})"
 
 class InstagramReel(models.Model):
-    """Instagram reels for about page"""
-    title = models.CharField(max_length=255)
-    reel_url = models.URLField(help_text="Instagram reel URL")
-    thumbnail_url = models.URLField(help_text="Thumbnail image URL")
+    """Instagram reels to display on homepage"""
+    title = models.CharField(max_length=255, help_text="Reel title/description")
+    thumbnail_url = models.URLField(max_length=700, help_text="Thumbnail image URL")
+    reel_url = models.URLField(max_length=700, help_text="Instagram reel URL")
     active = models.BooleanField(default=True)
-    order = models.IntegerField(default=0)
+    order = models.IntegerField(default=0, help_text="Display order (lower numbers first)")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['order']
+        ordering = ['order', '-created_at']
+        verbose_name = "Instagram Reel"
+        verbose_name_plural = "Instagram Reels"
 
     def __str__(self):
         return self.title
@@ -393,3 +395,5 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.email}"
+
+

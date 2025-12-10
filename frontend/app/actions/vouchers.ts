@@ -40,8 +40,8 @@ export async function createVoucher(data: {
     const payload = {
         code: data.code,
         discount_type: data.discountType,
-        discount_value: data.discountValue,
-        min_order_amount: data.minOrderAmount || null,
+        discount_value: Number(data.discountValue.toFixed(2)),
+        min_order_amount: data.minOrderAmount ? Number(data.minOrderAmount.toFixed(2)) : null,
         expiry_date: data.expiryDate ? data.expiryDate.toISOString() : null,
         usage_limit: data.usageLimit || null,
         description: data.description || null,
@@ -77,8 +77,8 @@ export async function updateVoucher(id: string, data: {
     const payload: any = {};
     if (data.code !== undefined) payload.code = data.code;
     if (data.discountType !== undefined) payload.discount_type = data.discountType;
-    if (data.discountValue !== undefined) payload.discount_value = data.discountValue;
-    if (data.minOrderAmount !== undefined) payload.min_order_amount = data.minOrderAmount;
+    if (data.discountValue !== undefined) payload.discount_value = Number(data.discountValue.toFixed(2));
+    if (data.minOrderAmount !== undefined) payload.min_order_amount = data.minOrderAmount ? Number(data.minOrderAmount.toFixed(2)) : null;
     if (data.expiryDate !== undefined) payload.expiry_date = data.expiryDate ? data.expiryDate.toISOString() : null;
     if (data.usageLimit !== undefined) payload.usage_limit = data.usageLimit;
     if (data.description !== undefined) payload.description = data.description;

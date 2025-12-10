@@ -137,23 +137,39 @@ export default async function AdminDashboard() {
                         </h2>
                     </div>
                     <div className="h-64 bg-slate-50 rounded-lg border border-dashed border-slate-300 flex items-end justify-between px-4 pb-0 pt-4 relative overflow-hidden">
-                        {stats.monthlyRevenue.length > 0 ? (
-                            stats.monthlyRevenue.map((item, i) => (
-                                <div key={i} className="flex flex-col items-center gap-2 w-full group relative">
-                                    <div
-                                        style={{ height: `${(item.total / maxRevenue) * 100}%` }}
-                                        className="w-full max-w-[40px] bg-neon-blue rounded-t-sm transition-all duration-500 hover:bg-blue-600 relative"
-                                    >
-                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                            ₹{item.total.toLocaleString()}
-                                        </div>
+                        {stats.monthlyRevenue && stats.monthlyRevenue.length > 0 ? (
+                            stats.monthlyRevenue.map((item, i) => {
+                                const heightPercent = maxRevenue > 0 ? (item.total / maxRevenue) * 100 : 0;
+                                const displayHeight = item.total > 0 ? Math.max(heightPercent, 8) : 0; // Minimum 8% height if there's any revenue
+
+                                return (
+                                    <div key={i} className="flex flex-col items-center gap-2 w-full group relative">
+                                        {item.total > 0 ? (
+                                            <>
+                                                <div
+                                                    style={{ height: `${displayHeight}%` }}
+                                                    className="w-full max-w-[40px] bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-500 hover:from-blue-600 hover:to-blue-500 relative shadow-sm"
+                                                >
+                                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                                        ₹{item.total.toLocaleString()}
+                                                    </div>
+                                                </div>
+                                                <span className="text-xs text-slate-500 font-medium">{item.name}</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div className="w-full max-w-[40px] h-2 bg-slate-200 rounded-t-sm"></div>
+                                                <span className="text-xs text-slate-400 font-medium">{item.name}</span>
+                                            </>
+                                        )}
                                     </div>
-                                    <span className="text-xs text-slate-500 font-medium">{item.name}</span>
-                                </div>
-                            ))
+                                );
+                            })
                         ) : (
-                            <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                                No revenue data for this period
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                                <TrendingUp className="w-12 h-12 mb-2 opacity-30" />
+                                <p className="text-sm">No revenue data for this period</p>
+                                <p className="text-xs mt-1">Create some bookings to see the chart</p>
                             </div>
                         )}
                     </div>

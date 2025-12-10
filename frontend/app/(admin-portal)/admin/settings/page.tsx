@@ -121,7 +121,7 @@ function BusinessSettings({ settings, onUpdate }: { settings: any; onUpdate: (s:
         };
 
         try {
-            const updated = await updateSettings(data);
+            const updated = await updateSettings(settings.id, data);
             onUpdate(updated);
             toast.success("Settings saved successfully");
         } catch (error) {
@@ -231,7 +231,7 @@ function AccountSettings() {
 function FeatureSettings({ settings, onUpdate }: { settings: any; onUpdate: (s: any) => void }) {
     async function handleToggle(key: string, value: boolean) {
         try {
-            const updated = await updateSettings({ [key]: value });
+            const updated = await updateSettings(settings.id, { [key]: value });
             onUpdate(updated);
             toast.success("Setting updated");
         } catch (error) {

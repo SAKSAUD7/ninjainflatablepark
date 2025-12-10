@@ -79,6 +79,7 @@ export default async function Home() {
             stats={stats}
             gallery={galleryItems}
             banners={banners.filter((b: any) => b.active)}
+            reels={reels.filter((r: any) => r.active)}
             settings={settings}
             activities={activities.filter((a: any) => a.active)}
             hero={heroData}

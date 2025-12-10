@@ -21,11 +21,13 @@ interface Minor {
 
 interface ParticipantCollectionProps {
     onSubmit: (data: { adults: Adult[]; minors: Minor[]; waiverSigned: boolean }) => void;
-    onBack: () => void;
+    onBack?: () => void;
     totalParticipants: number;
+    title?: string;
+    subtitle?: string;
 }
 
-export default function ParticipantCollection({ onSubmit, onBack, totalParticipants }: ParticipantCollectionProps) {
+export default function ParticipantCollection({ onSubmit, onBack, totalParticipants, title, subtitle }: ParticipantCollectionProps) {
     const [adults, setAdults] = useState<Adult[]>([{
         id: '1',
         name: '',
@@ -86,14 +88,6 @@ export default function ParticipantCollection({ onSubmit, onBack, totalParticipa
             return;
         }
 
-        // REMOVED: Strict participant count validation
-        // Allow booking with just primary contact info
-        // const totalAdded = adults.length + minors.length;
-        // if (totalAdded < totalParticipants) {
-        //     setError(`Please add details for all ${totalParticipants} participants (currently ${totalAdded})`);
-        //     return;
-        // }
-
         if (!waiverSigned) {
             setError('Please agree to the waiver terms');
             return;
@@ -122,11 +116,17 @@ export default function ParticipantCollection({ onSubmit, onBack, totalParticipa
     return (
         <div className="max-w-4xl mx-auto">
             <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
-                <h2 className="text-3xl font-display font-bold mb-2 text-primary">Participant Details</h2>
-                <p className="text-white/70 mb-6">
-                    Please provide details for the primary contact. You can add more participants now or later.
-                    <span className="ml-2 text-sm">({totalAdded} added)</span>
-                </p>
+                <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                        <User className="text-primary h-6 w-6" /> {/* Replaced Users with User icon or keep original if valid */}
+                    </div>
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-display font-black text-white">{title || "Participant Details"}</h2>
+                        <p className="text-white/50 text-sm">
+                            {subtitle || `Please provide details for the primary contact. You can add more participants now or later. (${totalAdded} added)`}
+                        </p>
+                    </div>
+                </div>
 
                 {error && (
                     <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200">

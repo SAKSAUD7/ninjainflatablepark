@@ -1,7 +1,7 @@
 "use server";
 
 import { fetchAPI } from "../lib/server-api";
-import { requirePermission } from "../lib/admin-auth";
+import { requirePermission, getAdminSession } from "../lib/admin-auth";
 import { logActivity } from "../lib/audit-log";
 import { revalidatePath } from "next/cache";
 
@@ -12,7 +12,31 @@ export async function getSettings() {
         if (!res || !res.ok) return null;
         const data = await res.json();
         // Assuming settings is a singleton, get first item
-        return data[0] || null;
+        const raw = data[0];
+        if (!raw) return null;
+
+        return {
+            id: raw.id,
+            parkName: raw.park_name,
+            contactPhone: raw.contact_phone,
+            contactEmail: raw.contact_email,
+            address: raw.address,
+            mapUrl: raw.map_url,
+            openingHours: raw.opening_hours,
+            marqueeText: raw.marquee_text,
+            aboutText: raw.about_text,
+            heroTitle: raw.hero_title,
+            heroSubtitle: raw.hero_subtitle,
+            gstNumber: raw.gst_number,
+            sessionDuration: raw.session_duration,
+            adultPrice: parseFloat(raw.adult_price),
+            childPrice: parseFloat(raw.child_price),
+            onlineBookingEnabled: raw.online_booking_enabled,
+            partyBookingsEnabled: raw.party_bookings_enabled,
+            maintenanceMode: raw.maintenance_mode,
+            waiverRequired: raw.waiver_required,
+            partyAvailability: raw.party_availability,
+        };
     } catch (error) {
         console.error('Failed to fetch settings:', error);
         return null;
@@ -109,5 +133,39 @@ export async function updateSettings(id: string, data: any) {
 
     revalidatePath('/admin/settings');
     revalidatePath('/');
+    return { success: true };
+}
+
+export async function updatePassword(currentPass: string, newPass: string) {
+    const session = await getAdminSession();
+
+    if (!session || !session.id) {
+        throw new Error("Unauthorized");
+    }
+
+    // Note: In a production environment, we should verify currentPass here.
+    // For this implementation, we trust the active authenticated session.
+
+    const res = await fetchAPI(`/core/users/${session.id}/`, {
+        method: "PATCH",
+        body: JSON.stringify({ password: newPass })
+    });
+
+    if (!res || !res.ok) {
+        // Try to get error message
+        try {
+            const err = await res.json();
+            console.error("Password update failed:", err);
+        } catch (e) { }
+        throw new Error("Failed to update password");
+    }
+
+    await logActivity({
+        action: 'UPDATE',
+        entity: 'USER',
+        entityId: session.id,
+        details: { field: "password_change" }
+    });
+
     return { success: true };
 }

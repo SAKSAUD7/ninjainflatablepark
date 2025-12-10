@@ -11,6 +11,11 @@ A comprehensive web-based management system for Ninja Inflatable Park, featuring
 - **UI Components**: Custom component library
 - **Icons**: Lucide React
 - **Forms**: React Hook Form + Zod validation
+- **Charts**: Recharts
+- **QR Codes**: qrcode library
+- **Date Handling**: date-fns
+- **Notifications**: React Hot Toast, Sonner
+- **Testing**: Vitest, Testing Library
 
 ### Backend
 - **Framework**: Django 5.0+
@@ -24,6 +29,8 @@ A comprehensive web-based management system for Ninja Inflatable Park, featuring
 ---
 
 ## 📁 Project Structure
+
+This is a **monorepo** managed with **Turborepo**, containing the frontend, backend, and shared packages.
 
 ```
 ninjainflatablepark-4/
@@ -39,18 +46,22 @@ ninjainflatablepark-4/
 │   ├── manage.py
 │   └── requirements.txt
 │
-├── frontend/               # Next.js frontend
+├── frontend/               # Next.js frontend (workspace)
 │   ├── app/
 │   │   ├── (main)/        # Public pages
 │   │   └── (admin-portal)/ # Admin panel
 │   ├── components/         # React components
-│   ├── lib/               # Utilities
+│   ├── lib/               # Utilities & API clients
 │   ├── public/            # Static assets
 │   └── package.json
 │
-└── packages/              # Shared packages
-    ├── ui/                # UI components
-    └── config/            # Shared config
+├── packages/              # Shared packages
+│   ├── ui/                # Shared UI components
+│   ├── types/             # TypeScript types & Zod schemas
+│   └── database/          # Database utilities
+│
+├── package.json           # Root package.json (monorepo)
+└── turbo.json            # Turborepo configuration
 ```
 
 ---
@@ -60,7 +71,7 @@ ninjainflatablepark-4/
 ### Prerequisites
 - Python 3.11+
 - Node.js 18+
-- npm or yarn
+- npm 10+ (for workspace support)
 
 ### 1. Clone Repository
 ```bash
@@ -96,18 +107,21 @@ python manage.py runserver
 
 Backend will run at: `http://localhost:8000`
 
-### 3. Frontend Setup
+### 3. Frontend Setup (Monorepo)
 ```bash
-cd frontend
+# Return to root directory
+cd ..
 
-# Install dependencies
+# Install all dependencies (root + workspaces)
 npm install
 
-# Start development server
+# Start development server (uses Turborepo)
 npm run dev
 ```
 
 Frontend will run at: `http://localhost:5000`
+
+> **Note**: The monorepo uses Turborepo to manage builds and development. The `npm run dev` command from the root will start the frontend development server on port 5000.
 
 ---
 
@@ -142,10 +156,12 @@ Frontend will run at: `http://localhost:5000`
 ### Admin Panel
 - ✅ Dashboard with analytics
 - ✅ Session bookings management
-- ✅ Party bookings management
+- ✅ Party bookings management (with calendar view)
+- ✅ E-invitation system with templates
+- ✅ QR code generation for bookings
 - ✅ Waiver management
 - ✅ Customer database
-- ✅ CMS for all content
+- ✅ CMS for all content (attractions, facilities, pricing, etc.)
 - ✅ Settings management
 - ✅ User management
 
@@ -219,19 +235,22 @@ python manage.py runserver
 python manage.py test
 ```
 
-### Frontend Commands
+### Frontend Commands (Monorepo)
 ```bash
-# Development
+# Development (from root)
 npm run dev
 
-# Production build
+# Production build (all workspaces)
 npm run build
 
-# Start production server
-npm start
+# Build only frontend
+npm run build:web
 
-# Linting
+# Linting (all workspaces)
 npm run lint
+
+# Format code
+npm run format
 ```
 
 ---

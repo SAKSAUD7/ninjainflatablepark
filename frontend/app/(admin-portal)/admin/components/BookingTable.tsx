@@ -225,7 +225,7 @@ export function BookingTable({ bookings, title, type, readOnly = false }: Bookin
                                             >
                                                 <Eye className="w-4 h-4" />
                                             </Link>
-                                            {!readOnly && (
+                                            {!readOnly && type !== 'party' && (
                                                 <>
                                                     <button
                                                         onClick={() => handleEdit(booking.id)}

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AdminSidebar } from "./admin/components/AdminSidebar";
 import { AdminHeader } from "./admin/components/AdminHeader";
 import { ToastProvider } from "../../components/ToastProvider";
+import { Toaster } from "sonner";
 
 export default async function AdminPortalLayout({
     children,
@@ -31,6 +32,7 @@ export default async function AdminPortalLayout({
     // Pass Super Admin permissions to show all menu items
     return (
         <ToastProvider>
+            <Toaster position="top-right" richColors />
             <div className="min-h-screen bg-slate-50 text-slate-900">
                 {/* Sidebar */}
                 <AdminSidebar permissions={session.permissions || []} />

@@ -161,6 +161,7 @@ export async function createPartyBooking(formData: any) {
         return {
             success: true,
             bookingId: booking.uuid || booking.id,
+            booking: booking, // Include full booking object with id, uuid, etc.
             amount: totalAmount,
             depositAmount: totalAmount * 0.5 // 50% deposit
         };

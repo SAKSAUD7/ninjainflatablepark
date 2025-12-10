@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ModelSchema } from '../../lib/cms/types';
+import { ModelSchema, FieldSchema } from '@/lib/cms/types';
 import { CMSField } from './CMSField';
 import { Loader2, Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -37,7 +37,7 @@ export function CMSForm({ schema, initialData = {}, onSubmit, submitLabel = 'Sav
         const newErrors: Record<string, string> = {};
         let isValid = true;
 
-        schema.fields.forEach((field) => {
+        schema.fields.forEach((field: FieldSchema) => {
             if (field.required && !formData[field.name] && formData[field.name] !== 0 && formData[field.name] !== false) {
                 newErrors[field.name] = `${field.label} is required`;
                 isValid = false;
@@ -86,7 +86,7 @@ export function CMSForm({ schema, initialData = {}, onSubmit, submitLabel = 'Sav
                 </div>
 
                 <div className="p-6 space-y-6">
-                    {schema.fields.map((field) => (
+                    {schema.fields.map((field: FieldSchema) => (
                         <CMSField
                             key={field.name}
                             field={field}

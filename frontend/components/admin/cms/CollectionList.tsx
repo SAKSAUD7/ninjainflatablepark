@@ -40,8 +40,8 @@ export function CollectionList({ title, description, items, schema, basePath, on
         }
     };
 
-    // Determine which fields to show in the table (first 4-5 fields usually)
-    const displayFields = schema.fields.filter((f: any) => f.type !== 'json_list' && f.type !== 'textarea').slice(0, 5);
+    // Determine which fields to show in the table (first 5 fields usually, include textareas but truncate)
+    const displayFields = schema.fields.filter((f: any) => f.type !== 'json_list' && f.type !== 'rich_text').slice(0, 5);
 
     return (
         <div className="space-y-6">
@@ -98,8 +98,10 @@ export function CollectionList({ title, description, items, schema, basePath, on
                                                     {item[field.name] ? "Active" : "Inactive"}
                                                 </span>
                                             ) : (
-                                                <span className="truncate max-w-xs block">
-                                                    {item[field.name]}
+                                                <span className="truncate max-w-xs block" title={String(item[field.name])}>
+                                                    {field.type === 'textarea' && item[field.name]?.length > 50
+                                                        ? item[field.name].substring(0, 50) + '...'
+                                                        : item[field.name]}
                                                 </span>
                                             )}
                                         </td>

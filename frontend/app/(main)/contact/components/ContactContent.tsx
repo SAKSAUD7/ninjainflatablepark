@@ -13,10 +13,15 @@ interface ContactContentProps {
         subtitle: string;
         image: string;
     };
+    form?: {
+        title: string;
+        subtitle?: string;
+    };
     defaultConfig?: any;
 }
 
-export default function ContactContent({ settings, hero, defaultConfig }: ContactContentProps) {
+export default function ContactContent({ settings, hero, form, defaultConfig }: ContactContentProps) {
+    // ... existing state ...
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -27,6 +32,7 @@ export default function ContactContent({ settings, hero, defaultConfig }: Contac
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
+        // ... existing submit logic ...
         e.preventDefault();
         setIsSubmitting(true);
 
@@ -51,12 +57,14 @@ export default function ContactContent({ settings, hero, defaultConfig }: Contac
     };
 
     const phone = settings?.contact_phone || defaultConfig?.contact?.phone || "+91 98454 71611";
+    // ... existing consts ...
     const email = settings?.contact_email || defaultConfig?.contact?.email || "info@ninjapark.com";
     const address = settings?.address || defaultConfig?.contact?.address || "Ninja Inflatable Park, Layarda Hoshalli, Bangalore 560083";
     const mapUrl = settings?.map_url || defaultConfig?.contact?.mapUrl || "https://goo.gl/maps/xyz";
     const openingHours = typeof settings?.opening_hours === 'string' ? settings.opening_hours : "12:00 PM - 10:00 PM";
 
     const contactInfo = [
+        // ... existing contactInfo array ...
         {
             icon: <Phone className="w-6 h-6" />,
             title: "Call Us",
@@ -82,7 +90,10 @@ export default function ContactContent({ settings, hero, defaultConfig }: Contac
 
     const heroTitle = hero?.title || "Contact Us";
     const heroSubtitle = hero?.subtitle || "Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible!";
-    const heroImage = hero?.image || "/images/uploads/img-7.jpg"; // Using a different image as default if needed, or stick to what was there
+    const heroImage = hero?.image || "/images/uploads/img-7.jpg";
+
+    const formTitle = form?.title || "Send us a Message";
+    const formSubtitle = form?.subtitle;
 
     return (
         <main className="min-h-screen bg-background text-white pt-24">
@@ -149,9 +160,13 @@ export default function ContactContent({ settings, hero, defaultConfig }: Contac
                         <ScrollReveal animation="slideLeft">
                             <div id="contactForm" className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-primary/30">
                                 <h2 className="text-3xl font-display font-black mb-6 text-primary">
-                                    Send us a Message
+                                    {formTitle}
                                 </h2>
+                                {formSubtitle && (
+                                    <p className="text-white/70 mb-6">{formSubtitle}</p>
+                                )}
                                 <form onSubmit={handleSubmit} className="space-y-6">
+                                    {/* ... existing form inputs ... */}
                                     <div>
                                         <label className="block text-sm font-bold mb-2 text-white/80">
                                             Your Name
@@ -204,7 +219,6 @@ export default function ContactContent({ settings, hero, defaultConfig }: Contac
                                         />
                                     </div>
                                     <div className="w-full">
-                                        {/* Using custom wrapper or div for BouncyButton */}
                                         <BouncyButton type="submit" variant="primary" className="w-full" size="lg" disabled={isSubmitting}>
                                             <div className="flex items-center justify-center">
                                                 {isSubmitting ? (

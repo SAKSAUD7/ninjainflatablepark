@@ -47,3 +47,56 @@ class GlobalSettings(models.Model):
 
     def __str__(self):
         return "Global Settings"
+
+class Logo(models.Model):
+    name = models.CharField(max_length=255, help_text="Logo name/description")
+    image = models.ImageField(upload_to='logos/', help_text="Logo image file")
+    is_active = models.BooleanField(default=False, help_text="Set as active logo")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Logo"
+        verbose_name_plural = "Logos"
+    
+    def save(self, *args, **kwargs):
+        # Ensure only one logo is active at a time
+        if self.is_active:
+            Logo.objects.filter(is_active=True).exclude(pk=self.pk).update(is_active=False)
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.name} ({'Active' if self.is_active else 'Inactive'})"
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('BOOKING', 'New Booking'),
+        ('PARTY_BOOKING', 'New Party Booking'),
+        ('CONTACT_MESSAGE', 'Contact Message'),
+        ('WAIVER_PENDING', 'Waiver Pending'),
+        ('LOW_INVENTORY', 'Low Inventory'),
+        ('PAYMENT_RECEIVED', 'Payment Received'),
+        ('SYSTEM', 'System Alert'),
+    ]
+    
+    type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    link = models.CharField(max_length=500, null=True, blank=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    # Optional: Link to specific objects
+    booking_id = models.IntegerField(null=True, blank=True)
+    party_booking_id = models.IntegerField(null=True, blank=True)
+    contact_message_id = models.IntegerField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
+    
+    def __str__(self):
+        return f"{self.type}: {self.title}"
+

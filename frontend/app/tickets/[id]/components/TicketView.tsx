@@ -42,7 +42,7 @@ export const TicketView = ({ booking }: TicketViewProps) => {
                         </div>
                         <div className="text-right">
                             <p className="text-xs opacity-50 uppercase tracking-widest">Booking Ref</p>
-                            <p className="text-xl font-mono font-bold text-primary">{booking.id.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-xl font-mono font-bold text-primary">{(booking.uuid || booking.id || "").toString().slice(0, 8).toUpperCase()}</p>
                         </div>
                     </div>
 

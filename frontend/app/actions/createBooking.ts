@@ -110,39 +110,56 @@ export async function createBooking(formData: any) {
                 cache: "no-store"
             });
 
-            if (voucherRes.ok) {
-                const vouchers = await voucherRes.json();
-                const voucher = vouchers[0];
-
-                if (voucher && voucher.is_active) {
-                    // Check expiry
-                    if (!voucher.expiry_date || new Date(voucher.expiry_date) >= new Date()) {
-                        // Check usage limit
-                        if (!voucher.usage_limit || voucher.used_count < voucher.usage_limit) {
-                            // Check min order amount
-                            if (!voucher.min_order_amount || subtotal >= voucher.min_order_amount) {
-                                // Calculate discount
-                                if (voucher.discount_type === "PERCENTAGE") {
-                                    discountAmount = (subtotal * voucher.discount_value) / 100;
-                                } else {
-                                    discountAmount = voucher.discount_value;
-                                }
-
-                                discountAmount = Math.min(discountAmount, totalAmount);
-                                totalAmount -= discountAmount;
-                                voucherId = voucher.id;
-
-                                // Increment usage count
-                                await fetch(`${API_URL}/shop/vouchers/${voucher.id}/`, {
-                                    method: "PATCH",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ used_count: voucher.used_count + 1 })
-                                });
-                            }
-                        }
-                    }
-                }
+            if (!voucherRes.ok) {
+                return { success: false, error: "Invalid voucher code" };
             }
+
+            const vouchers = await voucherRes.json();
+            const voucher = vouchers[0];
+
+            if (!voucher) {
+                return { success: false, error: "Invalid voucher code" };
+            }
+
+            if (!voucher.is_active) {
+                return { success: false, error: "This voucher is inactive" };
+            }
+
+            // Check expiry
+            if (voucher.expiry_date && new Date(voucher.expiry_date) < new Date()) {
+                return { success: false, error: "This voucher has expired" };
+            }
+
+            // Check usage limit
+            if (voucher.usage_limit && voucher.used_count >= voucher.usage_limit) {
+                return { success: false, error: "This voucher has reached its usage limit" };
+            }
+
+            // Check min order amount
+            if (voucher.min_order_amount && subtotal < parseFloat(voucher.min_order_amount)) {
+                return { success: false, error: `Minimum order of ₹${parseFloat(voucher.min_order_amount).toLocaleString()} required to use this voucher` };
+            }
+
+            // Calculate discount
+            if (voucher.discount_type === "PERCENTAGE") {
+                discountAmount = (subtotal * parseFloat(voucher.discount_value)) / 100;
+            } else {
+                discountAmount = parseFloat(voucher.discount_value);
+            }
+
+            discountAmount = Math.min(discountAmount, totalAmount);
+            // Ensure 2 decimal places
+            discountAmount = Number(discountAmount.toFixed(2));
+
+            totalAmount -= discountAmount;
+            voucherId = voucher.id;
+
+            // Increment usage count
+            await fetch(`${API_URL}/shop/vouchers/${voucher.id}/`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ used_count: voucher.used_count + 1 })
+            });
         }
 
         // Generate unique booking number
@@ -180,9 +197,9 @@ export async function createBooking(formData: any) {
             adults: data.adults,
             kids: data.kids,
             spectators: data.spectators,
-            subtotal: subtotal,
-            amount: totalAmount,
-            discount_amount: discountAmount,
+            subtotal: Number(subtotal.toFixed(2)),
+            amount: Number(totalAmount.toFixed(2)),
+            discount_amount: Number(discountAmount.toFixed(2)),
             voucher_code: data.voucherCode || null,
             voucher: voucherId,
             status: "CONFIRMED",

@@ -16,17 +16,27 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import os
+from dotenv import load_dotenv
+load_dotenv(BASE_DIR / '.env')
+
+def get_env_bool(name, default=False):
+    return str(os.getenv(name, str(default))).lower().strip() in ['true', '1', 'yes']
+
+def get_env_list(name, default=''):
+    val = os.getenv(name, default)
+    return [x.strip() for x in val.split(',') if x.strip()]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_^sm)8i-_242pzekv!w1&i+@u0t9e!6lcxwu^v=uxglq%&wc67'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-dev-key-fallback')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_env_bool('DEBUG', False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = get_env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1')
 
 
 # Application definition
@@ -161,21 +171,9 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5000",
-    "http://127.0.0.1:5000",
-]
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5000",
-    "http://127.0.0.1:5000",
-]
+CORS_ALLOWED_ORIGINS = get_env_list('CORS_ALLOWED_ORIGINS', 'http://localhost:3000')
+CSRF_TRUSTED_ORIGINS = get_env_list('CORS_ALLOWED_ORIGINS', 'http://localhost:3000')
 CORS_ALLOW_CREDENTIALS = True
 # CORS_ALLOW_ALL_ORIGINS = True  # Disabled to allowing credentials
-
-import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

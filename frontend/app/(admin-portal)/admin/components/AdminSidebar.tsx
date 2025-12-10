@@ -43,6 +43,7 @@ interface NavItem {
     icon: React.ComponentType<{ className?: string }>;
     badge?: string;
     permission?: PermissionCheck;
+    external?: boolean;
 }
 
 interface NavGroup {
@@ -57,6 +58,9 @@ const navigation: NavGroup[] = [
             { name: "Dashboard", href: "/admin", icon: LayoutDashboard, permission: { entity: 'dashboard', action: 'read' } },
             { name: "Website Content", href: "/admin/cms", icon: Globe, permission: { entity: 'cms', action: 'read' } },
             { name: "Contact Messages", href: "/admin/cms/contact-messages", icon: MessageSquare, permission: { entity: 'cms', action: 'read' } },
+            { name: "Go Kids Go", href: "https://www.gokidsgo.co.uk/", icon: ShoppingBag, external: true, permission: { entity: '*', action: 'read' } },
+            { name: "Go Kids Play", href: "https://www.gokidsplay.co.uk/", icon: PartyPopper, external: true, permission: { entity: '*', action: 'read' } },
+            { name: "Spin Pin", href: "https://www.spinpin.uk/", icon: Star, external: true, permission: { entity: '*', action: 'read' } },
         ]
     },
     {
@@ -201,6 +205,8 @@ export function AdminSidebar({ permissions = [] }: AdminSidebarProps) {
                                             key={item.href}
                                             href={item.href}
                                             onClick={() => setIsMobileOpen(false)}
+                                            target={item.external ? "_blank" : undefined}
+                                            rel={item.external ? "noopener noreferrer" : undefined}
                                             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${active
                                                 ? "bg-primary text-white shadow-sm"
                                                 : "text-slate-700 hover:bg-slate-100"
@@ -208,6 +214,9 @@ export function AdminSidebar({ permissions = [] }: AdminSidebarProps) {
                                         >
                                             <item.icon className={`w-5 h-5 ${active ? "text-white" : "text-slate-400"}`} />
                                             <span className="flex-1">{item.name}</span>
+                                            {item.external && (
+                                                <ExternalLink className="w-4 h-4 text-slate-400" />
+                                            )}
                                             {item.badge && (
                                                 <span className="px-2 py-0.5 text-xs font-bold bg-red-500 text-white rounded-full">
                                                     {item.badge}

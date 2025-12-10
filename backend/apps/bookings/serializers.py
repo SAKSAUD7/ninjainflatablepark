@@ -86,11 +86,43 @@ class BookingSerializer(serializers.ModelSerializer):
                   'created_at', 'updated_at']
 
 class PartyBookingSerializer(serializers.ModelSerializer):
+    duration = serializers.SerializerMethodField()
+    spectators = serializers.SerializerMethodField()
+    qr_code = serializers.SerializerMethodField()
+    payment_status = serializers.SerializerMethodField()
+    waiver_status = serializers.SerializerMethodField()
+    booking_status = serializers.SerializerMethodField()
+
     class Meta:
         model = PartyBooking
         fields = ['id', 'uuid', 'name', 'email', 'phone', 'date', 'time', 'package_name', 
                   'kids', 'adults', 'amount', 'birthday_child_name', 'birthday_child_age',
                   'participants', 'waiver_signed', 'waiver_signed_at', 'waiver_ip_address',
-                  'status', 'customer', 'created_at', 'updated_at']
+                  'status', 'customer', 'created_at', 'updated_at',
+                  'duration', 'spectators', 'qr_code', 'payment_status', 'waiver_status', 'booking_status']
+
+    def get_duration(self, obj):
+        return 120  # Party bookings are standard 2 hours
+
+    def get_spectators(self, obj):
+        return 0  # Spectators not currently tracked in PartyBooking model
+
+    def get_qr_code(self, obj):
+        # Generate a QR code URL or value similar to regular bookings
+        # For now, return the UUID which can be used to generate client-side or mocked
+        return f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={obj.uuid}"
+
+    def get_payment_status(self, obj):
+        # Party bookings usually default to PENDING until deposit is paid
+        # But we'll map the main status to payment status for now
+        if obj.status == 'CONFIRMED' or obj.status == 'COMPLETED':
+            return 'PAID'
+        return 'PENDING'
+
+    def get_waiver_status(self, obj):
+        return 'SIGNED' if obj.waiver_signed else 'PENDING'
+
+    def get_booking_status(self, obj):
+        return obj.status
 
 

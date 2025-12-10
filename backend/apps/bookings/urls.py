@@ -16,6 +16,7 @@ urlpatterns = [
     path('party-bookings/', create_party_booking_view, name='party-bookings-list-create'),
     path('party-bookings/<int:id>/', party_booking_detail_view, name='party-booking-detail'),
     path('party-bookings/<uuid:uuid>/add_participants/', add_party_participants_view, name='party-booking-add-participants'),
+    path('party-bookings/ticket/<uuid:uuid>/', PartyBookingViewSet.as_view({'get': 'ticket'}), name='party-booking-ticket'),
     # Custom waiver endpoints (bypasses serializer bug)
     path('waivers/', waiver_list_view, name='waivers-list'),
     path('waivers/<int:id>/', waiver_detail_view, name='waiver-detail'),

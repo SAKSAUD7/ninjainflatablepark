@@ -4,9 +4,21 @@ import { CMSBackLink } from '@/components/admin/cms/CMSBackLink';
 import Link from 'next/link';
 import { Settings } from 'lucide-react';
 
+import { ContactHeroEditor } from './components/ContactHeroEditor';
+import { ContactFormEditor } from './components/ContactFormEditor';
+import { getPageSections } from '@/app/actions/page-sections';
+
 export default async function ContactAdminPage() {
-    // Fetch settings
-    const settings = await getSettings() as any;
+    // Fetch settings and page sections in parallel
+    const [settings, sections] = await Promise.all([
+        getSettings() as any,
+        getPageSections('contact')
+    ]);
+
+    // Find the hero section, if it exists
+    const heroSection = sections.find((s: any) => s.section_key === 'hero');
+    // Find form section
+    const formSection = sections.find((s: any) => s.section_key === 'contact_form');
 
     return (
         <div className="space-y-8 max-w-5xl mx-auto pb-20">
@@ -17,6 +29,12 @@ export default async function ContactAdminPage() {
             </div>
 
             <div className="grid gap-8">
+                {/* Hero Editor */}
+                <ContactHeroEditor initialData={heroSection} />
+
+                {/* Contact Form Editor */}
+                <ContactFormEditor initialData={formSection} />
+
                 {/* Contact Information */}
                 <section>
                     <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
@@ -36,9 +54,9 @@ export default async function ContactAdminPage() {
 
                         {settings && (
                             <div className="bg-slate-50 rounded-lg p-4 space-y-2 text-sm">
-                                <p><strong>Park Name:</strong> {settings.park_name || 'Not set'}</p>
-                                <p><strong>Phone:</strong> {settings.contact_phone || 'Not set'}</p>
-                                <p><strong>Email:</strong> {settings.contact_email || 'Not set'}</p>
+                                <p><strong>Park Name:</strong> {settings.parkName || 'Not set'}</p>
+                                <p><strong>Phone:</strong> {settings.contactPhone || 'Not set'}</p>
+                                <p><strong>Email:</strong> {settings.contactEmail || 'Not set'}</p>
                                 <p><strong>Address:</strong> {settings.address || 'Not set'}</p>
                             </div>
                         )}

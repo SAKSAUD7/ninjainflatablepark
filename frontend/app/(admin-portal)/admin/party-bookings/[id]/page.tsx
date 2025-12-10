@@ -1,8 +1,8 @@
 import { getAdminSession } from "../../../../lib/admin-auth";
-import { getPartyBookingById, updatePartyBookingStatus, deletePartyBooking } from "../../../../actions/admin";
+import { getPartyBookingById, updatePartyBookingStatus } from "../../../../actions/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Check, X, Mail, Trash2, Calendar, User, Gift, DollarSign } from "lucide-react";
+import { ArrowLeft, Check, X, Mail, Calendar, User, Gift, DollarSign } from "lucide-react";
 import { PartyBookingActions } from "./PartyBookingActions";
 
 export default async function PartyBookingDetailPage({ params }: { params: { id: string } }) {
@@ -162,11 +162,7 @@ export default async function PartyBookingDetailPage({ params }: { params: { id:
                                 </button>
                             </form>
 
-                            <form action={deletePartyBooking.bind(null, booking.id)}>
-                                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-50 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors font-medium mt-4">
-                                    <Trash2 size={18} /> Delete Booking
-                                </button>
-                            </form>
+
                         </div>
                     </div>
 

@@ -1,9 +1,10 @@
-"use client";
-
 import { BookingWizard } from "../../../components/BookingWizard";
 import { createBooking } from "../../actions/createBooking";
+import { getPageSections } from "../../actions/page-sections";
 
-export default function BookingPage() {
+export default async function BookingPage() {
+    const cmsContent = await getPageSections('booking-session');
+
     return (
         <main className="bg-background min-h-screen pt-24 pb-16 px-4">
             <div className="max-w-5xl mx-auto">
@@ -18,7 +19,7 @@ export default function BookingPage() {
                     </p>
                 </div>
 
-                <BookingWizard onSubmit={createBooking} />
+                <BookingWizard onSubmit={createBooking} cmsContent={cmsContent} />
             </div>
         </main>
     );
