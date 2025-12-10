@@ -51,7 +51,7 @@ export const ImageCarousel = ({ images, interval = 5000, className = "" }: Image
 
     return (
         <div className={`relative overflow-hidden rounded-3xl group ${className}`}>
-            <div className="relative h-[400px] md:h-[500px] w-full">
+            <div className="relative w-full" style={{ height: '400px' }}>
                 <AnimatePresence initial={false} custom={direction}>
                     <motion.img
                         key={currentIndex}

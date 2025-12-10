@@ -19,6 +19,9 @@ export default async function HomeAdminPage() {
     const heroSection = sections.find((s: any) => s.section_key === 'hero');
     const aboutSection = sections.find((s: any) => s.section_key === 'about');
 
+    // Filter out party carousel items from home gallery
+    const homeGalleryItems = gallery.filter((item: any) => item.category !== 'parties_carousel');
+
     return (
         <div className="space-y-8 max-w-5xl mx-auto pb-20">
             <CMSBackLink />
@@ -37,7 +40,7 @@ export default async function HomeAdminPage() {
                 </section>
 
                 <section>
-                    <GalleryManager items={gallery} />
+                    <GalleryManager items={homeGalleryItems} />
                 </section>
 
 

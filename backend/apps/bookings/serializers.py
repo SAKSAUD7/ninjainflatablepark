@@ -33,8 +33,8 @@ class SimpleBookingSerializer(serializers.ModelSerializer):
 class WaiverSerializer(serializers.ModelSerializer):
     # booking_details = SimpleBookingSerializer(source='booking', read_only=True)  # Temporarily disabled
     # party_booking_details = serializers.SerializerMethodField()  # Temporarily disabled
-    # booking_type = serializers.SerializerMethodField()  # Temporarily disabled
-    # booking_reference = serializers.SerializerMethodField()  # Temporarily disabled
+    booking_type = serializers.SerializerMethodField()
+    booking_reference = serializers.SerializerMethodField()
     
     class Meta:
         model = Waiver

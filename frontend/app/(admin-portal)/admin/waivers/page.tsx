@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getCachedData, setCachedData } from "@/lib/admin-cache";
-import { verifyWaiver } from "../../../actions/admin";
+import { verifyWaiver, toggleWaiverVerification } from "../../../actions/admin";
+import { toast } from 'sonner';
 import {
     Search,
     Download,
@@ -84,6 +85,32 @@ export default function AdminWaivers() {
         }
     }
 
+    async function handleStatusToggle(id: string, currentStatus: boolean, e: React.MouseEvent) {
+        e.stopPropagation(); // Prevent row click
+
+        try {
+            const newStatus = !currentStatus;
+
+            // Optimistic update
+            setWaivers(prev => prev.map(w => w.id === id ? { ...w, is_verified: newStatus } : w));
+
+            const res = await toggleWaiverVerification(id, newStatus);
+            if (res.success) {
+                toast.success(newStatus ? "Marked as Arrived" : "Marked as Not Arrived");
+                // Don't reload immediately to prevent race condition overwriting optimistic state
+            } else {
+                // Revert on failure
+                setWaivers(prev => prev.map(w => w.id === id ? { ...w, is_verified: currentStatus } : w));
+                toast.error(res.error || "Failed to update status");
+            }
+        } catch (error) {
+            // Revert on error
+            setWaivers(prev => prev.map(w => w.id === id ? { ...w, is_verified: currentStatus } : w));
+            console.error("Toggle error:", error);
+            toast.error("Error updating status");
+        }
+    }
+
     function handleKioskMode() {
         window.open('/kiosk/waiver', '_blank', 'fullscreen=yes');
     }
@@ -111,6 +138,7 @@ export default function AdminWaivers() {
                 bookingMap.set(uniqueKey, {
                     ...waiver,
                     relatedWaivers,
+                    bookingType, // Add bookingType explicitly
                     totalParticipants: relatedWaivers.length,
                     adults: relatedWaivers.filter((w: any) => w.participant_type === 'ADULT').length,
                     minors: relatedWaivers.filter((w: any) => w.participant_type === 'MINOR').length
@@ -260,11 +288,26 @@ export default function AdminWaivers() {
                                     <tr key={waiver.id} className="hover:bg-slate-50 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold
+                                                    ${waiver.bookingType === 'PARTY'
+                                                        ? 'bg-purple-100 text-purple-700'
+                                                        : 'bg-blue-100 text-blue-700'}`}>
                                                     {(waiver.name || 'U').charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <p className="text-sm font-bold text-slate-900">{waiver.name || 'Unknown'}</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-sm font-bold text-slate-900">{waiver.name || 'Unknown'}</p>
+                                                        {waiver.bookingType === 'PARTY' && (
+                                                            <span className="px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 text-[10px] font-bold uppercase tracking-wider border border-purple-200">
+                                                                Party
+                                                            </span>
+                                                        )}
+                                                        {waiver.bookingType === 'SESSION' && (
+                                                            <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider border border-blue-100">
+                                                                Session
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     {waiver.email && (
                                                         <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
                                                             <Mail size={12} /> {waiver.email}
@@ -300,7 +343,7 @@ export default function AdminWaivers() {
                                         </td>
                                         <td className="px-6 py-4">
                                             {waiver.booking_reference ? (
-                                                <span className="text-sm font-medium text-neon-blue">
+                                                <span className={`text-sm font-medium ${waiver.bookingType === 'PARTY' ? 'text-purple-600' : 'text-neon-blue'}`}>
                                                     {waiver.booking_reference}
                                                 </span>
                                             ) : (
@@ -308,13 +351,21 @@ export default function AdminWaivers() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border inline-flex items-center gap-1 
-                                                ${waiver.is_verified 
-                                                    ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
-                                                    : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
-                                                <CheckCircle size={12} />
-                                                {waiver.is_verified ? 'Verified' : 'Signed'}
-                                            </span>
+                                            {waiver.is_verified ? (
+                                                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 w-fit">
+                                                    <CheckCircle size={14} className="fill-current" />
+                                                    <span className="text-xs font-bold">Arrived</span>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={(e) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
+                                                    disabled={waiver.updating}
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 hover:text-slate-700 transition-colors w-fit text-xs font-bold"
+                                                >
+                                                    <div className="w-3.5 h-3.5 rounded-full border-2 border-current opacity-60"></div>
+                                                    Mark Arrived
+                                                </button>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <Link
@@ -324,20 +375,6 @@ export default function AdminWaivers() {
                                                 <Eye size={16} />
                                                 View
                                             </Link>
-                                            {!waiver.is_verified && (
-                                                <button
-                                                    onClick={async () => {
-                                                        if (confirm("Confirm this waiver manually?")) {
-                                                            await verifyWaiver(waiver.id);
-                                                            loadWaivers(); // Reload to refresh UI
-                                                        }
-                                                    }}
-                                                    className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors font-medium ml-2"
-                                                >
-                                                    <CheckCircle size={16} />
-                                                    Confirm
-                                                </button>
-                                            )}
                                         </td>
                                     </tr>
                                 ))
@@ -394,13 +431,21 @@ export default function AdminWaivers() {
                                             )}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold border inline-flex items-center gap-1 
-                                                ${waiver.is_verified 
-                                                    ? 'bg-emerald-100 text-emerald-700 border-emerald-200' 
-                                                    : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
-                                                <CheckCircle size={12} />
-                                                {waiver.is_verified ? 'Verified' : 'Signed'}
-                                            </span>
+                                            {waiver.is_verified ? (
+                                                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 w-fit">
+                                                    <CheckCircle size={14} className="fill-current" />
+                                                    <span className="text-xs font-bold">Arrived</span>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={(e) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
+                                                    disabled={waiver.updating}
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 hover:text-slate-700 transition-colors w-fit text-xs font-bold"
+                                                >
+                                                    <div className="w-3.5 h-3.5 rounded-full border-2 border-current opacity-60"></div>
+                                                    Mark Arrived
+                                                </button>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-2">
@@ -411,20 +456,6 @@ export default function AdminWaivers() {
                                                 >
                                                     <Eye size={18} />
                                                 </Link>
-                                                {!waiver.is_verified && (
-                                                    <button
-                                                        onClick={async () => {
-                                                            if (confirm("Confirm this waiver manually?")) {
-                                                                await verifyWaiver(waiver.id);
-                                                                loadWaivers();
-                                                            }
-                                                        }}
-                                                        className="p-2 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
-                                                        title="Manual Confirm"
-                                                    >
-                                                        <CheckCircle size={18} />
-                                                    </button>
-                                                )}
                                                 <button
                                                     onClick={() => handleDownloadPDF(waiver.id)}
                                                     className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"

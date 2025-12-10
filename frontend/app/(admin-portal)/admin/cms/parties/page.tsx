@@ -1,19 +1,25 @@
 import React from 'react';
 import { getPageSections } from '@/app/actions/page-sections';
 import { getPartyPackages } from '@/app/actions/party-packages';
+import { getGalleryItems } from '@/app/actions/gallery';
 import { HeroEditor } from '@/components/admin/cms/home/HeroEditor';
 import { TermsEditor } from '@/components/admin/cms/parties/TermsEditor';
 import { PartyAvailabilityEditor } from '@/components/admin/cms/parties/PartyAvailabilityEditor';
+import { PartyCarouselEditor } from '@/components/admin/cms/parties/PartyCarouselEditor';
 import { CMSBackLink } from '@/components/admin/cms/CMSBackLink';
 import Link from 'next/link';
 import { Package, Settings } from 'lucide-react';
 
 export default async function PartiesAdminPage() {
-    // Fetch party data
-    const [sections, partyPackages] = await Promise.all([
+    // Fetch party data in parallel
+    const [sections, partyPackages, galleryItems] = await Promise.all([
         getPageSections('party-booking'),
-        getPartyPackages()
-    ]) as [any[], any[]];
+        getPartyPackages(),
+        getGalleryItems()
+    ]) as [any[], any[], any[]];
+
+    // Filter carousel images
+    const carouselImages = galleryItems.filter((item: any) => item.category === 'parties_carousel');
 
     // Find hero section for party-booking page specifically
     const heroSection = sections.find((s: any) => s.section_key === 'hero');
@@ -31,6 +37,11 @@ export default async function PartiesAdminPage() {
                 {/* Hero Section Editor - Dedicated for Party Booking Page */}
                 <section>
                     <HeroEditor section={heroSection} pageSlug="party-booking" />
+                </section>
+
+                {/* Party Carousel Editor */}
+                <section>
+                    <PartyCarouselEditor items={carouselImages} />
                 </section>
 
                 {/* Party Availability Editor */}

@@ -299,6 +299,30 @@ export async function verifyWaiver(id: string) {
     return { success: false };
 }
 
+export async function toggleWaiverVerification(id: string, isVerified: boolean) {
+    const res = await fetchAPI(`/bookings/waivers/${id}/`, {
+        method: "PATCH",
+        body: JSON.stringify({ is_verified: isVerified })
+    });
+
+    if (res && res.ok) {
+        revalidatePath("/admin/waivers");
+        return { success: true };
+    }
+
+    // Log error details
+    let errorMessage = "Failed to update status";
+    if (res) {
+        const errorText = await res.text();
+        console.error(`toggleWaiverVerification failed: ${res.status} ${res.statusText}`, errorText);
+        errorMessage = `Error: ${res.status} ${res.statusText}`;
+    } else {
+        console.error("toggleWaiverVerification failed: No response");
+    }
+
+    return { success: false, error: errorMessage };
+}
+
 export async function getWaivers(search?: string) {
     const params = new URLSearchParams();
     if (search) params.append("search", search);

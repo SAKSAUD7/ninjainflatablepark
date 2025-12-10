@@ -56,6 +56,9 @@ export async function createGalleryItem(data: {
     });
 
     revalidatePath('/admin/gallery');
+    revalidatePath('/admin/cms/home');
+    revalidatePath('/admin/cms/parties');
+    revalidatePath('/');
     return { success: true, item: transformCmsItem(item) };
 }
 
@@ -83,6 +86,9 @@ export async function updateGalleryItem(id: string, data: any) {
     });
 
     revalidatePath('/admin/gallery');
+    revalidatePath('/admin/cms/home');
+    revalidatePath('/admin/cms/parties');
+    revalidatePath('/');
     return { success: true };
 }
 
@@ -102,5 +108,8 @@ export async function deleteGalleryItem(id: string) {
     });
 
     revalidatePath('/admin/gallery');
+    revalidatePath('/admin/cms/home');
+    revalidatePath('/admin/cms/parties');
+    revalidatePath('/');
     return { success: true };
 }

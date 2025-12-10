@@ -54,12 +54,15 @@ export default async function Home() {
     ];
 
     // Transform gallery
-    const galleryItems = gallery.filter((g: any) => g.active).slice(0, 8).map((g: any) => ({
-        id: g.id,
-        src: g.image_url || '/images/hero-background.jpg',
-        title: g.title || '',
-        desc: g.category || ''
-    }));
+    const galleryItems = gallery
+        .filter((g: any) => g.active && g.category !== 'parties_carousel')
+        .slice(0, 8)
+        .map((g: any) => ({
+            id: g.id,
+            src: g.image_url || '/images/hero-background.jpg',
+            title: g.title || '',
+            desc: g.category || ''
+        }));
 
     // Prepare data for HomeContent
     const heroData = heroSection ? {

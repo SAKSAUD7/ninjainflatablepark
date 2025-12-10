@@ -15,9 +15,13 @@ interface PartyContentProps {
     };
     settings?: any;
     terms?: string; // HTML string or plain text
+    carouselImages?: string[];
 }
 
-export default function PartyContent({ packages, menus, hero, settings, terms }: PartyContentProps) {
+export default function PartyContent({ packages, menus, hero, settings, terms, carouselImages }: PartyContentProps) {
+    // ... [Rest of code]
+    // ...
+
     const heroTitle = hero?.title || "Ninja Party Booking";
     const heroSubtitle = hero?.subtitle || "Celebrate with the ultimate adventure! Birthdays, school trips, corporate events - we've got you covered.";
     const heroImage = hero?.image || "/images/uploads/img-3.jpg";
@@ -129,18 +133,16 @@ export default function PartyContent({ packages, menus, hero, settings, terms }:
             {/* Image Carousel */}
             <section className="relative px-4 py-12 bg-background">
                 <div className="max-w-5xl mx-auto">
-                    <ScrollReveal animation="scale">
-                        <ImageCarousel
-                            images={[
-                                "/images/uploads/img-1.jpg",
-                                "/images/uploads/img-3.jpg",
-                                "/images/uploads/img-5.jpg",
-                                "/images/uploads/img-7.jpg",
-                                "/images/uploads/img-8.jpg"
-                            ]}
-                            className="shadow-2xl border-4 border-white/10"
-                        />
-                    </ScrollReveal>
+                    <ImageCarousel
+                        images={carouselImages && carouselImages.length > 0 ? carouselImages : [
+                            "/images/uploads/img-1.jpg",
+                            "/images/uploads/img-3.jpg",
+                            "/images/uploads/img-5.jpg",
+                            "/images/uploads/img-7.jpg",
+                            "/images/uploads/img-8.jpg"
+                        ]}
+                        className="shadow-2xl border-4 border-white/10"
+                    />
                 </div>
             </section>
 

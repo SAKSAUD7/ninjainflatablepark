@@ -85,7 +85,7 @@ class SocialLink(models.Model):
 
 class GalleryItem(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
-    image_url = models.URLField()
+    image_url = models.CharField(max_length=700, help_text="Image URL (local path or external link)")
     category = models.CharField(max_length=100, null=True, blank=True)
     order = models.IntegerField(default=0)
     active = models.BooleanField(default=True)
@@ -117,8 +117,8 @@ class StatCard(models.Model):
 class InstagramReel(models.Model):
     """Instagram reels to display on homepage"""
     title = models.CharField(max_length=255, help_text="Reel title/description")
-    thumbnail_url = models.URLField(max_length=700, help_text="Thumbnail image URL")
-    reel_url = models.URLField(max_length=700, help_text="Instagram reel URL")
+    thumbnail_url = models.CharField(max_length=700, help_text="Thumbnail image URL (local path or external link)")
+    reel_url = models.CharField(max_length=700, help_text="Instagram reel URL")
     active = models.BooleanField(default=True)
     order = models.IntegerField(default=0, help_text="Display order (lower numbers first)")
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,13 @@
+[
+  "parties_carousel",
+  "parties_carousel",
+  "General",
+  "General",
+  "General",
+  "General",
+  "General",
+  "General",
+  "General",
+  "General",
+  "parties_carousel"
+]

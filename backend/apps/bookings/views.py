@@ -220,6 +220,7 @@ def waiver_list_view(request):
                 'ip_address': waiver.ip_address,
                 'minors': waiver.minors,
                 'adults': waiver.adults,
+                'is_verified': waiver.is_verified,  # Add this field
                 'booking': waiver.booking.id if waiver.booking else None,
                 'party_booking': waiver.party_booking.id if waiver.party_booking else None,
                 'customer': waiver.customer.id if waiver.customer else None,
@@ -278,13 +279,26 @@ def waiver_list_view(request):
                 'detail': 'Failed to create waiver'
             }, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
+@api_view(['GET', 'PATCH'])
 @permission_classes([permissions.AllowAny])
 def waiver_detail_view(request, id):
     """Custom view to get waiver details with booking and participant information"""
     try:
         waiver = Waiver.objects.get(pk=id)
         
+        if request.method == 'PATCH':
+            # Check for admin permissions strictly for updates
+            if not request.user.is_staff and not request.user.is_superuser:
+               return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            if 'is_verified' in request.data:
+                waiver.is_verified = request.data['is_verified']
+                waiver.save()
+                return Response({'success': True, 'is_verified': waiver.is_verified})
+            
+            return Response({'detail': 'No valid fields provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # GET method logic
         waiver_data = {
             'id': waiver.id,
             'name': waiver.name,
@@ -301,6 +315,7 @@ def waiver_detail_view(request, id):
             'adults': waiver.adults,
             'created_at': waiver.created_at.isoformat(),
             'updated_at': waiver.updated_at.isoformat(),
+            'is_verified': waiver.is_verified, # Include in GET response
         }
         
         # Add booking details if exists
