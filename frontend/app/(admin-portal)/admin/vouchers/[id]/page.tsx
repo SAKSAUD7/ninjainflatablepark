@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getVoucher, updateVoucher } from "../../../../actions/vouchers";
+import { getVoucher, updateVoucher } from "@/app/actions/vouchers";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft, Save, Loader2, Ticket, Percent, DollarSign, Calendar, Hash } from "lucide-react";

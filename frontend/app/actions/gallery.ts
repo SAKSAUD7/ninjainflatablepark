@@ -6,7 +6,7 @@ import { logActivity } from "../lib/audit-log";
 import { revalidatePath } from "next/cache";
 import { transformCmsItem } from "../lib/transformers";
 
-export async function getGalleryItems() {
+export async function getGalleryItems(): Promise<any[]> {
     await requirePermission('cms', 'read');
     const res = await fetchAPI("/cms/gallery/");
     if (!res || !res.ok) return [];

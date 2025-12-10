@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldSchema } from '../../../lib/cms/types';
+import { FieldSchema } from "../../../../lib/cms/types";
 
 interface BooleanFieldProps {
     field: FieldSchema;

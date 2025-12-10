@@ -1,4 +1,4 @@
-import { getDashboardStats } from "../../actions/admin";
+import { getDashboardStats } from "@/app/actions/admin";
 import { getAdminSession, requirePermission } from "../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";

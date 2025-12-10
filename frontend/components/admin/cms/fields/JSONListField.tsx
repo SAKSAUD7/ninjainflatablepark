@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FieldSchema } from '../../../lib/cms/types';
+import { FieldSchema } from "../../../../lib/cms/types";
 import { Plus, X } from 'lucide-react';
 
 interface JSONListFieldProps {

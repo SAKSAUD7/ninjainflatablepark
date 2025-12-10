@@ -1,4 +1,4 @@
-import { getStaticPages } from "../../../actions/cms";
+import { getStaticPages } from "@/app/actions/cms";
 import { getAdminSession } from "../../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";

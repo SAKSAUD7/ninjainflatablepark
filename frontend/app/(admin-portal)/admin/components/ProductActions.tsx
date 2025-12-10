@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteProduct, updateProduct } from "../../../actions/cms";
+import { deleteProduct, updateProduct } from "@/app/actions/cms";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

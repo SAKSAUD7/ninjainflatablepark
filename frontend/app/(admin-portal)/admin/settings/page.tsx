@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Save, Upload, Lock, Bell, Shield, Globe, Power, Loader2 } from "lucide-react";
-import { getSettings, updateSettings, updatePassword } from "../../../actions/settings";
+import { getSettings, updateSettings, updatePassword } from "@/app/actions/settings";
 import { toast } from "sonner";
 
 export default function SettingsPage() {

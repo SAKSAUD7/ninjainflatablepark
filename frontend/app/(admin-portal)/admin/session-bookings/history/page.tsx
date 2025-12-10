@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getSessionBookings } from "../../../../actions/admin";
+import { getSessionBookings } from "@/app/actions/admin";
 import { BookingTable } from "../../components/BookingTable";
 import { Calendar, Filter } from "lucide-react";
 

@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Loader2, Save, Trash, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createBanner, updateBanner, deleteBanner } from "../../../actions/banners";
+import { createBanner, updateBanner, deleteBanner } from "@/app/actions/banners";
 
 const bannerSchema = z.object({
     title: z.string().min(1, "Title is required"),

@@ -15,7 +15,7 @@ export default async function Pricing() {
         getPricingPlans(),
         getSettings(),
         getPublicPageSections('pricing')
-    ]) as [any[], any[], any[]];
+    ]) as [any[], any, any[]];
 
     const heroSection = sections.find((s: any) => s.section_key === 'hero');
 

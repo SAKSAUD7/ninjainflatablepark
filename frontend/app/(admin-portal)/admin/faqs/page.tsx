@@ -1,4 +1,4 @@
-import { getFaqs } from "../../../actions/faqs";
+import { getFaqs } from "@/app/actions/faqs";
 import { Plus, Edit } from "lucide-react";
 import Link from "next/link";
 import { PermissionGate } from "../../../../components/PermissionGate";

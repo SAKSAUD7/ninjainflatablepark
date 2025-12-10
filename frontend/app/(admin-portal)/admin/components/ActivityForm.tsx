@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Loader2, Save, Trash, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createActivity, updateActivity, deleteActivity } from "../../../actions/activities";
+import { createActivity, updateActivity, deleteActivity } from "@/app/actions/activities";
 
 const activitySchema = z.object({
     name: z.string().min(1, "Name is required"),

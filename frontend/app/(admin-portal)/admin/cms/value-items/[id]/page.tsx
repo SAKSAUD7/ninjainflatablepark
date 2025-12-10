@@ -51,7 +51,7 @@ export default function EditValueItemPage({ params }: { params: { id: string } }
             <CMSForm
                 schema={schemas.value_item}
                 initialData={item}
-                onSubmit={(data) => updateValueItem(params.id, data)}
+                onSubmit={(data: any) => updateValueItem(params.id, data)}
                 submitLabel="Update Value Item"
                 backUrl="/admin/cms/value-items"
             />

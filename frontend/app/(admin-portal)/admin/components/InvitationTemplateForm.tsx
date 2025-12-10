@@ -7,9 +7,9 @@ import { z } from "zod";
 import { Loader2, Save, Trash, ArrowLeft, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { deleteInvitationTemplate } from "../../../actions/invitation-templates";
+import { deleteInvitationTemplate } from "@/app/actions/invitation-templates";
 import ImageUploadField from "./ImageUploadField";
-import { getInvitationTemplate } from "../../../actions/invitation-templates";
+import { getInvitationTemplate } from "@/app/actions/invitation-templates";
 import { compressImage } from "../../../lib/compress-image";
 import { useToast } from "../../../../components/ToastProvider";
 
@@ -35,7 +35,7 @@ function getCookie(name: string): string {
     return '';
 }
 
-export default function InvitationTemplateForm({ initialId }: InvitationTemplateFormProps) {
+export function InvitationTemplateForm({ initialId }: InvitationTemplateFormProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [loading, setLoading] = useState(!!initialId);
@@ -254,8 +254,8 @@ export default function InvitationTemplateForm({ initialId }: InvitationTemplate
                         type="submit"
                         disabled={isSubmitting || success}
                         className={`flex items-center gap-2 px-6 py-2 rounded-lg transition-all text-sm font-bold disabled:opacity-50 ${success
-                                ? "bg-green-500 text-white hover:bg-green-600"
-                                : "bg-neon-blue text-white hover:bg-blue-600"
+                            ? "bg-green-500 text-white hover:bg-green-600"
+                            : "bg-neon-blue text-white hover:bg-blue-600"
                             }`}
                     >
                         {isSubmitting ? (
@@ -275,3 +275,5 @@ export default function InvitationTemplateForm({ initialId }: InvitationTemplate
         </div>
     );
 }
+
+export default InvitationTemplateForm;

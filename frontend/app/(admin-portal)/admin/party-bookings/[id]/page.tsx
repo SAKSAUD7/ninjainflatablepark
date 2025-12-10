@@ -1,5 +1,5 @@
-import { getAdminSession } from "../../../../lib/admin-auth";
-import { getPartyBookingById, updatePartyBookingStatus } from "../../../../actions/admin";
+import { getAdminSession } from "@/app/lib/admin-auth";
+import { getPartyBookingById, updatePartyBookingStatus } from "@/app/actions/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Check, X, Mail, Calendar, User, Gift, DollarSign } from "lucide-react";

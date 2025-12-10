@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getSessionBookings } from "../../../actions/admin";
+import { getSessionBookings } from "@/app/actions/admin";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
 import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";
@@ -45,8 +45,8 @@ export default function AdminBookings() {
             }
 
             const data = await getSessionBookings();
-            setBookings(data);
-            setFilteredBookings(data);
+            setBookings(data as any[]);
+            setFilteredBookings(data as any[]);
 
             // Cache the data
             setCachedData('session-bookings', data);

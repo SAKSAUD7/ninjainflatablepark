@@ -4,7 +4,7 @@ import { fetchAPI } from "../lib/server-api";
 import { requirePermission } from "../lib/admin-auth";
 import { revalidatePath } from "next/cache";
 
-export async function getInvitationTemplates() {
+export async function getInvitationTemplates(): Promise<any[]> {
     await requirePermission('cms', 'read');
     const res = await fetchAPI('/invitations/templates/');
     if (!res.ok) return [];

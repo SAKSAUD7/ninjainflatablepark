@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createBooking } from "../../../../actions/createBooking";
+import { createBooking } from "@/app/actions/createBooking";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Calendar, Clock, Users, User, Mail, Phone, Ticket, ArrowLeft } from "lucide-react";

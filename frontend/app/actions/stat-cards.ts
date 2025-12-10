@@ -14,4 +14,45 @@ export async function getStatCards(page?: string) {
     }
 }
 
-// ... create, update, delete actions
+
+export async function getStatCard(id: string) {
+    try {
+        return await fetchAPI(`${ENDPOINT}${id}/`, { cache: 'no-store' });
+    } catch (error) {
+        return null;
+    }
+}
+
+export async function createStatCard(data: any) {
+    try {
+        const result = await postAPI(ENDPOINT, data);
+        revalidatePath('/admin/cms/stat-cards');
+        revalidatePath('/'); // Stat cards might be on homepage
+        return { success: true, item: result };
+    } catch (error) {
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to create stat card' };
+    }
+}
+
+export async function updateStatCard(id: string, data: any) {
+    try {
+        const result = await putAPI(`${ENDPOINT}${id}/`, data);
+        revalidatePath('/admin/cms/stat-cards');
+        revalidatePath('/');
+        return { success: true, item: result };
+    } catch (error) {
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to update stat card' };
+    }
+}
+
+export async function deleteStatCard(id: string) {
+    try {
+        await deleteAPI(`${ENDPOINT}${id}/`);
+        revalidatePath('/admin/cms/stat-cards');
+        revalidatePath('/');
+        return { success: true };
+    } catch (error) {
+        return { success: false, error: error instanceof Error ? error.message : 'Failed to delete stat card' };
+    }
+}
+

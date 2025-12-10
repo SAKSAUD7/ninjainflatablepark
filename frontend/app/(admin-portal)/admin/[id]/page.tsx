@@ -1,5 +1,5 @@
-import { getAdminSession } from "../../../lib/admin-auth";
-import { updateBookingStatus, getBookingById } from "../../../actions/admin";
+import { getAdminSession } from "@/app/lib/admin-auth";
+import { updateBookingStatus, getBookingById } from "@/app/actions/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Check, X, Printer, Mail } from "lucide-react";
@@ -89,7 +89,7 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
                         <h2 className="text-lg font-bold text-slate-900 mb-4">Waivers</h2>
                         {booking.waivers.length > 0 ? (
                             <ul className="space-y-2">
-                                {booking.waivers.map(w => (
+                                {booking.waivers.map((w: any) => (
                                     <li key={w.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                                         <span className="text-sm font-medium">{w.name}</span>
                                         <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Signed</span>

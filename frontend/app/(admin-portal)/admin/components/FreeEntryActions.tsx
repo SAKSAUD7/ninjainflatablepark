@@ -1,6 +1,6 @@
 "use client";
 
-import { updateFreeEntryStatus, deleteFreeEntry } from "../../../actions/cms";
+import { updateFreeEntryStatus, deleteFreeEntry } from "@/app/actions/cms";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

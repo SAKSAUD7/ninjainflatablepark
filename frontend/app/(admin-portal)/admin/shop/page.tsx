@@ -1,4 +1,4 @@
-import { getProducts } from "../../../actions/cms";
+import { getProducts } from "@/app/actions/cms";
 import { getAdminSession } from "../../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -13,8 +13,8 @@ export default async function ShopPage() {
 
     const stats = {
         total: products.length,
-        active: products.filter(p => p.active).length,
-        totalValue: products.reduce((sum, p) => sum + (p.price * p.stock), 0)
+        active: products.filter((p: any) => p.active).length,
+        totalValue: products.reduce((sum: number, p: any) => sum + (p.price * p.stock), 0)
     };
 
     return (
@@ -72,7 +72,7 @@ export default async function ShopPage() {
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
+                {products.map((product: any) => (
                     <div key={product.id} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         {product.imageUrl && (
                             <img src={product.imageUrl} alt={product.name} className="w-full h-48 object-cover" />

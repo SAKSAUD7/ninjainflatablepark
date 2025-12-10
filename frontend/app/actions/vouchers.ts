@@ -5,7 +5,7 @@ import { getAdminSession } from "../lib/admin-auth";
 import { revalidatePath } from "next/cache";
 import { transformCmsItem } from "../lib/transformers";
 
-export async function getVouchers() {
+export async function getVouchers(): Promise<any[]> {
     const session = await getAdminSession();
     if (!session) throw new Error("Unauthorized");
 

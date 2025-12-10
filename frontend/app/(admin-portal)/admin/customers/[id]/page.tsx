@@ -1,5 +1,5 @@
-import { getAdminSession } from "../../../../lib/admin-auth";
-import { getCustomerById } from "../../../../actions/admin";
+import { getAdminSession } from "@/app/lib/admin-auth";
+import { getCustomerById } from "@/app/actions/admin";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Mail, Phone, Calendar, Package, TrendingUp, User, MapPin } from "lucide-react";

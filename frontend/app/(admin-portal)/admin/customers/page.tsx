@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getCustomers } from "../../../actions/admin";
+import { getCustomers } from "@/app/actions/admin";
 import { exportCustomersToCSV } from "../../../../lib/export-csv";
 import {
     Search,
@@ -30,8 +30,8 @@ export default function AdminCustomers() {
     async function loadCustomers() {
         try {
             const data = await getCustomers();
-            setAllCustomers(data);
-            setFilteredCustomers(data);
+            setAllCustomers(data as any[]);
+            setFilteredCustomers(data as any[]);
         } catch (error) {
             console.error("Error loading customers:", error);
         } finally {

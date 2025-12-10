@@ -9,7 +9,8 @@ export async function getAuditLogs(filter?: {
     action?: string;
     fromDate?: string;
     toDate?: string;
-}) {
+    limit?: number;
+}): Promise<any[]> {
     await requirePermission('logs', 'read');
 
     // Note: Django doesn't have AuditLog model yet
@@ -18,4 +19,12 @@ export async function getAuditLogs(filter?: {
     console.log("Audit logs requested with filter:", filter);
 
     return [];
+}
+
+export async function getLogStats(): Promise<any> {
+    return {
+        totalLogs: 0,
+        logsToday: 0,
+        actionsByType: []
+    };
 }

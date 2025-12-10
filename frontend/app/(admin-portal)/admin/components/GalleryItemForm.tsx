@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Loader2, Save, Trash, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createGalleryItem, updateGalleryItem, deleteGalleryItem } from "../../../actions/gallery";
+import { createGalleryItem, updateGalleryItem, deleteGalleryItem } from "@/app/actions/gallery";
 
 const galleryItemSchema = z.object({
     title: z.string().min(1, "Title is required"),

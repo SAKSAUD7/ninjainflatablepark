@@ -11,6 +11,7 @@ interface Template {
     name: string;
     background_image: string;
     description: string;
+    default_title?: string;
     is_active: boolean;
 }
 

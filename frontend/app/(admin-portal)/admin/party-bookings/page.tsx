@@ -1,7 +1,7 @@
 "use client";
 
 import { BookingTable } from "../components/BookingTable";
-import { getPartyBookings } from "../../../actions/admin";
+import { getPartyBookings } from "@/app/actions/admin";
 import { useEffect, useState } from "react";
 
 export default function PartyBookingsPage() {
@@ -12,7 +12,7 @@ export default function PartyBookingsPage() {
         const fetchBookings = async () => {
             try {
                 const data = await getPartyBookings();
-                setBookings(data);
+                setBookings(data as any[]);
             } catch (error) {
                 // Error handled silently - bookings will remain empty array
                 setBookings([]);

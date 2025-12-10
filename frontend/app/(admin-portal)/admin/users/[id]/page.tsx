@@ -1,5 +1,5 @@
-import { getRoles, getAdminUser } from "../../../../actions/users";
-import { getAdminSession } from "../../../../lib/admin-auth";
+import { getRoles, getAdminUser } from "@/app/actions/users";
+import { getAdminSession } from "@/app/lib/admin-auth";
 import { redirect, notFound } from "next/navigation";
 import { AdminUserForm } from "../../components/AdminUserForm";
 import Link from "next/link";

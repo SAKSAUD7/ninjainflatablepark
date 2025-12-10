@@ -1,4 +1,4 @@
-import { getVouchers, deleteVoucher } from "../../../actions/vouchers";
+import { getVouchers, deleteVoucher } from "@/app/actions/vouchers";
 import Link from "next/link";
 import { Plus, Ticket, Trash2, Edit } from "lucide-react";
 

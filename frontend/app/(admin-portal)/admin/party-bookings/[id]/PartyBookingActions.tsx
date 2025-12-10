@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Printer, Mail } from "lucide-react";
-import { resendPartyBookingEmail } from "../../../../actions/admin";
+import { resendPartyBookingEmail } from "@/app/actions/admin";
 import { toast } from "sonner";
 
 interface PartyBookingActionsProps {

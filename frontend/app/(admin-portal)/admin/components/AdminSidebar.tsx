@@ -33,7 +33,7 @@ import {
     Settings
 } from "lucide-react";
 import { hasPermission, type PermissionCheck } from "../../../lib/permissions";
-import { logoutAdmin } from "../../../actions/admin";
+import { logoutAdmin } from "@/app/actions/admin";
 
 interface NavItem {
     name: string;

@@ -1,4 +1,4 @@
-import { getAdminUsers, getUserStats, getRecentActivity } from "../../../actions/users";
+import { getAdminUsers, getUserStats, getRecentActivity } from "@/app/actions/users";
 import { getAdminSession } from "../../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -91,7 +91,7 @@ export default async function UsersPage() {
                         Role Distribution
                     </h3>
                     <div className="space-y-3">
-                        {stats.roleDistribution.map((item, index) => (
+                        {stats.roleDistribution.map((item: any, index: number) => (
                             <div key={index} className="flex items-center justify-between">
                                 <span className="text-sm font-medium text-slate-700">{item.role}</span>
                                 <div className="flex items-center gap-3">

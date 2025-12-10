@@ -8,7 +8,7 @@ import { transformCmsItem } from "../lib/transformers";
 
 // ========== FREE ENTRIES ==========
 
-export async function getFreeEntries(status?: string) {
+export async function getFreeEntries(status?: string): Promise<any[]> {
     await requirePermission('entries', 'read');
 
     const params = new URLSearchParams();
@@ -84,7 +84,7 @@ export async function deleteFreeEntry(id: string) {
 
 // ========== STATIC PAGES ==========
 
-export async function getStaticPages() {
+export async function getStaticPages(): Promise<any[]> {
     await requirePermission('cms', 'read');
     const res = await fetchAPI("/cms/pages/");
     if (!res || !res.ok) return [];
@@ -199,7 +199,7 @@ export async function deleteStaticPage(id: string) {
 
 // ========== SOCIAL LINKS ==========
 
-export async function getSocialLinks() {
+export async function getSocialLinks(): Promise<any[]> {
     await requirePermission('cms', 'read');
     const res = await fetchAPI("/cms/social-links/");
     if (!res || !res.ok) return [];
@@ -282,7 +282,7 @@ export async function deleteSocialLink(id: string) {
 
 // ========== PRODUCTS ==========
 
-export async function getProducts() {
+export async function getProducts(): Promise<any[]> {
     await requirePermission('shop', 'read');
     const res = await fetchAPI("/shop/products/");
     if (!res || !res.ok) return [];

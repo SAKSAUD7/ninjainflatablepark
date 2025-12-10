@@ -125,7 +125,7 @@ export async function getDashboardStats() {
     return await res.json();
 }
 
-export async function getAllBookings(filter?: { type?: string; status?: string; search?: string }) {
+export async function getAllBookings(filter?: { type?: string; status?: string; search?: string }): Promise<any[]> {
     const params = new URLSearchParams();
     if (filter?.type) params.append("type", filter.type);
     if (filter?.status) params.append("status", filter.status);
@@ -140,7 +140,7 @@ export async function getAllBookings(filter?: { type?: string; status?: string; 
 
 // --- Booking Actions ---
 
-export async function getBookings(filter?: { status?: string; date?: string; search?: string }) {
+export async function getBookings(filter?: { status?: string; date?: string; search?: string }): Promise<any[]> {
     const params = new URLSearchParams();
     if (filter?.status) params.append("booking_status", filter.status);
     if (filter?.date) params.append("date", filter.date);
@@ -153,7 +153,7 @@ export async function getBookings(filter?: { status?: string; date?: string; sea
     return data.map(transformBooking);
 }
 
-export async function getPartyBookings(filter?: { status?: string; date?: string; search?: string }) {
+export async function getPartyBookings(filter?: { status?: string; date?: string; search?: string }): Promise<any[]> {
     const params = new URLSearchParams();
     if (filter?.status) params.append("booking_status", filter.status);
     if (filter?.date) params.append("date", filter.date);
@@ -227,7 +227,7 @@ export async function updatePartyBooking(id: string, data: any) {
     return { success: false, error: errorData.detail || "Failed to update booking" };
 }
 
-export async function getSessionBookings(filter?: { status?: string; date?: string; search?: string }) {
+export async function getSessionBookings(filter?: { status?: string; date?: string; search?: string }): Promise<any[]> {
     const params = new URLSearchParams();
     params.append("type", "SESSION");
     if (filter?.status) params.append("booking_status", filter.status);
@@ -323,7 +323,7 @@ export async function toggleWaiverVerification(id: string, isVerified: boolean) 
     return { success: false, error: errorMessage };
 }
 
-export async function getWaivers(search?: string) {
+export async function getWaivers(search?: string): Promise<any[]> {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
 
@@ -347,7 +347,7 @@ export async function updateCustomerDetails(id: string, data: { name?: string; e
     }
 }
 
-export async function getCustomers(search?: string) {
+export async function getCustomers(search?: string): Promise<any[]> {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
 
@@ -374,7 +374,7 @@ export async function getWaiverById(id: string) {
 
 // --- Booking Block Actions ---
 
-export async function getBookingBlocks() {
+export async function getBookingBlocks(): Promise<any[]> {
     const res = await fetchAPI("/bookings/booking-blocks/");
     if (!res || !res.ok) return [];
 

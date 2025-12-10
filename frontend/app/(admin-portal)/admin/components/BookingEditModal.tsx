@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X, Edit } from "lucide-react";
-import { updateBookingDetails, updateBookingStatus } from "../../../actions/admin";
+import { updateBookingDetails, updateBookingStatus } from "@/app/actions/admin";
 
 interface BookingEditModalProps {
     booking: any;

@@ -1,4 +1,4 @@
-import { getInvitationTemplates } from "../../../actions/invitation-templates";
+import { getInvitationTemplates } from "@/app/actions/invitation-templates";
 import { Plus, Edit } from "lucide-react";
 import Link from "next/link";
 import { PermissionGate } from "../../../../components/PermissionGate";

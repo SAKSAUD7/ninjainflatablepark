@@ -1,4 +1,4 @@
-import { getFaq } from "../../../../actions/faqs";
+import { getFaq } from "@/app/actions/faqs";
 import { FaqForm } from "../../components/FaqForm";
 import { notFound } from "next/navigation";
 

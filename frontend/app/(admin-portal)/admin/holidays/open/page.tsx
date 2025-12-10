@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getBookingBlocks, deleteBookingBlock } from "../../../../actions/admin";
+import { getBookingBlocks, deleteBookingBlock } from "@/app/actions/admin";
 import Link from "next/link";
 import { CalendarDays, Trash2, Plus, Edit } from "lucide-react";
 import { format } from "date-fns";

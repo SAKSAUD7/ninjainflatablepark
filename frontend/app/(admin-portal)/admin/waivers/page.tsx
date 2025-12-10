@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { getCachedData, setCachedData } from "@/lib/admin-cache";
-import { verifyWaiver, toggleWaiverVerification } from "../../../actions/admin";
+import { verifyWaiver, toggleWaiverVerification } from "@/app/actions/admin";
 import { toast } from 'sonner';
 import {
     Search,
@@ -229,7 +229,7 @@ export default function AdminWaivers() {
                         type="text"
                         placeholder={viewMode === "grouped" ? "Search by primary signer..." : "Search by signer name or email..."}
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none text-slate-900"
                     />
                 </div>
@@ -237,7 +237,7 @@ export default function AdminWaivers() {
                     {viewMode === "all" && (
                         <select
                             value={typeFilter}
-                            onChange={(e) => setTypeFilter(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setTypeFilter(e.target.value)}
                             className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm outline-none focus:border-neon-blue"
                         >
                             <option value="ALL">All Types</option>
@@ -247,7 +247,7 @@ export default function AdminWaivers() {
                     )}
                     <select
                         value={bookingTypeFilter}
-                        onChange={(e) => setBookingTypeFilter(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setBookingTypeFilter(e.target.value)}
                         className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm outline-none focus:border-neon-blue"
                     >
                         <option value="ALL">All Bookings</option>
@@ -358,7 +358,7 @@ export default function AdminWaivers() {
                                                 </div>
                                             ) : (
                                                 <button
-                                                    onClick={(e) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
+                                                    onClick={(e: React.MouseEvent) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
                                                     disabled={waiver.updating}
                                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 hover:text-slate-700 transition-colors w-fit text-xs font-bold"
                                                 >
@@ -438,7 +438,8 @@ export default function AdminWaivers() {
                                                 </div>
                                             ) : (
                                                 <button
-                                                    onClick={(e) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
+                                                    onClick={(e: React.MouseEvent) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
+
                                                     disabled={waiver.updating}
                                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 hover:text-slate-700 transition-colors w-fit text-xs font-bold"
                                                 >

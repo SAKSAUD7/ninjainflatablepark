@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createAdminUser, getRoles } from "../../../../actions/users";
+import { createAdminUser, getRoles } from "@/app/actions/users";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft, Save, Loader2, User, Mail, Lock, Shield } from "lucide-react";

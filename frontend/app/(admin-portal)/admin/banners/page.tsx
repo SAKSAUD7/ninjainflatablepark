@@ -1,4 +1,4 @@
-import { getBanners } from "../../../actions/banners";
+import { getBanners } from "@/app/actions/banners";
 import { Plus, Edit, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { PermissionGate } from "../../../../components/PermissionGate";

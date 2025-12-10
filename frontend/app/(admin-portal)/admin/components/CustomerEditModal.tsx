@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { updateCustomerDetails } from "../../../actions/admin";
+import { updateCustomerDetails } from "@/app/actions/admin";
 
 interface CustomerEditModalProps {
     customer: any;

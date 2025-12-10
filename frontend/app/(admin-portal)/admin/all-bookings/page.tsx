@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getAllBookings } from "../../../actions/admin";
+import { getAllBookings } from "@/app/actions/admin";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
 import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";

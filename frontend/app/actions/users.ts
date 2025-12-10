@@ -4,7 +4,7 @@ import { fetchAPI } from "../lib/server-api";
 import { requirePermission } from "../lib/admin-auth";
 import { revalidatePath } from "next/cache";
 
-export async function getAdminUsers() {
+export async function getAdminUsers(): Promise<any[]> {
     await requirePermission('users', 'read');
     const res = await fetchAPI("/core/users/");
     if (!res || !res.ok) return [];
@@ -20,7 +20,7 @@ export async function getAdminUsers() {
     }));
 }
 
-export async function getUserStats() {
+export async function getUserStats(): Promise<any> {
     await requirePermission('users', 'read');
     const res = await fetchAPI("/core/users/stats/");
     if (!res || !res.ok) {
@@ -32,10 +32,10 @@ export async function getUserStats() {
             roleDistribution: []
         };
     }
-    return await res.json();
+    return res.json();
 }
 
-export async function getRecentActivity(limit: number = 5) {
+export async function getRecentActivity(limit: number = 5): Promise<any[]> {
     await requirePermission('users', 'read');
     const res = await fetchAPI(`/core/users/recent_activity/?limit=${limit}`);
     if (!res || !res.ok) return [];
@@ -113,7 +113,7 @@ export async function createAdminUser(data: any) {
     revalidatePath("/admin/users");
 }
 
-export async function getRoles() {
+export async function getRoles(): Promise<any[]> {
     return [
         { id: 'SUPER_ADMIN', name: 'Super Admin', description: 'Full access to all settings and data' },
         { id: 'ADMIN', name: 'Content Manager', description: 'Manage content and bookings' },
@@ -123,4 +123,12 @@ export async function getRoles() {
 
 export async function getAdminUser(id: string) {
     return getUser(id);
+}
+
+export async function updateAdminUser(id: string, data: any) {
+    return updateUser(id, data);
+}
+
+export async function deleteAdminUser(id: string) {
+    return deleteUser(id);
 }

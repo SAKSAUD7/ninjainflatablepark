@@ -51,7 +51,7 @@ export default function EditTimelineItemPage({ params }: { params: { id: string 
             <CMSForm
                 schema={schemas.timeline_item}
                 initialData={item}
-                onSubmit={(data) => updateTimelineItem(params.id, data)}
+                onSubmit={(data: any) => updateTimelineItem(params.id, data)}
                 submitLabel="Update Timeline Item"
                 backUrl="/admin/cms/timeline-items"
             />

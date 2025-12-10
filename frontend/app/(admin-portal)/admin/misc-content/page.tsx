@@ -1,4 +1,4 @@
-import { getGalleryItems } from "../../../actions/gallery";
+import { getGalleryItems } from "@/app/actions/gallery";
 import { Plus, Edit } from "lucide-react";
 import Link from "next/link";
 import { PermissionGate } from "../../../../components/PermissionGate";

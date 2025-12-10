@@ -1,5 +1,5 @@
-import { getAuditLogs, getLogStats } from "../../../actions/logs";
-import { getAdminSession } from "../../../lib/admin-auth";
+import { getAuditLogs, getLogStats } from "@/app/actions/logs";
+import { getAdminSession } from "@/app/lib/admin-auth";
 import { redirect } from "next/navigation";
 import { LogViewer } from "../components/LogViewer";
 import { Activity, Shield, Clock } from "lucide-react";
@@ -52,7 +52,7 @@ export default async function ActivityLogsPage() {
                         <div>
                             <p className="text-sm text-slate-500 font-medium">Security Events</p>
                             <p className="text-2xl font-bold text-slate-900">
-                                {stats.actionsByType.find(a => a.action === 'LOGIN')?._count || 0}
+                                {stats.actionsByType.find((a: any) => a.action === 'LOGIN')?._count || 0}
                             </p>
                         </div>
                     </div>

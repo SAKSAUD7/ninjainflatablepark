@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getPartyBookings } from "../../../../actions/admin";
+import { getPartyBookings } from "@/app/actions/admin";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import { exportBookingsToCSV } from "../../../../../lib/export-csv";
 import {

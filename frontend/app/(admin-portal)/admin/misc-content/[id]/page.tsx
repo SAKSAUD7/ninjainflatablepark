@@ -1,4 +1,4 @@
-import { getGalleryItem } from "../../../actions/gallery";
+import { getGalleryItem } from "@/app/actions/gallery";
 import { GalleryItemForm } from "../../components/GalleryItemForm";
 import { notFound } from "next/navigation";
 

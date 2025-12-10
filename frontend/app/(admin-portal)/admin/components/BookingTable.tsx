@@ -16,7 +16,7 @@ import { StatusBadge } from "./StatusBadge";
 import Link from "next/link";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
 import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";
-import { deletePartyBooking, deleteBooking } from "../../../actions/admin";
+import { deletePartyBooking, deleteBooking } from "@/app/actions/admin";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 

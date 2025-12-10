@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createAdminUser, updateAdminUser, deleteAdminUser } from "../../../actions/users";
+import { createAdminUser, updateAdminUser, deleteAdminUser } from "@/app/actions/users";
 import { Save, Trash2, ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 

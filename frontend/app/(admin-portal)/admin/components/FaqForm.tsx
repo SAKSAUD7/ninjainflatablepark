@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Loader2, Save, Trash, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createFaq, updateFaq, deleteFaq } from "../../../actions/faqs";
+import { createFaq, updateFaq, deleteFaq } from "@/app/actions/faqs";
 
 const faqSchema = z.object({
     question: z.string().min(1, "Question is required"),

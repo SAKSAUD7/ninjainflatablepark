@@ -51,7 +51,7 @@ export default function EditSocialLinkPage({ params }: { params: { id: string } 
             <CMSForm
                 schema={schemas.social_link}
                 initialData={item}
-                onSubmit={(data) => updateSocialLink(params.id, data)}
+                onSubmit={(data: any) => updateSocialLink(params.id, data)}
                 submitLabel="Update Social Link"
                 backUrl="/admin/cms/social-links"
             />

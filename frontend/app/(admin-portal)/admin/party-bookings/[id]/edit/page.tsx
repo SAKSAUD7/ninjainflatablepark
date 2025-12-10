@@ -1,7 +1,7 @@
-import { getAdminSession } from "../../../../lib/admin-auth";
-import { getPartyBookingById } from "../../../../actions/admin";
+import { getAdminSession } from "@/app/lib/admin-auth";
+import { getPartyBookingById } from "@/app/actions/admin";
 import { redirect } from "next/navigation";
-import { AdminPartyBookingForm } from "../../components/AdminPartyBookingForm";
+import { AdminPartyBookingForm } from "../../../components/AdminPartyBookingForm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 

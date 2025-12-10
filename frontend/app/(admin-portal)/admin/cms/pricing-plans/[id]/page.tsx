@@ -51,7 +51,7 @@ export default function EditPricingPlanPage({ params }: { params: { id: string }
             <CMSForm
                 schema={schemas.pricing_plan}
                 initialData={item}
-                onSubmit={(data) => updatePricingPlan(params.id, data)}
+                onSubmit={(data: any) => updatePricingPlan(params.id, data)}
                 submitLabel="Update Pricing Plan"
                 backUrl="/admin/cms/pricing-plans"
             />

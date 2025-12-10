@@ -1,4 +1,4 @@
-import { loginAdmin } from "../../../actions/admin";
+import { loginAdmin } from "@/app/actions/admin";
 import { getAdminSession } from "../../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import AdminLoginForm from "./LoginForm";

@@ -51,7 +51,7 @@ export default function EditStatCardPage({ params }: { params: { id: string } })
             <CMSForm
                 schema={schemas.stat_card}
                 initialData={item}
-                onSubmit={(data) => updateStatCard(params.id, data)}
+                onSubmit={(data: any) => updateStatCard(params.id, data)}
                 submitLabel="Update Stat Card"
                 backUrl="/admin/cms/stat-cards"
             />

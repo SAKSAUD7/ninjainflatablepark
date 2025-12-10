@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createBookingBlock } from "../../../../actions/admin";
+import { createBookingBlock } from "@/app/actions/admin";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock, AlertTriangle } from "lucide-react";

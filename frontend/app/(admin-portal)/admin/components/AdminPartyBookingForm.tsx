@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { createPartyBooking } from "../../../actions/createPartyBooking";
-import { updatePartyBooking } from "../../../actions/admin";
+import { createPartyBooking } from "@/app/actions/createPartyBooking";
+import { updatePartyBooking } from "@/app/actions/admin";
 import { useRouter } from "next/navigation";
 import { Calendar, Clock, Users, User, Mail, Phone, Baby, Info, Gift } from "lucide-react";
 import { toast } from "sonner";

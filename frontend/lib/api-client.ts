@@ -48,13 +48,13 @@ class ApiClient {
         // Handle absolute URLs (like /api/token/) vs relative resource URLs
         const url = endpoint.startsWith('http') ? endpoint : `${this.baseURL}${endpoint}`;
 
-        const headers: HeadersInit = {
-            'Content-Type': 'application/json',
-            ...options.headers,
-        };
+        const headers = new Headers(options.headers);
+        if (!headers.has('Content-Type')) {
+            headers.set('Content-Type', 'application/json');
+        }
 
         if (this.token) {
-            headers['Authorization'] = `Bearer ${this.token}`;
+            headers.set('Authorization', `Bearer ${this.token}`);
         }
 
         try {
@@ -92,7 +92,7 @@ class ApiClient {
         // Use the root API URL for token, not v1 prefix if it's different, but here we put it in v1/../token or root/api/token
         // My Django URLs: /api/token/
         const tokenUrl = 'http://localhost:8000/api/token/';
-        
+
         const response = await this.request<{ access: string; refresh: string }>(tokenUrl, {
             method: 'POST',
             body: JSON.stringify({ email, password }), // DRF SimpleJWT expects username/password usually, but we can configure it or just send username=email
@@ -103,10 +103,10 @@ class ApiClient {
         // Wait, I need to check if I customized SimpleJWT to accept 'email' field.
         // By default it expects 'username'. Since USERNAME_FIELD = 'email', it might still expect the key 'username'.
         // Let's try sending 'username': email.
-        
+
         if (!response.success) {
-             // Retry with 'username' key if 'email' failed, or just send 'username' by default
-             const retryResponse = await this.request<{ access: string; refresh: string }>(tokenUrl, {
+            // Retry with 'username' key if 'email' failed, or just send 'username' by default
+            const retryResponse = await this.request<{ access: string; refresh: string }>(tokenUrl, {
                 method: 'POST',
                 body: JSON.stringify({ username: email, password }),
             });
@@ -171,7 +171,7 @@ class ApiClient {
 
     async getBookingStats() {
         // Need to implement stats endpoint in backend
-        return { success: true, data: {} }; 
+        return { success: true, data: {} };
     }
 
     // Customers endpoints

@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteStaticPage } from "../../../actions/cms";
+import { deleteStaticPage } from "@/app/actions/cms";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

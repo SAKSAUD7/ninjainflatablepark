@@ -1,6 +1,6 @@
 "use client";
 
-import { createVoucher } from "../../../../actions/vouchers";
+import { createVoucher } from "@/app/actions/vouchers";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";

@@ -1,4 +1,4 @@
-import { getFreeEntries, updateFreeEntryStatus, deleteFreeEntry } from "../../../actions/cms";
+import { getFreeEntries, updateFreeEntryStatus, deleteFreeEntry } from "@/app/actions/cms";
 import { getAdminSession } from "../../../lib/admin-auth";
 import { redirect } from "next/navigation";
 import { Mail, Phone, Calendar, CheckCircle, XCircle, Clock } from "lucide-react";

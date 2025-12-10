@@ -1,4 +1,4 @@
-import { getInvitationTemplate } from "../../../actions/invitation-templates";
+import { getInvitationTemplate } from "../../../../actions/invitation-templates";
 import { InvitationTemplateForm } from "../../components/InvitationTemplateForm";
 import { notFound } from "next/navigation";
 
@@ -9,11 +9,11 @@ interface EditInvitationTemplatePageProps {
 }
 
 export default async function EditInvitationTemplatePage({ params }: EditInvitationTemplatePageProps) {
-    const template = await getInvitationTemplate(params.id);
+    const template = await getInvitationTemplate(parseInt(params.id));
 
     if (!template) {
         notFound();
     }
 
-    return <InvitationTemplateForm initialData={template} isEditing />;
+    return <InvitationTemplateForm initialId={parseInt(params.id)} />;
 }
