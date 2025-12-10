@@ -121,95 +121,97 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
                         )}
                     </div>
 
-                    {/* Tab Content */}
-                    {activeTab === "safety" && (
-                        <ScrollReveal animation="fade">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                {categories.map((section, index) => (
-                                    <motion.div
-                                        key={section.id || index}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="bg-surface-800/50 backdrop-blur-md p-6 rounded-3xl border border-white/10"
-                                    >
-                                        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4 text-primary">
-                                            {getIcon(section.icon)}
-                                        </div>
-                                        <h3 className="text-xl font-bold mb-4">{section.title}</h3>
-                                        {section.description && (
-                                            <p className="text-sm text-white/60 mb-4">{section.description}</p>
-                                        )}
-                                        <ul className="space-y-3">
-                                            {(section.items || []).map((rule: string, i: number) => (
-                                                <li key={i} className="flex items-start gap-2 text-sm text-white/70">
-                                                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                                                    <span>{rule}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </ScrollReveal>
-                    )}
-
-                    {activeTab === "terms" && termsDoc && (
-                        <ScrollReveal animation="fade">
-                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
-                                <h2 className="text-3xl font-bold mb-4">{termsDoc.title}</h2>
-                                {termsDoc.intro && (
-                                    <p className="text-white/70 mb-8 text-lg">{termsDoc.intro}</p>
-                                )}
-                                <div className="space-y-8">
-                                    {(termsDoc.sections || []).map((section: any, index: number) => (
-                                        <div key={index} className="border-l-4 border-primary pl-6">
-                                            <h3 className="text-xl font-bold mb-3 text-primary">{section.title}</h3>
-                                            <p className="text-white/80 leading-relaxed">{section.content}</p>
-                                        </div>
+                    <div className="pt-12 mt-8 relative z-0">
+                        {/* Tab Content */}
+                        {activeTab === "safety" && (
+                            <ScrollReveal animation="fade">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                    {categories.map((section, index) => (
+                                        <motion.div
+                                            key={section.id || index}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.1 }}
+                                            className="bg-surface-800/50 backdrop-blur-md p-6 rounded-3xl border border-white/10"
+                                        >
+                                            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4 text-primary">
+                                                {getIcon(section.icon)}
+                                            </div>
+                                            <h3 className="text-xl font-bold mb-4">{section.title}</h3>
+                                            {section.description && (
+                                                <p className="text-sm text-white/60 mb-4">{section.description}</p>
+                                            )}
+                                            <ul className="space-y-3">
+                                                {(section.items || []).map((rule: string, i: number) => (
+                                                    <li key={i} className="flex items-start gap-2 text-sm text-white/70">
+                                                        <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                                                        <span>{rule}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </motion.div>
                                     ))}
                                 </div>
-                            </div>
-                        </ScrollReveal>
-                    )}
+                            </ScrollReveal>
+                        )}
 
-                    {activeTab === "waiver" && waiverDoc && (
-                        <ScrollReveal animation="fade">
-                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
-                                <h2 className="text-3xl font-bold mb-4">{waiverDoc.title}</h2>
-                                {waiverDoc.intro && (
-                                    <p className="text-white/70 mb-8 text-lg">{waiverDoc.intro}</p>
-                                )}
-                                <div className="space-y-8">
-                                    {(waiverDoc.sections || []).map((section: any, index: number) => (
-                                        <div key={index} className="border-l-4 border-secondary pl-6">
-                                            <h3 className="text-xl font-bold mb-3 text-secondary">{section.title}</h3>
-                                            <p className="text-white/80 leading-relaxed">{section.content}</p>
-                                        </div>
-                                    ))}
+                        {activeTab === "terms" && termsDoc && (
+                            <ScrollReveal animation="fade">
+                                <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
+                                    <h2 className="text-3xl font-bold mb-4">{termsDoc.title}</h2>
+                                    {termsDoc.intro && (
+                                        <p className="text-white/70 mb-8 text-lg">{termsDoc.intro}</p>
+                                    )}
+                                    <div className="space-y-8">
+                                        {(termsDoc.sections || []).map((section: any, index: number) => (
+                                            <div key={index} className="border-l-4 border-primary pl-6">
+                                                <h3 className="text-xl font-bold mb-3 text-primary">{section.title}</h3>
+                                                <p className="text-white/80 leading-relaxed">{section.content}</p>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        </ScrollReveal>
-                    )}
+                            </ScrollReveal>
+                        )}
 
-                    {activeTab === "privacy" && privacyDoc && (
-                        <ScrollReveal animation="fade">
-                            <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
-                                <h2 className="text-3xl font-bold mb-4">{privacyDoc.title}</h2>
-                                {privacyDoc.intro && (
-                                    <p className="text-white/70 mb-8 text-lg">{privacyDoc.intro}</p>
-                                )}
-                                <div className="space-y-8">
-                                    {(privacyDoc.sections || []).map((section: any, index: number) => (
-                                        <div key={index} className="border-l-4 border-accent pl-6">
-                                            <h3 className="text-xl font-bold mb-3 text-accent">{section.title}</h3>
-                                            <p className="text-white/80 leading-relaxed">{section.content}</p>
-                                        </div>
-                                    ))}
+                        {activeTab === "waiver" && waiverDoc && (
+                            <ScrollReveal animation="fade">
+                                <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
+                                    <h2 className="text-3xl font-bold mb-4">{waiverDoc.title}</h2>
+                                    {waiverDoc.intro && (
+                                        <p className="text-white/70 mb-8 text-lg">{waiverDoc.intro}</p>
+                                    )}
+                                    <div className="space-y-8">
+                                        {(waiverDoc.sections || []).map((section: any, index: number) => (
+                                            <div key={index} className="border-l-4 border-secondary pl-6">
+                                                <h3 className="text-xl font-bold mb-3 text-secondary">{section.title}</h3>
+                                                <p className="text-white/80 leading-relaxed">{section.content}</p>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        </ScrollReveal>
-                    )}
+                            </ScrollReveal>
+                        )}
+
+                        {activeTab === "privacy" && privacyDoc && (
+                            <ScrollReveal animation="fade">
+                                <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
+                                    <h2 className="text-3xl font-bold mb-4">{privacyDoc.title}</h2>
+                                    {privacyDoc.intro && (
+                                        <p className="text-white/70 mb-8 text-lg">{privacyDoc.intro}</p>
+                                    )}
+                                    <div className="space-y-8">
+                                        {(privacyDoc.sections || []).map((section: any, index: number) => (
+                                            <div key={index} className="border-l-4 border-accent pl-6">
+                                                <h3 className="text-xl font-bold mb-3 text-accent">{section.title}</h3>
+                                                <p className="text-white/80 leading-relaxed">{section.content}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </ScrollReveal>
+                        )}
+                    </div>
                 </div>
             </section>
 

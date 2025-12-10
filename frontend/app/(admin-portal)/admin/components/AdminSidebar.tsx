@@ -22,7 +22,6 @@ import {
     Globe,
     MessageSquare,
     Star,
-    ShoppingBag,
     User,
     ExternalLink,
     LogOut,
@@ -31,7 +30,6 @@ import {
     Menu,
     X,
     Shield,
-    Activity,
     Settings
 } from "lucide-react";
 import { hasPermission, type PermissionCheck } from "../../../lib/permissions";
@@ -58,7 +56,7 @@ const navigation: NavGroup[] = [
             { name: "Dashboard", href: "/admin", icon: LayoutDashboard, permission: { entity: 'dashboard', action: 'read' } },
             { name: "Website Content", href: "/admin/cms", icon: Globe, permission: { entity: 'cms', action: 'read' } },
             { name: "Contact Messages", href: "/admin/cms/contact-messages", icon: MessageSquare, permission: { entity: 'cms', action: 'read' } },
-            { name: "Go Kids Go", href: "https://www.gokidsgo.co.uk/", icon: ShoppingBag, external: true, permission: { entity: '*', action: 'read' } },
+            { name: "Go Kids Go", href: "https://www.gokidsgo.co.uk/", icon: Globe, external: true, permission: { entity: '*', action: 'read' } },
             { name: "Go Kids Play", href: "https://www.gokidsplay.co.uk/", icon: PartyPopper, external: true, permission: { entity: '*', action: 'read' } },
             { name: "Spin Pin", href: "https://www.spinpin.uk/", icon: Star, external: true, permission: { entity: '*', action: 'read' } },
         ]
@@ -100,17 +98,10 @@ const navigation: NavGroup[] = [
     },
     // Content Management section removed - use CMS section instead to avoid duplicates
     {
-        name: "E-commerce",
-        items: [
-            { name: "Shop", href: "/admin/shop", icon: ShoppingBag, permission: { entity: 'shop', action: 'read' } },
-        ]
-    },
-    {
         name: "System",
         items: [
             { name: "Settings", href: "/admin/settings", icon: Settings, permission: { entity: 'settings', action: 'read' } },
             { name: "Admin Users", href: "/admin/users", icon: Shield, permission: { entity: 'users', action: 'read' } },
-            { name: "Activity Logs", href: "/admin/activity-logs", icon: Activity, permission: { entity: 'logs', action: 'read' } },
         ]
     }
 ];
@@ -134,7 +125,6 @@ export function AdminSidebar({ permissions = [] }: AdminSidebarProps) {
         "Calendar & Availability",
         "Promotions",
         "Content Management",
-        "E-commerce",
         "System"
     ]);
 
