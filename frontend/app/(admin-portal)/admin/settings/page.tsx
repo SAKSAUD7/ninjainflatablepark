@@ -63,12 +63,6 @@ export default function SettingsPage() {
                                 icon={<Lock size={18} />}
                                 label="Account & Security"
                             />
-                            <SettingsTab
-                                active={activeTab === "features"}
-                                onClick={() => setActiveTab("features")}
-                                icon={<Power size={18} />}
-                                label="Feature Toggles"
-                            />
                         </nav>
                     </div>
                 </div>
@@ -79,7 +73,6 @@ export default function SettingsPage() {
                         {activeTab === "business" && <BusinessSettings settings={settings} onUpdate={setSettings} />}
                         {activeTab === "media" && <MediaSettings />}
                         {activeTab === "account" && <AccountSettings />}
-                        {activeTab === "features" && <FeatureSettings settings={settings} onUpdate={setSettings} />}
                     </div>
                 </div>
             </div>

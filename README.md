@@ -280,13 +280,32 @@ npm run format
 
 ## 🔒 Security
 
-- ✅ JWT authentication
-- ✅ CORS configured
-- ✅ CSRF protection
-- ✅ Password hashing
+### Recent Security Audit (December 2025)
+✅ **Comprehensive security audit completed and critical vulnerabilities fixed**
+
+**Fixed Issues**:
+- ✅ **P0 Critical**: Secured public access to booking and waiver endpoints
+- ✅ Customer data now protected (names, emails, phone numbers, booking details)
+- ✅ Admin-only access enforced for sensitive data listing
+
+**Current Security Measures**:
+- ✅ JWT authentication for API access
+- ✅ Admin-only permissions for customer data endpoints
+- ✅ CORS configured for cross-origin requests
+- ✅ CSRF protection enabled
+- ✅ Password hashing with Django's built-in security
 - ⚠️ Set `DEBUG = False` in production
-- ⚠️ Use strong `SECRET_KEY`
-- ⚠️ Configure HTTPS
+- ⚠️ Use strong `SECRET_KEY` in production
+- ⚠️ Configure HTTPS for production deployment
+
+**API Endpoint Security**:
+- 🔒 `GET /api/v1/bookings/bookings/` - Admin only
+- 🔒 `GET /api/v1/bookings/waivers/` - Admin only
+- ✅ `POST /api/v1/bookings/bookings/` - Public (booking creation)
+- ✅ `POST /api/v1/bookings/waivers/` - Public (waiver signing)
+- ✅ `GET /api/v1/bookings/bookings/ticket/{uuid}/` - Public (ticket retrieval)
+
+For detailed security audit report, see project documentation.
 
 ---
 
@@ -358,4 +377,4 @@ Proprietary - Ninja Inflatable Park
 
 ---
 
-**Last Updated**: December 2025
+**Last Updated**: December 10, 2025 - Security audit completed and critical fixes applied

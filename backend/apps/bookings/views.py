@@ -42,8 +42,9 @@ class BookingViewSet(viewsets.ModelViewSet):
     serializer_class = BookingSerializer
     
     def get_permissions(self):
-        # Allow public access for create, list (for duplicate checking), and ticket retrieval
-        if self.action in ['create', 'list', 'ticket', 'retrieve']:
+        # Allow public access ONLY for create and ticket retrieval
+        # List and retrieve require admin authentication to protect customer data
+        if self.action in ['create', 'ticket']:
             return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
 
@@ -58,7 +59,9 @@ class WaiverViewSet(viewsets.ModelViewSet):
     serializer_class = WaiverSerializer
     
     def get_permissions(self):
-        if self.action in ['create', 'list']:
+        # Allow public access ONLY for create (waiver signing)
+        # List requires admin authentication to protect personal data
+        if self.action == 'create':
             return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
     
@@ -198,10 +201,14 @@ class WaiverViewSet(viewsets.ModelViewSet):
 
 # Custom function-based view for waiver listing (bypasses serializer bug)
 @api_view(['GET', 'POST'])
-@permission_classes([permissions.AllowAny])
+@permission_classes([permissions.AllowAny])  # We'll check permissions inside
 def waiver_list_view(request):
     """Custom view to list/create waivers without using ModelSerializer"""
     if request.method == 'GET':
+        # Require admin authentication for listing all waivers
+        if not (request.user and request.user.is_authenticated and request.user.is_staff):
+            return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+        
         # List all waivers
         waivers = Waiver.objects.all().order_by('-created_at')
         data = []

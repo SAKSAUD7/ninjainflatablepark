@@ -211,7 +211,7 @@ class DashboardViewSet(viewsets.ViewSet):
             
             monthly_revenue.append({
                 "name": d.strftime('%a'),
-                "total": day_session_revenue + day_party_revenue
+                "total": float(day_session_revenue + day_party_revenue)  # Convert Decimal to float
             })
 
         # Customers

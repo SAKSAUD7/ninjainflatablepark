@@ -142,13 +142,25 @@ export default async function AdminDashboard() {
                                 const heightPercent = maxRevenue > 0 ? (item.total / maxRevenue) * 100 : 0;
                                 const displayHeight = item.total > 0 ? Math.max(heightPercent, 8) : 0; // Minimum 8% height if there's any revenue
 
+                                // Vibrant color gradients for each day
+                                const colorGradients = [
+                                    'from-violet-500 to-purple-400 hover:from-violet-600 hover:to-purple-500', // Thu
+                                    'from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500', // Fri
+                                    'from-emerald-500 to-teal-400 hover:from-emerald-600 hover:to-teal-500', // Sat
+                                    'from-amber-500 to-orange-400 hover:from-amber-600 hover:to-orange-500', // Sun
+                                    'from-rose-500 to-pink-400 hover:from-rose-600 hover:to-pink-500', // Mon
+                                    'from-indigo-500 to-blue-400 hover:from-indigo-600 hover:to-blue-500', // Tue
+                                    'from-fuchsia-500 to-purple-400 hover:from-fuchsia-600 hover:to-purple-500', // Wed
+                                ];
+                                const gradient = colorGradients[i % colorGradients.length];
+
                                 return (
                                     <div key={i} className="flex flex-col items-center gap-2 w-full group relative">
                                         {item.total > 0 ? (
                                             <>
                                                 <div
                                                     style={{ height: `${displayHeight}%` }}
-                                                    className="w-full max-w-[40px] bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-sm transition-all duration-500 hover:from-blue-600 hover:to-blue-500 relative shadow-sm"
+                                                    className={`w-full max-w-[40px] bg-gradient-to-t ${gradient} rounded-t-lg transition-all duration-500 relative shadow-lg hover:shadow-xl hover:scale-105`}
                                                 >
                                                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                                                         ₹{item.total.toLocaleString()}
