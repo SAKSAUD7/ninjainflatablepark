@@ -69,10 +69,10 @@ export default function GuidelinesContent({ hero, categories, legalDocuments }: 
             </section>
 
             {/* Tabs */}
-            <section className="relative px-4 pb-32 md:pb-40">
+            <section className="relative px-4 pb-32 md:pb-40 pt-8">
                 <div className="max-w-5xl mx-auto">
                     {/* Tab Navigation */}
-                    <div className="flex flex-wrap gap-4 mb-12 justify-center">
+                    <div className="flex flex-wrap gap-4 mb-16 justify-center relative z-10">
                         <button
                             onClick={() => setActiveTab("safety")}
                             className={`px-6 py-3 rounded-xl font-bold transition-all ${activeTab === "safety"
