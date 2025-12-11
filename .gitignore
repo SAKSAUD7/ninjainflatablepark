@@ -46,6 +46,12 @@ __pycache__/
 .installed.cfg
 *.egg
 
+# Virtual Environment
+venv/
+env/
+.env/
+.venv/
+
 # Django
 *.log
 db.sqlite3
