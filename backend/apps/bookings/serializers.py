@@ -33,12 +33,13 @@ class SimpleBookingSerializer(serializers.ModelSerializer):
 class WaiverSerializer(serializers.ModelSerializer):
     # booking_details = SimpleBookingSerializer(source='booking', read_only=True)  # Temporarily disabled
     # party_booking_details = serializers.SerializerMethodField()  # Temporarily disabled
-    booking_type = serializers.SerializerMethodField()
-    booking_reference = serializers.SerializerMethodField()
+    booking_type = serializers.SerializerMethodField(read_only=True)
+    booking_reference = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
         model = Waiver
         fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'signed_at']
     
     def get_party_booking_details(self, obj):
         if obj.party_booking:
@@ -75,7 +76,7 @@ class BookingSerializer(serializers.ModelSerializer):
     customer_details = CustomerSerializer(source='customer', read_only=True)
     # voucher_details = VoucherSerializer(source='voucher', read_only=True)
     transactions = TransactionSerializer(many=True, read_only=True)
-    # Removed waivers field to avoid circular reference
+    waivers = WaiverSerializer(many=True, read_only=True)
 
     class Meta:
         model = Booking
@@ -83,7 +84,7 @@ class BookingSerializer(serializers.ModelSerializer):
                   'adults', 'kids', 'spectators', 'subtotal', 'discount_amount', 'amount',
                   'voucher_code', 'status', 'booking_status', 'payment_status', 'waiver_status',
                   'type', 'qr_code', 'customer', 'customer_details', 'voucher', 'transactions',
-                  'created_at', 'updated_at']
+                  'waivers', 'created_at', 'updated_at']
 
 class PartyBookingSerializer(serializers.ModelSerializer):
     duration = serializers.SerializerMethodField()

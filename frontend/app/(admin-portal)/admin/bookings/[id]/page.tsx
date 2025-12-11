@@ -133,10 +133,42 @@ export default function BookingDetailPage({ params }: { params: { id: string } }
                         {booking.waivers && booking.waivers.length > 0 ? (
                             <ul className="space-y-2">
                                 {booking.waivers.map((w: any) => (
-                                    <li key={w.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-                                        <span className="text-sm font-medium">{w.name}</span>
-                                        <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Signed</span>
-                                    </li>
+                                    <div key={w.id} className="border-b border-slate-100 last:border-0 pb-3 last:pb-0 mb-3 last:mb-0">
+                                        <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg mb-2">
+                                            <span className="text-sm font-bold">{w.name} (Primary)</span>
+                                            <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">Signed</span>
+                                        </div>
+
+                                        {/* Display Minors */}
+                                        {w.minors && w.minors.length > 0 && (
+                                            <div className="ml-4 mt-2">
+                                                <p className="text-xs font-semibold text-slate-500 mb-1">Minors:</p>
+                                                <ul className="space-y-1">
+                                                    {w.minors.map((m: any, idx: number) => (
+                                                        <li key={`minor-${idx}`} className="text-sm text-slate-700 flex items-center">
+                                                            <span className="w-1.5 h-1.5 bg-slate-300 rounded-full mr-2"></span>
+                                                            {m.name} {m.dob && <span className="text-slate-400 text-xs ml-1">({m.dob})</span>}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+
+                                        {/* Display Additional Adults */}
+                                        {w.adults && w.adults.length > 0 && (
+                                            <div className="ml-4 mt-2">
+                                                <p className="text-xs font-semibold text-slate-500 mb-1">Guests:</p>
+                                                <ul className="space-y-1">
+                                                    {w.adults.map((a: any, idx: number) => (
+                                                        <li key={`adult-${idx}`} className="text-sm text-slate-700 flex items-center">
+                                                            <span className="w-1.5 h-1.5 bg-slate-300 rounded-full mr-2"></span>
+                                                            {a.name}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
                                 ))}
                             </ul>
                         ) : (

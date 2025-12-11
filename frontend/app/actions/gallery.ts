@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { transformCmsItem } from "../lib/transformers";
 
 export async function getGalleryItems(): Promise<any[]> {
-    await requirePermission('cms', 'read');
+    // Public access allowed
     const res = await fetchAPI("/cms/gallery/");
     if (!res || !res.ok) return [];
     const data = await res.json();
@@ -15,7 +15,7 @@ export async function getGalleryItems(): Promise<any[]> {
 }
 
 export async function getGalleryItem(id: string) {
-    await requirePermission('cms', 'read');
+    // Public access allowed
     const res = await fetchAPI(`/cms/gallery/${id}/`);
     if (!res || !res.ok) return null;
     const data = await res.json();

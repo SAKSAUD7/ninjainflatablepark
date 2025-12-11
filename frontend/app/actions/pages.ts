@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { transformCmsItem } from "../lib/transformers";
 
 export async function getPages() {
-    await requirePermission('cms', 'read');
+    // Public access allowed
     const res = await fetchAPI("/cms/pages/");
     if (!res || !res.ok) return [];
     const data = await res.json();
@@ -15,7 +15,7 @@ export async function getPages() {
 }
 
 export async function getPage(slug: string) {
-    await requirePermission('cms', 'read');
+    // Public access allowed
     const res = await fetchAPI(`/cms/pages/${slug}/`);
     if (!res || !res.ok) return null;
     const data = await res.json();

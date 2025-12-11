@@ -41,6 +41,40 @@ class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     
+    def get_queryset(self):
+        queryset = Booking.objects.all()
+        
+        # Filtering
+        booking_type = self.request.query_params.get('type', None)
+        if booking_type:
+            queryset = queryset.filter(type=booking_type)
+            
+        status = self.request.query_params.get('booking_status', None)
+        if status:
+            queryset = queryset.filter(booking_status=status)
+            
+        date = self.request.query_params.get('date', None)
+        if date:
+            queryset = queryset.filter(date=date)
+            
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | 
+                Q(email__icontains=search) | 
+                Q(phone__icontains=search) |
+                Q(uuid__icontains=search)
+            )
+            
+        # Ordering
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering:
+            queryset = queryset.order_by(ordering)
+        else:
+            queryset = queryset.order_by('-created_at') # Default to newest first
+            
+        return queryset
+    
     def get_permissions(self):
         # Allow public access ONLY for create and ticket retrieval
         # List and retrieve require admin authentication to protect customer data
@@ -64,6 +98,27 @@ class WaiverViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
+    
+    def partial_update(self, request, *args, **kwargs):
+        """Handle PATCH requests for updating waiver fields like minors"""
+        print(f"DEBUG: partial_update called with data: {request.data}")
+        instance = self.get_object()
+        
+        # Update only the fields provided in the request
+        if 'minors' in request.data:
+            print(f"DEBUG: Updating minors to: {request.data['minors']}")
+            instance.minors = request.data['minors']
+        if 'adults' in request.data:
+            print(f"DEBUG: Updating adults to: {request.data['adults']}")
+            instance.adults = request.data['adults']
+        if 'is_verified' in request.data:
+            print(f"DEBUG: Updating is_verified to: {request.data['is_verified']}")
+            instance.is_verified = request.data['is_verified']
+            
+        instance.save()
+        print(f"DEBUG: Waiver saved successfully")
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
     
     @action(detail=True, methods=['get'])
     def download_pdf(self, request, pk=None):

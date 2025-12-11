@@ -57,6 +57,32 @@ export default function AdminBookings() {
         }
     }
 
+    // Real-time polling for new bookings
+    useEffect(() => {
+        let previousCount = bookings.length;
+
+        const pollInterval = setInterval(async () => {
+            try {
+                const data = await getSessionBookings();
+
+                // Check if there are new bookings
+                if (data.length > previousCount) {
+                    const newCount = data.length - previousCount;
+                    // Show toast notification (you'll need to import toast from sonner)
+                    console.log(`${newCount} new booking(s) received!`);
+                }
+
+                previousCount = data.length;
+                setBookings(data as any[]);
+                setCachedData('session-bookings', data);
+            } catch (error) {
+                console.error("Polling error:", error);
+            }
+        }, 15000); // Poll every 15 seconds
+
+        return () => clearInterval(pollInterval);
+    }, [bookings.length]);
+
     function filterBookings() {
         let filtered = [...bookings];
 

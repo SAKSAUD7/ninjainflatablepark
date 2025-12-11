@@ -28,7 +28,7 @@ function transformBooking(b: any) {
         waiverSignedAt: b.waiver_signed_at,
         waiverIpAddress: b.waiver_ip_address,
         // Add flat customer properties for easy access
-        customerName: customer?.name || b.name || null,
+        customerName: b.name || customer?.name || null,
         customerEmail: customer?.email || b.email || null,
         customerPhone: customer?.phone || b.phone || null,
         customer: customer,
@@ -142,6 +142,7 @@ export async function getAllBookings(filter?: { type?: string; status?: string; 
 
 export async function getBookings(filter?: { status?: string; date?: string; search?: string }): Promise<any[]> {
     const params = new URLSearchParams();
+    params.append("ordering", "-created_at");
     if (filter?.status) params.append("booking_status", filter.status);
     if (filter?.date) params.append("date", filter.date);
     if (filter?.search) params.append("search", filter.search);
@@ -155,6 +156,7 @@ export async function getBookings(filter?: { status?: string; date?: string; sea
 
 export async function getPartyBookings(filter?: { status?: string; date?: string; search?: string }): Promise<any[]> {
     const params = new URLSearchParams();
+    params.append("ordering", "-created_at");
     if (filter?.status) params.append("booking_status", filter.status);
     if (filter?.date) params.append("date", filter.date);
     if (filter?.search) params.append("search", filter.search);
@@ -230,6 +232,7 @@ export async function updatePartyBooking(id: string, data: any) {
 export async function getSessionBookings(filter?: { status?: string; date?: string; search?: string }): Promise<any[]> {
     const params = new URLSearchParams();
     params.append("type", "SESSION");
+    params.append("ordering", "-created_at"); // Ensure latest first
     if (filter?.status) params.append("booking_status", filter.status);
     if (filter?.date) params.append("date", filter.date);
     if (filter?.search) params.append("search", filter.search);
@@ -318,6 +321,42 @@ export async function toggleWaiverVerification(id: string, isVerified: boolean) 
         errorMessage = `Error: ${res.status} ${res.statusText}`;
     } else {
         console.error("toggleWaiverVerification failed: No response");
+    }
+
+    return { success: false, error: errorMessage };
+}
+
+export async function updateWaiverMinors(id: string, minors: any[]) {
+    const payload = { minors };
+    console.log('updateWaiverMinors - Sending payload:', JSON.stringify(payload, null, 2));
+    console.log('updateWaiverMinors - Endpoint:', `/bookings/waivers/${id}/`);
+
+    const res = await fetchAPI(`/bookings/waivers/${id}/`, {
+        method: "PATCH",
+        body: JSON.stringify(payload)
+    });
+
+    console.log('updateWaiverMinors - Response status:', res?.status);
+    console.log('updateWaiverMinors - Response ok:', res?.ok);
+
+    if (res && res.ok) {
+        revalidatePath("/admin/waivers");
+        revalidatePath(`/admin/waivers/${id}`);
+        return { success: true };
+    }
+
+    // Log error details and get the actual error message
+    let errorMessage = "Failed to update minors";
+    if (res) {
+        try {
+            const errorData = await res.json();
+            console.error(`updateWaiverMinors failed: ${res.status} ${res.statusText}`, errorData);
+            errorMessage = errorData.minors ? errorData.minors[0] : (errorData.detail || `Error: ${res.status} ${res.statusText}`);
+        } catch (e) {
+            const errorText = await res.text();
+            console.error(`updateWaiverMinors failed: ${res.status} ${res.statusText}`, errorText);
+            errorMessage = `Error: ${res.status} ${res.statusText}`;
+        }
     }
 
     return { success: false, error: errorMessage };

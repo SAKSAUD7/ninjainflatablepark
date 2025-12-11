@@ -24,6 +24,9 @@ export default function NewSessionBookingPage() {
                 name: formData.get("name") as string,
                 email: formData.get("email") as string,
                 phone: formData.get("phone") as string,
+                dateOfBirth: formData.get("dateOfBirth") as string,
+                dateOfArrival: formData.get("date") as string, // Use booking date as arrival date
+                waiverAccepted: true, // Admin bookings auto-accept waiver
                 voucherCode: formData.get("voucherCode") as string || undefined,
             };
 
@@ -103,6 +106,18 @@ export default function NewSessionBookingPage() {
                                     placeholder="+91 98765 43210"
                                 />
                             </div>
+                        </div>
+                    </div>
+                    <div className="mt-4">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
+                        <div className="relative max-w-md">
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                            <input
+                                name="dateOfBirth"
+                                type="date"
+                                required
+                                className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
                         </div>
                     </div>
                 </div>

@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { verifyWaiver, toggleWaiverVerification, getWaivers, updateWaiverMinors } from "@/app/actions/admin";
+import { toast } from 'sonner';
 import {
     ArrowLeft,
     User,
@@ -13,7 +15,10 @@ import {
     Download,
     CheckCircle,
     FileText,
-    Users
+    Users,
+    Pencil,
+    Save,
+    X
 } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
@@ -24,6 +29,8 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
     const [allWaivers, setAllWaivers] = useState<any[]>([]);
     const [relatedWaivers, setRelatedWaivers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isEditingMinors, setIsEditingMinors] = useState(false);
+    const [editedMinors, setEditedMinors] = useState<any[]>([]);
 
     useEffect(() => {
         loadWaiver();
@@ -31,19 +38,19 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
 
     async function loadWaiver() {
         try {
-            // Load the primary waiver
-            const response = await fetch(`${API_URL}/bookings/waivers/${params.id}/`);
-            const data = await response.json();
+            // Load all waivers using server action (authenticated)
+            const allData = await getWaivers();
+            setAllWaivers(allData);
+
+            // Find the primary waiver (convert params.id to number for comparison)
+            const data = allData.find((w: any) => w.id === parseInt(params.id) || w.id === params.id);
+            if (!data) {
+                console.error('Waiver not found. Available IDs:', allData.map((w: any) => w.id));
+                throw new Error('Waiver not found');
+            }
             setWaiver(data);
 
             console.log('Primary waiver data:', data); // Debug log
-
-            // Load all waivers to find related ones
-            const allResponse = await fetch(`${API_URL}/bookings/waivers/`);
-            const allData = await allResponse.json();
-            setAllWaivers(allData);
-
-            console.log('All waivers:', allData); // Debug log
 
             // Extract booking ID - handle both object and direct ID
             const bookingId = typeof data.booking === 'object' ? data.booking?.id : data.booking;
@@ -69,6 +76,58 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
             console.error('Failed to load waiver:', error);
         } finally {
             setLoading(false);
+        }
+    }
+
+    function calculateAge(dob: string): string {
+        if (!dob) return 'N/A';
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age.toString();
+    }
+
+
+
+    function handleEditMinors() {
+        setEditedMinors(JSON.parse(JSON.stringify(waiver.minors || [])));
+        setIsEditingMinors(true);
+    }
+
+    function handleCancelEdit() {
+        setIsEditingMinors(false);
+        setEditedMinors([]);
+    }
+
+    function handleMinorChange(index: number, field: string, value: string) {
+        const newMinors = [...editedMinors];
+        newMinors[index] = { ...newMinors[index], [field]: value };
+        setEditedMinors(newMinors);
+    }
+
+    async function handleSaveMinors() {
+        try {
+            console.log('Saving minors:', editedMinors);
+            console.log('Waiver ID:', waiver.id);
+
+            const res = await updateWaiverMinors(waiver.id, editedMinors);
+            console.log('Update response:', res);
+
+            if (res.success) {
+                toast.success("Minors updated successfully");
+                setWaiver({ ...waiver, minors: editedMinors });
+                setIsEditingMinors(false);
+            } else {
+                console.error('Update failed:', res.error);
+                toast.error(res.error || "Failed to update minors");
+            }
+        } catch (error) {
+            console.error("Failed to update minors:", error);
+            toast.error("An error occurred while updating minors");
         }
     }
 
@@ -160,6 +219,95 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
                                         waiver.booking || waiver.party_booking}
                             </p>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Minors Included in Waiver */}
+            {waiver.minors && waiver.minors.length > 0 && (
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <Users className="w-5 h-5 text-purple-600" />
+                            Minors Included ({waiver.minors.length})
+                        </h2>
+                        {!isEditingMinors ? (
+                            <button
+                                onClick={handleEditMinors}
+                                className="flex items-center gap-1.5 text-sm font-medium text-neon-blue hover:text-blue-600 transition-colors"
+                            >
+                                <Pencil size={14} />
+                                Edit Minors
+                            </button>
+                        ) : (
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleCancelEdit}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                                >
+                                    <X size={14} />
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSaveMinors}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-neon-blue hover:bg-blue-600 rounded-lg transition-colors"
+                                >
+                                    <Save size={14} />
+                                    Save Changes
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {(isEditingMinors ? editedMinors : waiver.minors).map((minor: any, index: number) => (
+                            <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="flex items-center gap-3 w-full">
+                                        <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-lg shrink-0">
+                                            {(minor.name || 'U').charAt(0)}
+                                        </div>
+                                        <div className="w-full">
+                                            {isEditingMinors ? (
+                                                <div className="space-y-2">
+                                                    <input
+                                                        type="text"
+                                                        value={minor.name}
+                                                        onChange={(e) => handleMinorChange(index, 'name', e.target.value)}
+                                                        className="w-full px-2 py-1 text-sm border border-slate-300 rounded focus:border-neon-blue outline-none"
+                                                        placeholder="Minor Name"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <p className="text-sm font-bold text-slate-900">{minor.name}</p>
+                                                    <span className="text-xs text-purple-600">Minor</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-2 text-sm">
+                                    {isEditingMinors ? (
+                                        <div className="flex items-center gap-2 text-slate-600">
+                                            <Calendar size={14} className="text-slate-400" />
+                                            <input
+                                                type="date"
+                                                value={minor.dob}
+                                                onChange={(e) => handleMinorChange(index, 'dob', e.target.value)}
+                                                className="px-2 py-1 text-sm border border-slate-300 rounded focus:border-neon-blue outline-none"
+                                            />
+                                        </div>
+                                    ) : (
+                                        minor.dob && (
+                                            <div className="flex items-center gap-2 text-slate-600">
+                                                <Calendar size={14} className="text-slate-400" />
+                                                DOB: {new Date(minor.dob).toLocaleDateString()} ({calculateAge(minor.dob)} years)
+                                            </div>
+                                        )
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}

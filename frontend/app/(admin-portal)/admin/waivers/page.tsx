@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { getCachedData, setCachedData } from "@/lib/admin-cache";
-import { verifyWaiver, toggleWaiverVerification } from "@/app/actions/admin";
+import { verifyWaiver, toggleWaiverVerification, getWaivers } from "@/app/actions/admin";
 import { toast } from 'sonner';
 import {
     Search,
@@ -43,18 +43,49 @@ export default function AdminWaivers() {
                 return;
             }
 
-            const response = await fetch(`${API_URL}/bookings/waivers/`);
-            const data = await response.json();
-            setWaivers(data);
-
-            // Cache the data
-            setCachedData('waivers', data);
+            const data = await getWaivers();
+            if (Array.isArray(data)) {
+                setWaivers(data);
+                // Cache the data
+                setCachedData('waivers', data);
+            } else {
+                console.error("Failed to load waivers: Invalid data format", data);
+                setWaivers([]);
+            }
         } catch (error) {
             console.error('Failed to load waivers:', error);
+            setWaivers([]);
         } finally {
             setLoading(false);
         }
     }
+
+    // Real-time polling for new waivers
+    useEffect(() => {
+        let previousCount = waivers.length;
+
+        const pollInterval = setInterval(async () => {
+            try {
+                const data = await getWaivers();
+
+                if (Array.isArray(data)) {
+                    // Check if there are new waivers
+                    if (data.length > previousCount) {
+                        const newCount = data.length - previousCount;
+                        console.log(`${newCount} new waiver(s) received!`);
+                    }
+
+                    previousCount = data.length;
+                    setWaivers(data);
+                    setCachedData('waivers', data);
+                }
+            } catch (error) {
+                console.error("Polling error:", error);
+            }
+        }, 15000); // Poll every 15 seconds
+
+        return () => clearInterval(pollInterval);
+    }, [waivers.length]);
 
     async function handleExportCSV() {
         try {
@@ -115,6 +146,50 @@ export default function AdminWaivers() {
         window.open('/kiosk/waiver', '_blank', 'fullscreen=yes');
     }
 
+    function calculateAge(dob: string): string {
+        if (!dob) return 'N/A';
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age.toString();
+    }
+
+    // Flatten waivers to include additional adults as their own rows
+    const flattenedWaivers = useMemo(() => {
+        const flatList: any[] = [];
+        waivers.forEach((waiver: any) => {
+            // Add primary signer
+            flatList.push({
+                ...waiver,
+                isPrimary: true,
+                uniqueId: waiver.id
+            });
+
+            // Add additional adults
+            if (waiver.adults && Array.isArray(waiver.adults)) {
+                waiver.adults.forEach((adult: any, index: number) => {
+                    flatList.push({
+                        ...waiver, // Inherit parent details
+                        name: adult.name,
+                        dob: adult.dob,
+                        email: null, // Additional adults usually don't have separate email captured
+                        phone: null,
+                        participant_type: 'ADULT',
+                        minors: [], // Minors belong to the primary signer
+                        isPrimary: false,
+                        isAdditionalAdult: true,
+                        uniqueId: `${waiver.id}-adult-${index}`
+                    });
+                });
+            }
+        });
+        return flatList;
+    }, [waivers]);
+
     // Group waivers by booking for grouped view - ensure no duplicates
     const groupedWaivers = (() => {
         const bookingMap = new Map<string, any>();
@@ -140,8 +215,8 @@ export default function AdminWaivers() {
                     relatedWaivers,
                     bookingType, // Add bookingType explicitly
                     totalParticipants: relatedWaivers.length,
-                    adults: relatedWaivers.filter((w: any) => w.participant_type === 'ADULT').length,
-                    minors: relatedWaivers.filter((w: any) => w.participant_type === 'MINOR').length
+                    adultCount: relatedWaivers.filter((w: any) => w.participant_type === 'ADULT').length,
+                    minorCount: relatedWaivers.filter((w: any) => w.participant_type === 'MINOR').length
                 });
             }
         });
@@ -151,7 +226,7 @@ export default function AdminWaivers() {
 
 
     // Filter logic for both views
-    const filteredWaivers = (viewMode === "grouped" ? groupedWaivers : waivers).filter(waiver => {
+    const filteredWaivers = (viewMode === "grouped" ? groupedWaivers : flattenedWaivers).filter(waiver => {
         const matchesSearch =
             waiver.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             waiver.email?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -199,28 +274,6 @@ export default function AdminWaivers() {
                 </div>
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="bg-white p-2 rounded-lg shadow-sm border border-slate-200 mb-4 inline-flex gap-2">
-                <button
-                    onClick={() => setViewMode("all")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === "all"
-                        ? "bg-neon-blue text-slate-900"
-                        : "text-slate-600 hover:bg-slate-100"
-                        }`}
-                >
-                    All Waivers
-                </button>
-                <button
-                    onClick={() => setViewMode("grouped")}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === "grouped"
-                        ? "bg-neon-blue text-slate-900"
-                        : "text-slate-600 hover:bg-slate-100"
-                        }`}
-                >
-                    Grouped by Booking
-                </button>
-            </div>
-
             {/* Filters Bar */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
                 <div className="relative w-full md:w-96">
@@ -263,14 +316,20 @@ export default function AdminWaivers() {
                     <table className="w-full text-left">
                         <thead className="bg-slate-50 border-b border-slate-200">
                             <tr>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Booking Ref</th>
                                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                                    {viewMode === "grouped" ? "Primary Signer" : "Signer Details"}
+                                    {viewMode === "grouped" ? "Primary Signer" : "Signer Name"}
+                                </th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Telephone</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">DOB</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date of Arrival</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                    Minors
                                 </th>
                                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
                                     {viewMode === "grouped" ? "Participants" : "Type"}
                                 </th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Signed Date</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Booking Ref</th>
                                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
                                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
                             </tr>
@@ -278,14 +337,25 @@ export default function AdminWaivers() {
                         <tbody className="divide-y divide-slate-100">
                             {filteredWaivers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                                    <td colSpan={10} className="px-6 py-12 text-center text-slate-500">
                                         No waivers found
                                     </td>
                                 </tr>
                             ) : viewMode === "grouped" ? (
-                                // Grouped View
                                 filteredWaivers.map((waiver: any) => (
                                     <tr key={waiver.id} className="hover:bg-slate-50 transition-colors group">
+                                        {/* Grouped View Columns */}
+                                        {/* 1. Booking Ref */}
+                                        <td className="px-6 py-4">
+                                            {waiver.booking_reference ? (
+                                                <span className={`text-sm font-medium ${waiver.bookingType === 'PARTY' ? 'text-purple-600' : 'text-neon-blue'}`}>
+                                                    {waiver.booking_reference}
+                                                </span>
+                                            ) : (
+                                                <span className="text-xs text-slate-400 italic">Walk-in</span>
+                                            )}
+                                        </td>
+                                        {/* 2. Primary Signer */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold
@@ -308,29 +378,22 @@ export default function AdminWaivers() {
                                                             </span>
                                                         )}
                                                     </div>
-                                                    {waiver.email && (
-                                                        <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                                                            <Mail size={12} /> {waiver.email}
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex flex-col gap-1">
-                                                <span className="text-sm font-bold text-slate-900">
-                                                    {waiver.totalParticipants} Total
-                                                </span>
-                                                <div className="flex gap-2">
-                                                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                                        {waiver.adults} Adult{waiver.adults !== 1 ? 's' : ''}
-                                                    </span>
-                                                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
-                                                        {waiver.minors} Minor{waiver.minors !== 1 ? 's' : ''}
-                                                    </span>
-                                                </div>
-                                            </div>
+                                        {/* 3. Email */}
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            {waiver.email || <span className="text-slate-400 italic">N/A</span>}
                                         </td>
+                                        {/* 4. Telephone */}
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            {waiver.phone || <span className="text-slate-400 italic">N/A</span>}
+                                        </td>
+                                        {/* 5. DOB */}
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            {waiver.dob || <span className="text-slate-400 italic">N/A</span>}
+                                        </td>
+                                        {/* 6. Date of Arrival */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2 text-sm text-slate-600">
                                                 <Calendar size={14} className="text-slate-400" />
@@ -341,15 +404,46 @@ export default function AdminWaivers() {
                                                 {new Date(waiver.signed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
                                         </td>
+                                        {/* 7. Minors */}
                                         <td className="px-6 py-4">
-                                            {waiver.booking_reference ? (
-                                                <span className={`text-sm font-medium ${waiver.bookingType === 'PARTY' ? 'text-purple-600' : 'text-neon-blue'}`}>
-                                                    {waiver.booking_reference}
-                                                </span>
+                                            {waiver.minors && waiver.minors.length > 0 ? (
+                                                <div className="flex flex-col gap-2">
+                                                    {waiver.minors.map((m: any, idx: number) => (
+                                                        <div key={idx} className="text-sm text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
+                                                            <div className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-0.5">
+                                                                <span className="text-xs font-bold text-slate-400 uppercase">Name:</span>
+                                                                <span className="font-medium text-slate-900">{m.name}</span>
+
+                                                                <span className="text-xs font-bold text-slate-400 uppercase">DOB:</span>
+                                                                <span>{m.dob || 'N/A'}</span>
+
+                                                                <span className="text-xs font-bold text-slate-400 uppercase">Age:</span>
+                                                                <span>{calculateAge(m.dob)}</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             ) : (
-                                                <span className="text-xs text-slate-400 italic">Walk-in</span>
+                                                <span className="text-xs text-slate-400 italic">None</span>
                                             )}
                                         </td>
+                                        {/* 8. Participants */}
+                                        <td className="px-6 py-4">
+                                            <div className="flex flex-col gap-1">
+                                                <span className="text-sm font-bold text-slate-900">
+                                                    {waiver.totalParticipants} Total
+                                                </span>
+                                                <div className="flex gap-2">
+                                                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                                                        {waiver.adultCount} Adult{waiver.adultCount !== 1 ? 's' : ''}
+                                                    </span>
+                                                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                                                        {waiver.minorCount} Minor{waiver.minorCount !== 1 ? 's' : ''}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        {/* 9. Status */}
                                         <td className="px-6 py-4">
                                             {waiver.is_verified ? (
                                                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 w-fit">
@@ -367,6 +461,7 @@ export default function AdminWaivers() {
                                                 </button>
                                             )}
                                         </td>
+                                        {/* 10. Actions */}
                                         <td className="px-6 py-4 text-right">
                                             <Link
                                                 href={`/admin/waivers/${waiver.id}`}
@@ -379,9 +474,20 @@ export default function AdminWaivers() {
                                     </tr>
                                 ))
                             ) : (
-                                // All Waivers View (Original)
+                                // All Waivers View
                                 filteredWaivers.map((waiver: any) => (
-                                    <tr key={waiver.id} className="hover:bg-slate-50 transition-colors group">
+                                    <tr key={waiver.uniqueId || waiver.id} className="hover:bg-slate-50 transition-colors group">
+                                        {/* 1. Booking Ref */}
+                                        <td className="px-6 py-4">
+                                            {waiver.booking_reference ? (
+                                                <span className="text-sm font-medium text-neon-blue">
+                                                    {waiver.booking_reference}
+                                                </span>
+                                            ) : (
+                                                <span className="text-xs text-slate-400 italic">Walk-in</span>
+                                            )}
+                                        </td>
+                                        {/* 2. Signer Name */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">
@@ -389,28 +495,22 @@ export default function AdminWaivers() {
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-bold text-slate-900">{waiver.name || 'Unknown'}</p>
-                                                    {waiver.email && (
-                                                        <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                                                            <Mail size={12} /> {waiver.email}
-                                                        </div>
-                                                    )}
-                                                    {waiver.phone && (
-                                                        <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                                                            <Phone size={12} /> {waiver.phone}
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${waiver.participant_type === 'ADULT'
-                                                ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                                : 'bg-purple-100 text-purple-700 border border-purple-200'
-                                                }`}>
-                                                {waiver.participant_type === 'ADULT' ? <User size={12} /> : <Users size={12} />}
-                                                {waiver.participant_type === 'ADULT' ? 'Adult' : 'Minor'}
-                                            </span>
+                                        {/* 3. Email */}
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            {waiver.email || <span className="text-slate-400 italic">N/A</span>}
                                         </td>
+                                        {/* 4. Telephone */}
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            {waiver.phone || <span className="text-slate-400 italic">N/A</span>}
+                                        </td>
+                                        {/* 5. DOB */}
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            {waiver.dob || <span className="text-slate-400 italic">N/A</span>}
+                                        </td>
+                                        {/* 6. Date of Arrival */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2 text-sm text-slate-600">
                                                 <Calendar size={14} className="text-slate-400" />
@@ -421,15 +521,40 @@ export default function AdminWaivers() {
                                                 {new Date(waiver.signed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </div>
                                         </td>
+                                        {/* 7. Minors */}
                                         <td className="px-6 py-4">
-                                            {waiver.booking_reference ? (
-                                                <span className="text-sm font-medium text-neon-blue">
-                                                    {waiver.booking_reference}
-                                                </span>
+                                            {waiver.minors && waiver.minors.length > 0 ? (
+                                                <div className="flex flex-col gap-2">
+                                                    {waiver.minors.map((m: any, idx: number) => (
+                                                        <div key={idx} className="text-sm text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
+                                                            <div className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-0.5">
+                                                                <span className="text-xs font-bold text-slate-400 uppercase">Name:</span>
+                                                                <span className="font-medium text-slate-900">{m.name}</span>
+
+                                                                <span className="text-xs font-bold text-slate-400 uppercase">DOB:</span>
+                                                                <span>{m.dob || 'N/A'}</span>
+
+                                                                <span className="text-xs font-bold text-slate-400 uppercase">Age:</span>
+                                                                <span>{calculateAge(m.dob)}</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             ) : (
-                                                <span className="text-xs text-slate-400 italic">Walk-in</span>
+                                                <span className="text-xs text-slate-400 italic">None</span>
                                             )}
                                         </td>
+                                        {/* 8. Type */}
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${waiver.participant_type === 'ADULT'
+                                                ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                                                : 'bg-purple-100 text-purple-700 border border-purple-200'
+                                                }`}>
+                                                {waiver.participant_type === 'ADULT' ? <User size={12} /> : <Users size={12} />}
+                                                {waiver.participant_type === 'ADULT' ? 'Adult' : 'Minor'}
+                                            </span>
+                                        </td>
+                                        {/* 9. Status */}
                                         <td className="px-6 py-4">
                                             {waiver.is_verified ? (
                                                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 w-fit">
@@ -439,7 +564,6 @@ export default function AdminWaivers() {
                                             ) : (
                                                 <button
                                                     onClick={(e: React.MouseEvent) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
-
                                                     disabled={waiver.updating}
                                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 hover:text-slate-700 transition-colors w-fit text-xs font-bold"
                                                 >
@@ -448,6 +572,7 @@ export default function AdminWaivers() {
                                                 </button>
                                             )}
                                         </td>
+                                        {/* 10. Actions */}
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex justify-end gap-2">
                                                 <Link

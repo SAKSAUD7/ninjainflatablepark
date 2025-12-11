@@ -17,11 +17,22 @@ export default function SessionBookingHistoryPage() {
     async function loadBookings() {
         try {
             const data = await getSessionBookings();
+            console.log('All bookings:', data);
+            console.log('Current filter:', filter);
 
             // Filter for historical bookings
             const filtered = data.filter((booking: any) => {
                 const bookingDate = new Date(booking.date);
                 const isPast = bookingDate < new Date();
+
+                console.log(`Booking ${booking.id}:`, {
+                    date: booking.date,
+                    isPast,
+                    status: booking.bookingStatus,
+                    willShow: filter === "completed" ? (isPast && booking.bookingStatus === "COMPLETED") :
+                        filter === "cancelled" ? booking.bookingStatus === "CANCELLED" :
+                            isPast
+                });
 
                 if (filter === "completed") {
                     return isPast && booking.bookingStatus === "COMPLETED";
@@ -31,8 +42,10 @@ export default function SessionBookingHistoryPage() {
                 return isPast; // all past bookings
             });
 
+            console.log('Filtered bookings:', filtered);
             setBookings(filtered);
         } catch (error) {
+            console.error('Error loading bookings:', error);
             setBookings([]);
         } finally {
             setLoading(false);
