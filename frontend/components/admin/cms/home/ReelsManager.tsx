@@ -20,9 +20,9 @@ export function ReelsManager({ items: initialItems }: ReelsManagerProps) {
         setLoading(true);
         try {
             const result = await createInstagramReel({
-                url: newUrl,
-                thumbnail_url: '/park-slides-action.jpg', // Default thumbnail
-                caption: 'New Reel',
+                reelUrl: newUrl,
+                thumbnailUrl: '/park-slides-action.jpg', // Default thumbnail
+                title: 'New Reel',
                 active: true,
                 order: items.length
             });
@@ -86,9 +86,9 @@ export function ReelsManager({ items: initialItems }: ReelsManagerProps) {
                                 <Video className="w-5 h-5" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-slate-900 truncate">{item.caption || 'Reel'}</p>
-                                <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline truncate block">
-                                    {item.url}
+                                <p className="text-sm font-medium text-slate-900 truncate">{item.title || 'Reel'}</p>
+                                <a href={item.reelUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline truncate block">
+                                    {item.reelUrl}
                                 </a>
                             </div>
                             <button
