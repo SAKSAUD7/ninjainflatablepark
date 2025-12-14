@@ -8,6 +8,7 @@ import { PermissionGate } from '../../PermissionGate';
 import { ModelSchema } from '@/lib/cms/types';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { getMediaUrl } from '@/lib/media-utils';
 
 interface CollectionListProps {
     title?: string;
@@ -90,7 +91,7 @@ export function CollectionList({ title, description, items, schema, basePath, on
                                         <td key={field.name} className="px-6 py-4 text-slate-600">
                                             {field.type === 'image' ? (
                                                 <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden">
-                                                    <img src={item[field.name]} alt="" className="w-full h-full object-cover" />
+                                                    <img src={getMediaUrl(item[field.name])} alt="" className="w-full h-full object-cover" />
                                                 </div>
                                             ) : field.type === 'boolean' ? (
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${item[field.name] ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"

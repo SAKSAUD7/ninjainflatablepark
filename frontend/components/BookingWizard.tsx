@@ -315,7 +315,7 @@ export const BookingWizard = ({ onSubmit, cmsContent = [] }: BookingWizardProps)
                     whileTap={{ scale: 0.95 }}
                     className="inline-flex items-center bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-xl shadow-lg transition-colors"
                 >
-                    <Printer className="mr-2 w-5 h-5" /> View & Print Ticket
+                    <Download className="mr-2 w-5 h-5" /> Download Ticket
                 </motion.a>
             </motion.div >
         );

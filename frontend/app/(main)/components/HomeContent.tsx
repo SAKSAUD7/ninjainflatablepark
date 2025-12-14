@@ -10,6 +10,7 @@ import { Zap, Shield, Users, Trophy, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Stat, GalleryItem, Activity } from "../../../lib/api/types";
 import InstagramReels from "./InstagramReels";
+import { getMediaUrl } from "@/lib/media-utils";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
     Zap,
@@ -116,7 +117,7 @@ export default function HomeContent({ stats, gallery, banners, reels, settings, 
                         <ScrollReveal animation="slideRight">
                             <div className="relative rounded-3xl overflow-hidden aspect-video lg:aspect-square">
                                 <img
-                                    src={aboutImage}
+                                    src={getMediaUrl(aboutImage)}
                                     alt="Kids enjoying the park"
                                     className="w-full h-full object-cover rounded-3xl"
                                 />
@@ -179,7 +180,7 @@ export default function HomeContent({ stats, gallery, banners, reels, settings, 
                                 >
                                     <div className="aspect-[4/3] relative">
                                         <img
-                                            src={photo.src}
+                                            src={getMediaUrl(photo.src)}
                                             alt={photo.title || 'Gallery image'}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             onError={(e) => {

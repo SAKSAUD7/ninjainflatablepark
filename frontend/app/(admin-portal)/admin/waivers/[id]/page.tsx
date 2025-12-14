@@ -50,7 +50,7 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
             }
             setWaiver(data);
 
-            console.log('Primary waiver data:', data); // Debug log
+
 
             // Extract booking ID - handle both object and direct ID
             const bookingId = typeof data.booking === 'object' ? data.booking?.id : data.booking;

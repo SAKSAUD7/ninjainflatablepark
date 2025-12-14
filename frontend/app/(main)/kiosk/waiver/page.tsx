@@ -1,23 +1,66 @@
 "use client";
 
 import { useState } from "react";
-import { ScrollReveal, BouncyButton } from "@repo/ui";
-import { FileSignature, CheckCircle, User, Mail, Phone, AlertCircle } from "lucide-react";
+import { ScrollReveal } from "@repo/ui";
+import { FileSignature, CheckCircle, User, Mail, Phone, AlertCircle, Plus, Trash2, Calendar } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
+interface Minor {
+    name: string;
+    dob: string;
+}
+
+interface AdultGuest {
+    name: string;
+    email: string;
+    phone: string;
+    dob: string;
+}
 
 export default function KioskWaiverPage() {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         phone: "",
-        dob: "",
-        participant_type: "ADULT",
-        emergency_contact: "",
+        dateOfBirth: "",
+        dateOfArrival: "",
+        waiverAccepted: false,
     });
+    const [minors, setMinors] = useState<Minor[]>([]);
+    const [adultGuests, setAdultGuests] = useState<AdultGuest[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [signed, setSigned] = useState(false);
     const [error, setError] = useState("");
+
+    const addMinor = () => {
+        setMinors([...minors, { name: "", dob: "" }]);
+    };
+
+    const removeMinor = (index: number) => {
+        setMinors(minors.filter((_, i) => i !== index));
+    };
+
+    const updateMinor = (index: number, field: keyof Minor, value: string) => {
+        const updated = [...minors];
+        updated[index][field] = value;
+        setMinors(updated);
+    };
+
+    const addAdult = () => {
+        setAdultGuests([...adultGuests, { name: "", email: "", phone: "", dob: "" }]);
+    };
+
+    const removeAdult = (index: number) => {
+        setAdultGuests(adultGuests.filter((_, i) => i !== index));
+    };
+
+    const updateAdult = (index: number, field: keyof AdultGuest, value: string) => {
+        const updated = [...adultGuests];
+        updated[index][field] = value;
+        setAdultGuests(updated);
+    };
 
     const handleSign = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,9 +74,15 @@ export default function KioskWaiverPage() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    ...formData,
-                    version: "1.0",
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    dob: formData.dateOfBirth,
+                    participant_type: "ADULT",
                     is_primary_signer: true,
+                    version: "1.0",
+                    minors: minors,
+                    adults: adultGuests,
                 }),
             });
 
@@ -43,18 +92,20 @@ export default function KioskWaiverPage() {
             }
 
             setSigned(true);
-            // Reset form after 3 seconds
+            // Reset form after 5 seconds
             setTimeout(() => {
                 setSigned(false);
                 setFormData({
                     name: "",
                     email: "",
                     phone: "",
-                    dob: "",
-                    participant_type: "ADULT",
-                    emergency_contact: "",
+                    dateOfBirth: "",
+                    dateOfArrival: "",
+                    waiverAccepted: false,
                 });
-            }, 3000);
+                setMinors([]);
+                setAdultGuests([]);
+            }, 5000);
         } catch (err: any) {
             setError(err.message || "Failed to submit waiver");
         } finally {
@@ -65,7 +116,11 @@ export default function KioskWaiverPage() {
     if (signed) {
         return (
             <main className="min-h-screen bg-background flex items-center justify-center p-4">
-                <div className="text-center max-w-lg w-full bg-surface-800/50 backdrop-blur-md p-10 rounded-3xl border border-primary/30">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center max-w-lg w-full bg-surface-800/50 backdrop-blur-md p-10 rounded-3xl border border-primary/30"
+                >
                     <div className="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-6">
                         <CheckCircle className="w-12 h-12 text-primary" />
                     </div>
@@ -76,34 +131,34 @@ export default function KioskWaiverPage() {
                         Thank you for signing. You may now proceed to the check-in counter.
                     </p>
                     <p className="text-sm text-white/50">
-                        Redirecting to new form in 3 seconds...
+                        Redirecting to new form in 5 seconds...
                     </p>
-                </div>
+                </motion.div>
             </main>
         );
     }
 
     return (
-        <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-            <div className="max-w-4xl w-full">
+        <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4 py-12">
+            <div className="max-w-5xl w-full">
                 <ScrollReveal animation="slideUp">
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-8">
                         <div className="w-20 h-20 rounded-full bg-accent/20 flex items-center justify-center mx-auto mb-6">
                             <FileSignature className="w-10 h-10 text-accent" />
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-display font-black mb-4">
+                        <h1 className="text-4xl md:text-5xl font-display font-black mb-3">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
-                                Kiosk Mode
+                                Risk Acknowledgement
                             </span>
                         </h1>
-                        <p className="text-xl text-white/70">
-                            Digital Liability Waiver
+                        <p className="text-lg text-white/70">
+                            Please fill out this waiver prior or on the date of your arrival.
                         </p>
                     </div>
                 </ScrollReveal>
 
                 <ScrollReveal animation="scale">
-                    <div className="bg-surface-800/50 backdrop-blur-md p-8 rounded-3xl border border-white/10">
+                    <div className="bg-surface-800/50 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-white/10">
                         {error && (
                             <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl flex items-start gap-3">
                                 <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
@@ -111,130 +166,263 @@ export default function KioskWaiverPage() {
                             </div>
                         )}
 
-                        <form onSubmit={handleSign} className="space-y-6">
-                            {/* Participant Type */}
-                            <div>
-                                <label className="block text-sm font-bold mb-3 text-white/80">
-                                    Participant Type *
-                                </label>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, participant_type: "ADULT" })}
-                                        className={`p-4 rounded-xl border-2 transition-all ${formData.participant_type === "ADULT"
-                                                ? "border-primary bg-primary/20"
-                                                : "border-white/20 hover:border-white/40"
-                                            }`}
-                                    >
-                                        <User className="w-6 h-6 mx-auto mb-2 text-white" />
-                                        <span className="font-medium text-white">Adult</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, participant_type: "MINOR" })}
-                                        className={`p-4 rounded-xl border-2 transition-all ${formData.participant_type === "MINOR"
-                                                ? "border-primary bg-primary/20"
-                                                : "border-white/20 hover:border-white/40"
-                                            }`}
-                                    >
-                                        <User className="w-6 h-6 mx-auto mb-2 text-white" />
-                                        <span className="font-medium text-white">Minor</span>
-                                    </button>
+                        <form onSubmit={handleSign} className="space-y-8">
+                            {/* Primary Adult Details */}
+                            <div className="space-y-6">
+                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <User className="w-5 h-5 text-primary" />
+                                    Primary Adult Information
+                                </h3>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-white/70 mb-3 uppercase tracking-wide">
+                                            Name Of Adult <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            className="w-full px-6 py-4 rounded-xl border-2 border-white/10 focus:border-primary bg-surface-900 text-white outline-none transition-all text-lg"
+                                            placeholder="Full Name"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-bold text-white/70 mb-3 uppercase tracking-wide">
+                                            Email <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="email"
+                                            required
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            className="w-full px-6 py-4 rounded-xl border-2 border-white/10 focus:border-primary bg-surface-900 text-white outline-none transition-all text-lg"
+                                            placeholder="Email Address"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-bold text-white/70 mb-3 uppercase tracking-wide">
+                                            Telephone <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            required
+                                            value={formData.phone}
+                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                            className="w-full px-6 py-4 rounded-xl border-2 border-white/10 focus:border-primary bg-surface-900 text-white outline-none transition-all text-lg"
+                                            placeholder="Phone Number"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-bold text-white/70 mb-3 uppercase tracking-wide">
+                                            Date Of Birth <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            required
+                                            value={formData.dateOfBirth}
+                                            onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                                            className="w-full px-6 py-4 rounded-xl border-2 border-white/10 focus:border-primary bg-surface-900 text-white outline-none transition-all text-lg"
+                                            style={{ colorScheme: 'dark' }}
+                                        />
+                                    </div>
+
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-bold text-white/70 mb-3 uppercase tracking-wide">
+                                            Date of Arrival <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            required
+                                            value={formData.dateOfArrival}
+                                            onChange={(e) => setFormData({ ...formData, dateOfArrival: e.target.value })}
+                                            className="w-full px-6 py-4 rounded-xl border-2 border-white/10 focus:border-primary bg-surface-900 text-white outline-none transition-all text-lg"
+                                            style={{ colorScheme: 'dark' }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Name */}
-                            <div>
-                                <label className="block text-sm font-bold mb-2 text-white/80">
-                                    Full Name *
-                                </label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
-                                    placeholder="Enter full name"
-                                />
+                            {/* Minors Section */}
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-bold text-amber-400 flex items-center gap-2">
+                                    <User className="w-5 h-5" />
+                                    Minors
+                                </h3>
+                                <AnimatePresence>
+                                    {minors.map((minor, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-surface-800/30 p-4 rounded-xl border border-white/5"
+                                        >
+                                            <div className="md:col-span-5">
+                                                <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                                    Name of minor <span className="text-red-400">*</span>
+                                                </label>
+                                                <input
+                                                    value={minor.name}
+                                                    onChange={(e) => updateMinor(index, 'name', e.target.value)}
+                                                    className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-primary outline-none"
+                                                    placeholder="Minor Name"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="md:col-span-5">
+                                                <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                                    Date of Birth of minor <span className="text-red-400">*</span>
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    value={minor.dob}
+                                                    onChange={(e) => updateMinor(index, 'dob', e.target.value)}
+                                                    className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-primary outline-none"
+                                                    style={{ colorScheme: 'dark' }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeMinor(index)}
+                                                    className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium"
+                                                >
+                                                    <Trash2 size={18} /> Remove
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
+
+                                <button
+                                    type="button"
+                                    onClick={addMinor}
+                                    className="px-6 py-3 bg-primary text-black font-bold rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2"
+                                >
+                                    <Plus size={20} /> Add a minor
+                                </button>
                             </div>
 
-                            {/* Email */}
-                            <div>
-                                <label className="block text-sm font-bold mb-2 text-white/80">
-                                    Email Address {formData.participant_type === "ADULT" && "*"}
-                                </label>
-                                <input
-                                    type="email"
-                                    required={formData.participant_type === "ADULT"}
-                                    value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
-                                    placeholder="email@example.com"
-                                />
-                            </div>
+                            {/* Additional Adults Section */}
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                                    <User className="w-5 h-5" />
+                                    Additional Adults
+                                </h3>
+                                <AnimatePresence>
+                                    {adultGuests.map((adult, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-cyan-500/5 p-4 rounded-xl border border-cyan-500/20"
+                                        >
+                                            <div className="md:col-span-3">
+                                                <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                                    Adult Name <span className="text-red-400">*</span>
+                                                </label>
+                                                <input
+                                                    value={adult.name}
+                                                    onChange={(e) => updateAdult(index, 'name', e.target.value)}
+                                                    className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-cyan-500 outline-none"
+                                                    placeholder="Full Name"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="md:col-span-3">
+                                                <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                                    Email <span className="text-red-400">*</span>
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    value={adult.email}
+                                                    onChange={(e) => updateAdult(index, 'email', e.target.value)}
+                                                    className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-cyan-500 outline-none"
+                                                    placeholder="Email"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                                    Phone <span className="text-red-400">*</span>
+                                                </label>
+                                                <input
+                                                    type="tel"
+                                                    value={adult.phone}
+                                                    onChange={(e) => updateAdult(index, 'phone', e.target.value)}
+                                                    className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-cyan-500 outline-none"
+                                                    placeholder="Phone"
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <label className="block text-xs font-bold text-white/70 mb-2 uppercase tracking-wide">
+                                                    DOB <span className="text-red-400">*</span>
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    value={adult.dob}
+                                                    onChange={(e) => updateAdult(index, 'dob', e.target.value)}
+                                                    className="w-full px-4 py-3 rounded-lg border border-white/10 bg-surface-900 text-white focus:border-cyan-500 outline-none"
+                                                    style={{ colorScheme: 'dark' }}
+                                                    required
+                                                />
+                                            </div>
+                                            <div className="md:col-span-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeAdult(index)}
+                                                    className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium"
+                                                >
+                                                    <Trash2 size={18} /> Remove
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
 
-                            {/* Phone */}
-                            <div>
-                                <label className="block text-sm font-bold mb-2 text-white/80">
-                                    Phone Number {formData.participant_type === "ADULT" && "*"}
-                                </label>
-                                <input
-                                    type="tel"
-                                    required={formData.participant_type === "ADULT"}
-                                    value={formData.phone}
-                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
-                                    placeholder="(123) 456-7890"
-                                />
-                            </div>
-
-                            {/* Date of Birth */}
-                            <div>
-                                <label className="block text-sm font-bold mb-2 text-white/80">
-                                    Date of Birth
-                                </label>
-                                <input
-                                    type="date"
-                                    value={formData.dob}
-                                    onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
-                                />
-                            </div>
-
-                            {/* Emergency Contact */}
-                            <div>
-                                <label className="block text-sm font-bold mb-2 text-white/80">
-                                    Emergency Contact {formData.participant_type === "MINOR" && "*"}
-                                </label>
-                                <input
-                                    type="text"
-                                    required={formData.participant_type === "MINOR"}
-                                    value={formData.emergency_contact}
-                                    onChange={(e) => setFormData({ ...formData, emergency_contact: e.target.value })}
-                                    className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white text-lg"
-                                    placeholder="Guardian name and phone"
-                                />
+                                <button
+                                    type="button"
+                                    onClick={addAdult}
+                                    className="px-6 py-3 bg-cyan-500 text-black font-bold rounded-lg hover:bg-cyan-600 transition-colors flex items-center gap-2"
+                                >
+                                    <Plus size={20} /> Add Adult
+                                </button>
                             </div>
 
                             {/* Agreement */}
-                            <div className="bg-black/30 p-6 rounded-xl border border-white/10">
-                                <h3 className="font-bold text-white mb-3">Liability Waiver Agreement</h3>
-                                <div className="text-sm text-white/60 space-y-2 max-h-32 overflow-y-auto">
-                                    <p>
-                                        I acknowledge that participation involves inherent risks and voluntarily assume all risks.
-                                        I release Ninja Inflatable Park from any liability for injury or loss.
-                                    </p>
-                                </div>
+                            <div className="bg-warning/10 p-6 rounded-2xl border-2 border-warning/20">
+                                <label className="flex items-start cursor-pointer group">
+                                    <input
+                                        type="checkbox"
+                                        required
+                                        checked={formData.waiverAccepted}
+                                        onChange={(e) => setFormData({ ...formData, waiverAccepted: e.target.checked })}
+                                        className="mt-1 h-6 w-6 cursor-pointer rounded border-2 border-white/30 transition-all checked:border-primary checked:bg-primary"
+                                    />
+                                    <span className="ml-4 text-white/80 font-medium leading-relaxed text-sm md:text-base">
+                                        I confirm and accept the terms of this website.{" "}
+                                        <a href="/terms" target="_blank" className="text-primary hover:underline font-bold">You can read the Terms and Conditions here.</a>
+                                        <span className="text-red-400">*</span>
+                                    </span>
+                                </label>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="w-full px-8 py-4 bg-primary hover:bg-primary-light text-black font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-lg"
+                                className="w-full px-8 py-5 bg-primary hover:bg-primary-light text-black font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 text-lg shadow-lg hover:shadow-xl"
                             >
                                 {submitting ? (
                                     <>
-                                        <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                                        <div className="w-6 h-6 border-3 border-black border-t-transparent rounded-full animate-spin" />
                                         Submitting...
                                     </>
                                 ) : (

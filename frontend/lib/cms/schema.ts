@@ -73,7 +73,6 @@ export const schemas: SchemaMap = {
         fields: [
             { name: "title", label: "Title", type: "text", required: true },
             { name: "reel_url", label: "Reel URL", type: "url", required: true },
-            { name: "thumbnail_url", label: "Thumbnail URL", type: "image", required: true },
             { name: "active", label: "Active", type: "boolean", defaultValue: true },
             { name: "order", label: "Order", type: "number", defaultValue: 0 },
         ],

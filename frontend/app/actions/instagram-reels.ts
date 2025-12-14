@@ -8,7 +8,7 @@ import { transformCmsItem } from "../lib/transformers";
 
 export async function getInstagramReels() {
     await requirePermission('cms', 'read');
-    const res = await fetchAPI("/cms/instagram-reels/");
+    const res = await fetchAPI("/cms/instagram-reels/", { cache: 'no-store' });
     if (!res || !res.ok) return [];
     const data = await res.json();
     return data.map(transformCmsItem);
@@ -31,10 +31,38 @@ export async function createInstagramReel(data: {
 }) {
     await requirePermission('cms', 'write');
 
+    // Fetch thumbnail from Instagram oEmbed if reelUrl is provided
+    let derivedThumbnail = data.thumbnailUrl;
+    if (data.reelUrl && !derivedThumbnail) {
+        try {
+            console.log(`[InstagramReel] Fetching oEmbed for: ${data.reelUrl}`);
+            const oembedRes = await fetch(`https://www.instagram.com/oembed/?url=${encodeURIComponent(data.reelUrl)}`);
+            if (oembedRes.ok) {
+                const oembedData = await oembedRes.json();
+                if (oembedData.thumbnail_url) {
+                    derivedThumbnail = oembedData.thumbnail_url;
+                    console.log(`[InstagramReel] Found thumbnail: ${derivedThumbnail}`);
+                }
+            } else {
+                console.warn(`[InstagramReel] oEmbed fetch failed: ${oembedRes.status}`);
+                // Fallback to media URL pattern which redirects to image
+                // Ensure URL ends effectively and append /media/?size=l
+                const cleanUrl = data.reelUrl.split('?')[0].replace(/\/$/, '');
+                derivedThumbnail = `${cleanUrl}/media/?size=l`;
+                console.log(`[InstagramReel] Using fallback thumbnail: ${derivedThumbnail}`);
+            }
+        } catch (error) {
+            console.error('[InstagramReel] oEmbed error details:', error);
+            // Fallback on error too
+            const cleanUrl = data.reelUrl.split('?')[0].replace(/\/$/, '');
+            derivedThumbnail = `${cleanUrl}/media/?size=l`;
+        }
+    }
+
     const payload = {
         title: data.title,
         reel_url: data.reelUrl,
-        thumbnail_url: data.thumbnailUrl,
+        thumbnail_url: derivedThumbnail || "",
         active: data.active,
         order: data.order
     };
@@ -56,6 +84,7 @@ export async function createInstagramReel(data: {
     });
 
     revalidatePath('/admin/instagram-reels');
+    revalidatePath('/', 'layout');
     return { success: true, item: transformCmsItem(item) };
 }
 
@@ -75,6 +104,25 @@ export async function updateInstagramReel(id: string, data: Partial<{
     if (data.active !== undefined) payload.active = data.active;
     if (data.order !== undefined) payload.order = data.order;
 
+    // If updating URL but no thumbnail provided, try to fetch it
+    if (data.reelUrl && !data.thumbnailUrl) {
+        try {
+            console.log(`[InstagramReel] Fetching oEmbed for update: ${data.reelUrl}`);
+            const oembedRes = await fetch(`https://www.instagram.com/oembed/?url=${encodeURIComponent(data.reelUrl)}`);
+            if (oembedRes.ok) {
+                const oembedData = await oembedRes.json();
+                if (oembedData.thumbnail_url) {
+                    payload.thumbnail_url = oembedData.thumbnail_url;
+                    console.log(`[InstagramReel] Found new thumbnail: ${payload.thumbnail_url}`);
+                }
+            }
+        } catch (error) {
+            console.error('[InstagramReel] oEmbed error:', error);
+        }
+    }
+
+    console.log('[InstagramReel] Updating reel:', id, 'Payload:', JSON.stringify(payload));
+
     const res = await fetchAPI(`/cms/instagram-reels/${id}/`, {
         method: "PATCH",
         body: JSON.stringify(payload)
@@ -90,6 +138,7 @@ export async function updateInstagramReel(id: string, data: Partial<{
     });
 
     revalidatePath('/admin/instagram-reels');
+    revalidatePath('/', 'layout'); // Force refresh of main site cache
     return { success: true };
 }
 

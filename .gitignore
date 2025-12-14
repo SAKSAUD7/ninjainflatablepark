@@ -59,3 +59,14 @@ db.sqlite3-journal
 /backend/.env
 /backend/media/
 /backend/staticfiles/
+
+# Test files (exclude from root, but allow in tests/ directories)
+/test_*.js
+/test_*.py
+/check_*.py
+/backend/add_*.py
+/backend/test_*.py
+/frontend/test_*.js
+
+
+

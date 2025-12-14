@@ -5,6 +5,39 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { fetchAPI } from "../lib/server-api";
 
+const API_URL = process.env.API_URL || 'http://localhost:8000/api/v1';
+
+export async function updateBooking(id: string | number, data: any) {
+    try {
+        const session = await getAdminSession();
+        if (!session) return { success: false, error: "Unauthorized" };
+
+        const res = await fetch(`${API_URL}/bookings/bookings/${id}/`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Cookie: `sessionid=${session.sessionId}`,
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            return {
+                success: false,
+                error: errorData.detail || "Failed to update booking",
+            };
+        }
+
+        revalidatePath("/admin/bookings");
+        revalidatePath(`/admin/bookings/${id}`);
+        return { success: true };
+    } catch (error) {
+        console.error("Update booking error:", error);
+        return { success: false, error: "Failed to connect to server" };
+    }
+}
+
 // --- Helper Functions ---
 
 // Transform Django snake_case to camelCase for Booking
@@ -157,7 +190,7 @@ export async function getBookings(filter?: { status?: string; date?: string; sea
 export async function getPartyBookings(filter?: { status?: string; date?: string; search?: string }): Promise<any[]> {
     const params = new URLSearchParams();
     params.append("ordering", "-created_at");
-    if (filter?.status) params.append("booking_status", filter.status);
+    if (filter?.status) params.append("status", filter.status);
     if (filter?.date) params.append("date", filter.date);
     if (filter?.search) params.append("search", filter.search);
 
@@ -233,14 +266,26 @@ export async function getSessionBookings(filter?: { status?: string; date?: stri
     const params = new URLSearchParams();
     params.append("type", "SESSION");
     params.append("ordering", "-created_at"); // Ensure latest first
-    if (filter?.status) params.append("booking_status", filter.status);
+    if (filter?.status) params.append("status", filter.status);
     if (filter?.date) params.append("date", filter.date);
     if (filter?.search) params.append("search", filter.search);
 
+    console.log('[DEBUG] getSessionBookings - Request URL:', `/bookings/bookings/?${params.toString()}`);
+
     const res = await fetchAPI(`/bookings/bookings/?${params.toString()}`);
-    if (!res || !res.ok) return [];
+
+    console.log('[DEBUG] getSessionBookings - Response status:', res?.status);
+    console.log('[DEBUG] getSessionBookings - Response ok:', res?.ok);
+
+    if (!res || !res.ok) {
+        console.log('[DEBUG] getSessionBookings - Response not OK, returning empty array');
+        return [];
+    }
 
     const data = await res.json();
+    console.log('[DEBUG] getSessionBookings - Response data:', data);
+    console.log('[DEBUG] getSessionBookings - Data length:', data?.length);
+
     return data.map(transformBooking);
 }
 
@@ -468,3 +513,142 @@ export async function deleteBookingBlock(id: string) {
         revalidatePath("/admin/booking-blocks");
     }
 }
+
+// --- Arrival Status Actions ---
+
+export async function toggleBookingArrival(
+    bookingId: string | number,
+    type: 'session' | 'party',
+    setArrived: boolean
+) {
+    const endpoint = type === 'session'
+        ? `/bookings/bookings/${bookingId}/${setArrived ? 'mark_arrived' : 'mark_not_arrived'}/`
+        : `/bookings/party-bookings/${bookingId}/${setArrived ? 'mark_arrived' : 'mark_not_arrived'}/`;
+
+    try {
+        const res = await fetchAPI(endpoint, { method: "POST" });
+
+        if (res && res.ok) {
+            // Revalidate relevant pages
+            revalidatePath("/admin/bookings");
+            revalidatePath("/admin/party-bookings");
+            revalidatePath(`/admin/${type}-bookings/${bookingId}`); // View page
+            return { success: true };
+        }
+
+        return { success: false, error: "API request failed" };
+    } catch (error) {
+        console.error("Error toggling arrival:", error);
+        return { success: false, error: String(error) };
+    }
+}
+
+// --- Booking History Actions ---
+
+export async function getSessionBookingHistory(): Promise<any[]> {
+    const res = await fetchAPI("/bookings/session-booking-history/");
+    if (!res || !res.ok) return [];
+
+    const data = await res.json();
+    // Transform snake_case to camelCase
+    return data.map((h: any) => ({
+        ...h,
+        canRestore: h.can_restore,
+        restoredAt: h.restored_at,
+        restoredBy: h.restored_by,
+        restoredByName: h.restored_by_name,
+        restoredBookingId: h.restored_booking_id,
+        originalBookingId: h.original_booking_id,
+        paymentTransactionId: h.payment_transaction_id,
+        paymentAmount: h.payment_amount,
+        failureReason: h.failure_reason,
+        createdAt: h.created_at,
+        updatedAt: h.updated_at,
+        voucherCode: h.voucher_code,
+        discountAmount: h.discount_amount,
+    }));
+}
+
+export async function getPartyBookingHistory(): Promise<any[]> {
+    const res = await fetchAPI("/bookings/party-booking-history/");
+    if (!res || !res.ok) return [];
+
+    const data = await res.json();
+    // Transform snake_case to camelCase
+    return data.map((h: any) => ({
+        ...h,
+        canRestore: h.can_restore,
+        restoredAt: h.restored_at,
+        restoredBy: h.restored_by,
+        restoredByName: h.restored_by_name,
+        restoredBookingId: h.restored_booking_id,
+        originalBookingId: h.original_booking_id,
+        paymentTransactionId: h.payment_transaction_id,
+        paymentAmount: h.payment_amount,
+        failureReason: h.failure_reason,
+        packageName: h.package_name,
+        birthdayChildName: h.birthday_child_name,
+        birthdayChildAge: h.birthday_child_age,
+        createdAt: h.created_at,
+        updatedAt: h.updated_at,
+    }));
+}
+
+export async function restoreSessionBooking(historyId: number) {
+    const res = await fetchAPI(`/bookings/session-booking-history/${historyId}/restore/`, {
+        method: "POST"
+    });
+
+    if (!res) {
+        return { success: false, error: "Network error" };
+    }
+
+    const data = await res.json();
+
+    if (res.ok) {
+        // Revalidate relevant paths
+        revalidatePath("/admin/session-bookings/history");
+        revalidatePath("/admin/bookings");
+        revalidatePath("/admin/all-bookings");
+        return {
+            success: true,
+            bookingId: data.booking_id,
+            message: data.message
+        };
+    }
+
+    return {
+        success: false,
+        error: data.error || "Failed to restore booking"
+    };
+}
+
+export async function restorePartyBooking(historyId: number) {
+    const res = await fetchAPI(`/bookings/party-booking-history/${historyId}/restore/`, {
+        method: "POST"
+    });
+
+    if (!res) {
+        return { success: false, error: "Network error" };
+    }
+
+    const data = await res.json();
+
+    if (res.ok) {
+        // Revalidate relevant paths
+        revalidatePath("/admin/party-bookings/history");
+        revalidatePath("/admin/party-bookings");
+        revalidatePath("/admin/all-bookings");
+        return {
+            success: true,
+            bookingId: data.booking_id,
+            message: data.message
+        };
+    }
+
+    return {
+        success: false,
+        error: data.error || "Failed to restore party booking"
+    };
+}
+

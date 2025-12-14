@@ -1,220 +1,198 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getPartyBookings } from "@/app/actions/admin";
-import { formatDate, formatCurrency, getInitials } from "@repo/utils";
-import { exportBookingsToCSV } from "../../../../../lib/export-csv";
-import {
-    Search,
-    Download,
-    Calendar,
-    Clock,
-    Mail,
-    Phone,
-    Eye,
-    Filter
-} from "lucide-react";
+import { getPartyBookingHistory, restorePartyBooking } from "@/app/actions/admin";
+import { RestoreConfirmationModal } from "../../components/RestoreConfirmationModal";
+import { Calendar, AlertTriangle, RefreshCw, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
 
 export default function PartyBookingHistoryPage() {
-    const [allBookings, setAllBookings] = useState<any[]>([]);
-    const [filteredBookings, setFilteredBookings] = useState<any[]>([]);
+    const [history, setHistory] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState("all");
+    const [restoring, setRestoring] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState<any>(null);
+    const [showModal, setShowModal] = useState(false);
+    const [displayCount, setDisplayCount] = useState(100);
 
     useEffect(() => {
-        loadBookings();
+        loadHistory();
     }, []);
 
-    useEffect(() => {
-        filterBookings();
-    }, [searchTerm, statusFilter, allBookings]);
-
-    async function loadBookings() {
+    async function loadHistory() {
         try {
-            const data = await getPartyBookings();
-
-            // Filter for past bookings
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            const pastBookings = data.filter((booking: any) => {
-                const bookingDate = new Date(booking.date);
-                return bookingDate < today;
-            });
-
-            setAllBookings(pastBookings);
-            setFilteredBookings(pastBookings);
+            const data = await getPartyBookingHistory();
+            setHistory(data);
         } catch (error) {
-            console.error("Error loading bookings:", error);
+            console.error('Error loading history:', error);
+            toast.error("Failed to load booking history");
         } finally {
             setLoading(false);
         }
     }
 
-    function filterBookings() {
-        let filtered = [...allBookings];
+    function handleRestoreClick(booking: any) {
+        setSelectedBooking(booking);
+        setShowModal(true);
+    }
 
-        // Search filter
-        if (searchTerm) {
-            const search = searchTerm.toLowerCase();
-            filtered = filtered.filter(booking =>
-                booking.customerName?.toLowerCase().includes(search) ||
-                booking.customerEmail?.toLowerCase().includes(search) ||
-                booking.name?.toLowerCase().includes(search) ||
-                booking.email?.toLowerCase().includes(search) ||
-                booking.birthday_child_name?.toLowerCase().includes(search) ||
-                booking.id?.toString().includes(search)
-            );
+    async function handleConfirmRestore() {
+        if (!selectedBooking) return;
+
+        setRestoring(true);
+        try {
+            const result = await restorePartyBooking(selectedBooking.id);
+
+            if (result.success) {
+                toast.success(result.message || `Party Booking #${result.bookingId} restored successfully!`);
+                setShowModal(false);
+                setSelectedBooking(null);
+                // Reload history to remove restored item
+                await loadHistory();
+            } else {
+                toast.error(result.error || "Failed to restore party booking");
+            }
+        } catch (error: any) {
+            console.error('Restore error:', error);
+            toast.error(error.message || "An error occurred while restoring");
+        } finally {
+            setRestoring(false);
         }
-
-        // Status filter
-        if (statusFilter !== "all") {
-            filtered = filtered.filter(booking =>
-                (booking.bookingStatus || booking.status)?.toUpperCase() === statusFilter.toUpperCase()
-            );
-        }
-
-        setFilteredBookings(filtered);
     }
 
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon-blue"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
         );
     }
 
     return (
-        <div className="p-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div className="p-8 space-y-6">
+            {/* Header */}
+            <div className="flex justify-between items-start">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
-                        <Calendar className="w-8 h-8 text-neon-blue" />
-                        Party Booking History
-                    </h1>
-                    <p className="text-slate-500 mt-1">Archive of past party bookings</p>
-                </div>
-                <div className="flex gap-3">
                     <Link
                         href="/admin/party-bookings"
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium text-sm"
+                        className="text-slate-500 hover:text-slate-700 flex items-center gap-2 mb-2 transition-colors text-sm"
                     >
+                        <ArrowLeft size={16} />
                         Back to Party Bookings
                     </Link>
-                    <button
-                        onClick={() => exportBookingsToCSV(filteredBookings, 'party-booking-history')}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors font-medium text-sm"
-                    >
-                        <Download size={16} />
-                        Export CSV
-                    </button>
+                    <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+                        <Calendar className="w-8 h-8 text-primary" />
+                        Party Booking History
+                    </h1>
+                    <p className="text-slate-600 mt-1">Move Party Bookings That Were Paid But Not Saved</p>
                 </div>
             </div>
 
-            {/* Filters Bar */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="relative w-full md:w-96">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                    <input
-                        type="text"
-                        placeholder="Search by name, email, birthday child..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-neon-blue focus:border-transparent outline-none text-slate-900 placeholder:text-slate-400"
-                    />
-                </div>
-                <div className="flex gap-3 w-full md:w-auto">
-                    <Filter className="w-4 h-4 text-slate-400 self-center" />
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:border-neon-blue"
-                    >
-                        <option value="all">All Past Bookings</option>
-                        <option value="completed">Completed Only</option>
-                        <option value="cancelled">Cancelled Only</option>
-                    </select>
+            {/* Warning Banner */}
+            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 flex items-start gap-3">
+                <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                    <p className="text-red-800 font-bold text-base">
+                        Warning! Restoring These Bookings From History Will Move The Data To The Manual Party Booking Page.
+                    </p>
+                    <p className="text-red-700 text-sm mt-1">
+                        Be Super Careful When You Use This Facility!
+                    </p>
                 </div>
             </div>
 
-            {/* Bookings Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            {/* Filter Data Section */}
+            <div className="bg-white rounded-lg border border-slate-200 p-4">
+                <h3 className="text-sm font-bold text-slate-700 mb-3">Filter Data:</h3>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm text-slate-600">Display</label>
+                        <select
+                            value={displayCount}
+                            onChange={(e) => setDisplayCount(Number(e.target.value))}
+                            className="px-3 py-1.5 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                        >
+                            <option value={10}>10</option>
+                            <option value={25}>25</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                    </div>
+                    <p className="text-sm text-slate-600">
+                        Displaying {Math.min(displayCount, history.length)} out of {history.length}
+                    </p>
+                    <p className="text-sm text-slate-600">
+                        Page 1 / 1
+                    </p>
+                </div>
+            </div>
+
+            {/* Table */}
+            <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full">
                         <thead className="bg-slate-50 border-b border-slate-200">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Customer Details</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Party Details</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Guests</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Amount</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider text-right">Actions</th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Party Booking ID #
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Customer Name
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Email
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Date & Time
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Package
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Amount Checked Out
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Manage
+                                </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {filteredBookings.length === 0 ? (
+                            {history.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
-                                        No past party bookings found
+                                    <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
+                                        No party booking history found
                                     </td>
                                 </tr>
                             ) : (
-                                filteredBookings.map((booking: any) => (
-                                    <tr key={booking.id} className="hover:bg-slate-50 transition-colors group">
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold">
-                                                    {getInitials(booking.customerName || booking.name || 'U')}
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-bold text-slate-900">{booking.customerName || booking.name || 'Unknown'}</p>
-                                                    <div className="flex items-center gap-2 text-xs text-slate-600 mt-0.5">
-                                                        <Mail size={12} /> {booking.customerEmail || booking.email || 'No Email'}
-                                                    </div>
-                                                    <div className="flex items-center gap-2 text-xs text-slate-600 mt-0.5">
-                                                        <Phone size={12} /> {booking.customerPhone || booking.phone || 'No Phone'}
-                                                    </div>
-                                                </div>
-                                            </div>
+                                history.slice(0, displayCount).map((booking) => (
+                                    <tr key={booking.id} className="hover:bg-slate-50 transition-colors">
+                                        <td className="px-6 py-4 text-sm font-medium text-slate-900">
+                                            {booking.id}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-900">
+                                            {booking.name}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            {booking.email}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-900">
+                                            {new Date(booking.date).toLocaleDateString()} at {booking.time}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            {booking.packageName || "Standard"}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm font-bold text-slate-900">
+                                            ₹{parseFloat(booking.amount).toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2 text-sm font-medium text-slate-900">
-                                                    <Calendar size={14} className="text-slate-400" />
-                                                    {formatDate(booking.date)}
-                                                </div>
-                                                <div className="flex items-center gap-2 text-xs text-slate-600">
-                                                    <Clock size={12} />
-                                                    {booking.time}
-                                                </div>
-                                                {booking.birthday_child_name && (
-                                                    <div className="text-xs text-slate-600">
-                                                        🎂 {booking.birthday_child_name} ({booking.birthday_child_age}y)
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <p className="text-xs text-slate-600">Kids: {booking.kids || 0}</p>
-                                            <p className="text-xs text-slate-600">Adults: {booking.adults || 0}</p>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <p className="text-sm font-bold text-slate-900">{formatCurrency(booking.amount || 0)}</p>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <StatusBadge status={booking.bookingStatus || booking.status} />
-                                        </td>
-                                        <td className="px-6 py-4 text-right">
-                                            <Link
-                                                href={`/admin/party-bookings/${booking.id}`}
-                                                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                                            <button
+                                                onClick={() => handleRestoreClick(booking)}
+                                                disabled={!booking.canRestore}
+                                                className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                             >
-                                                <Eye size={16} />
-                                                View
-                                            </Link>
+                                                <RefreshCw className="w-4 h-4" />
+                                                Restore?
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
@@ -222,30 +200,29 @@ export default function PartyBookingHistoryPage() {
                         </tbody>
                     </table>
                 </div>
-
-                {/* Pagination */}
-                <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
-                    <p className="text-sm text-slate-600">Showing <span className="font-bold text-slate-900">{filteredBookings.length}</span> of <span className="font-bold text-slate-900">{allBookings.length}</span> past party bookings</p>
-                </div>
             </div>
+
+            {/* Restore Confirmation Modal */}
+            {selectedBooking && (
+                <RestoreConfirmationModal
+                    isOpen={showModal}
+                    onClose={() => {
+                        setShowModal(false);
+                        setSelectedBooking(null);
+                    }}
+                    onConfirm={handleConfirmRestore}
+                    bookingData={{
+                        id: selectedBooking.id,
+                        name: selectedBooking.name,
+                        email: selectedBooking.email,
+                        date: new Date(selectedBooking.date).toLocaleDateString(),
+                        time: selectedBooking.time,
+                        amount: parseFloat(selectedBooking.amount),
+                        type: "party"
+                    }}
+                    loading={restoring}
+                />
+            )}
         </div>
-    );
-}
-
-function StatusBadge({ status }: { status: string }) {
-    const styles: Record<string, string> = {
-        CONFIRMED: "bg-emerald-100 text-emerald-700 border-emerald-200",
-        PENDING: "bg-amber-100 text-amber-700 border-amber-200",
-        CANCELLED: "bg-red-100 text-red-700 border-red-200",
-        COMPLETED: "bg-blue-100 text-blue-700 border-blue-200",
-    };
-
-    const defaultStyle = "bg-slate-100 text-slate-700 border-slate-200";
-
-    return (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${styles[status?.toUpperCase()] || defaultStyle} inline-flex items-center gap-1`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${status?.toUpperCase() === 'CONFIRMED' ? 'bg-emerald-500' : status?.toUpperCase() === 'PENDING' ? 'bg-amber-500' : 'bg-slate-400'}`} />
-            {status || 'PENDING'}
-        </span>
     );
 }

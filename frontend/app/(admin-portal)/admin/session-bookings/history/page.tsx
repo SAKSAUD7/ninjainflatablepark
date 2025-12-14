@@ -1,54 +1,62 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getSessionBookings } from "@/app/actions/admin";
-import { BookingTable } from "../../components/BookingTable";
-import { Calendar, Filter } from "lucide-react";
+import { getSessionBookingHistory, restoreSessionBooking } from "@/app/actions/admin";
+import { RestoreConfirmationModal } from "../../components/RestoreConfirmationModal";
+import { Calendar, AlertTriangle, RefreshCw, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
+import Link from "next/link";
 
 export default function SessionBookingHistoryPage() {
-    const [bookings, setBookings] = useState<any[]>([]);
+    const [history, setHistory] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<"all" | "completed" | "cancelled">("completed");
+    const [restoring, setRestoring] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState<any>(null);
+    const [showModal, setShowModal] = useState(false);
+    const [displayCount, setDisplayCount] = useState(100);
 
     useEffect(() => {
-        loadBookings();
-    }, [filter]);
+        loadHistory();
+    }, []);
 
-    async function loadBookings() {
+    async function loadHistory() {
         try {
-            const data = await getSessionBookings();
-            console.log('All bookings:', data);
-            console.log('Current filter:', filter);
-
-            // Filter for historical bookings
-            const filtered = data.filter((booking: any) => {
-                const bookingDate = new Date(booking.date);
-                const isPast = bookingDate < new Date();
-
-                console.log(`Booking ${booking.id}:`, {
-                    date: booking.date,
-                    isPast,
-                    status: booking.bookingStatus,
-                    willShow: filter === "completed" ? (isPast && booking.bookingStatus === "COMPLETED") :
-                        filter === "cancelled" ? booking.bookingStatus === "CANCELLED" :
-                            isPast
-                });
-
-                if (filter === "completed") {
-                    return isPast && booking.bookingStatus === "COMPLETED";
-                } else if (filter === "cancelled") {
-                    return booking.bookingStatus === "CANCELLED";
-                }
-                return isPast; // all past bookings
-            });
-
-            console.log('Filtered bookings:', filtered);
-            setBookings(filtered);
+            const data = await getSessionBookingHistory();
+            setHistory(data);
         } catch (error) {
-            console.error('Error loading bookings:', error);
-            setBookings([]);
+            console.error('Error loading history:', error);
+            toast.error("Failed to load booking history");
         } finally {
             setLoading(false);
+        }
+    }
+
+    function handleRestoreClick(booking: any) {
+        setSelectedBooking(booking);
+        setShowModal(true);
+    }
+
+    async function handleConfirmRestore() {
+        if (!selectedBooking) return;
+
+        setRestoring(true);
+        try {
+            const result = await restoreSessionBooking(selectedBooking.id);
+
+            if (result.success) {
+                toast.success(result.message || `Booking #${result.bookingId} restored successfully!`);
+                setShowModal(false);
+                setSelectedBooking(null);
+                // Reload history to remove restored item
+                await loadHistory();
+            } else {
+                toast.error(result.error || "Failed to restore booking");
+            }
+        } catch (error: any) {
+            console.error('Restore error:', error);
+            toast.error(error.message || "An error occurred while restoring");
+        } finally {
+            setRestoring(false);
         }
     }
 
@@ -62,35 +70,153 @@ export default function SessionBookingHistoryPage() {
 
     return (
         <div className="p-8 space-y-6">
-            <div className="flex justify-between items-center">
+            {/* Header */}
+            <div className="flex justify-between items-start">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
+                    <Link
+                        href="/admin/bookings"
+                        className="text-slate-500 hover:text-slate-700 flex items-center gap-2 mb-2 transition-colors text-sm"
+                    >
+                        <ArrowLeft size={16} />
+                        Back to Dashboard
+                    </Link>
+                    <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
                         <Calendar className="w-8 h-8 text-primary" />
                         Session Booking History
                     </h1>
-                    <p className="text-slate-500 mt-1">Archive of past session bookings</p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <Filter className="w-4 h-4 text-slate-400" />
-                    <select
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value as any)}
-                        className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
-                    >
-                        <option value="all">All Past Bookings</option>
-                        <option value="completed">Completed Only</option>
-                        <option value="cancelled">Cancelled Only</option>
-                    </select>
+                    <p className="text-slate-600 mt-1">Move Session Bookings That Were Paid But Not Saved</p>
                 </div>
             </div>
 
-            <BookingTable
-                bookings={bookings}
-                title={`${filter === "completed" ? "Completed" : filter === "cancelled" ? "Cancelled" : "All Past"} Session Bookings`}
-                type="session"
-                readOnly={true}
-            />
+            {/* Warning Banner */}
+            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 flex items-start gap-3">
+                <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                    <p className="text-red-800 font-bold text-base">
+                        Warning! Restoring These Bookings From History Will Move The Data To The Manual Session Booking Page.
+                    </p>
+                    <p className="text-red-700 text-sm mt-1">
+                        Be Super Careful When You Use This Facility!
+                    </p>
+                </div>
+            </div>
+
+            {/* Filter Data Section */}
+            <div className="bg-white rounded-lg border border-slate-200 p-4">
+                <h3 className="text-sm font-bold text-slate-700 mb-3">Filter Data:</h3>
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm text-slate-600">Display</label>
+                        <select
+                            value={displayCount}
+                            onChange={(e) => setDisplayCount(Number(e.target.value))}
+                            className="px-3 py-1.5 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+                        >
+                            <option value={10}>10</option>
+                            <option value={25}>25</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                    </div>
+                    <p className="text-sm text-slate-600">
+                        Displaying {Math.min(displayCount, history.length)} out of {history.length}
+                    </p>
+                    <p className="text-sm text-slate-600">
+                        Page 1 / 1
+                    </p>
+                </div>
+            </div>
+
+            {/* Table */}
+            <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead className="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Session Booking ID #
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Customer Name
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Email
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Date & Time
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Amount Checked Out
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Manage
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {history.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                                        No session booking history found
+                                    </td>
+                                </tr>
+                            ) : (
+                                history.slice(0, displayCount).map((booking) => (
+                                    <tr key={booking.id} className="hover:bg-slate-50 transition-colors">
+                                        <td className="px-6 py-4 text-sm font-medium text-slate-900">
+                                            {booking.id}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-900">
+                                            {booking.name}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-600">
+                                            {booking.email}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-slate-900">
+                                            {new Date(booking.date).toLocaleDateString()} at {booking.time}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm font-bold text-slate-900">
+                                            ₹{parseFloat(booking.amount).toFixed(2)}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <button
+                                                onClick={() => handleRestoreClick(booking)}
+                                                disabled={!booking.canRestore}
+                                                className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                            >
+                                                <RefreshCw className="w-4 h-4" />
+                                                Restore?
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Restore Confirmation Modal */}
+            {selectedBooking && (
+                <RestoreConfirmationModal
+                    isOpen={showModal}
+                    onClose={() => {
+                        setShowModal(false);
+                        setSelectedBooking(null);
+                    }}
+                    onConfirm={handleConfirmRestore}
+                    bookingData={{
+                        id: selectedBooking.id,
+                        name: selectedBooking.name,
+                        email: selectedBooking.email,
+                        date: new Date(selectedBooking.date).toLocaleDateString(),
+                        time: selectedBooking.time,
+                        amount: parseFloat(selectedBooking.amount),
+                        type: "session"
+                    }}
+                    loading={restoring}
+                />
+            )}
         </div>
     );
 }

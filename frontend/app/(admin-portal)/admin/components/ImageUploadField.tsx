@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Upload, X, Image as ImageIcon } from "lucide-react";
+import { getMediaUrl } from "@/lib/media-utils";
 
 interface ImageUploadFieldProps {
     value?: string | File | null;
@@ -11,9 +12,16 @@ interface ImageUploadFieldProps {
 }
 
 export default function ImageUploadField({ value, onChange, label = "Image", error }: ImageUploadFieldProps) {
-    const [preview, setPreview] = useState<string | null>(
-        typeof value === 'string' ? value : (value ? URL.createObjectURL(value) : null)
-    );
+    // Convert value to preview URL
+    const getPreviewUrl = (val: string | File | null | undefined): string | null => {
+        if (!val) return null;
+        if (typeof val === 'string') {
+            return getMediaUrl(val);
+        }
+        return URL.createObjectURL(val);
+    };
+
+    const [preview, setPreview] = useState<string | null>(getPreviewUrl(value));
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

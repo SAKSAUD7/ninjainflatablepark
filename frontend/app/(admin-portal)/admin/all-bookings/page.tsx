@@ -5,6 +5,8 @@ import { getAllBookings } from "@/app/actions/admin";
 import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
 import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";
+import { clearCacheByPrefix } from "@/lib/admin-cache";
+import { toast } from 'sonner';
 import {
     Search,
     Download,
@@ -35,11 +37,27 @@ export default function AllBookingsPage() {
 
     async function loadBookings() {
         try {
-            const data = await getAllBookings();
+            setLoading(true);
+
+            // Use client-side fetch instead of server action
+            const { fetchAllBookingsClient } = await import('@/lib/client-api');
+            const data = await fetchAllBookingsClient();
+
+
+
+            if (!data || data.length === 0) {
+                console.log('[ALL BOOKINGS PAGE] No bookings found');
+                toast.info('No bookings found');
+            } else {
+                console.log('[ALL BOOKINGS PAGE] Loaded', data.length, 'bookings');
+                toast.success(`Loaded ${data.length} bookings`);
+            }
+
             setAllBookings(data);
             setFilteredBookings(data);
         } catch (error) {
-            console.error("Error loading bookings:", error);
+            console.error("[ALL BOOKINGS PAGE] Error loading all bookings:", error);
+            toast.error('Failed to load bookings: ' + (error as Error).message);
         } finally {
             setLoading(false);
         }

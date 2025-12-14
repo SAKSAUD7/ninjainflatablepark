@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Customer, Booking, Waiver, Transaction, BookingBlock, PartyBooking
+from .models import Customer, Booking, Waiver, Transaction, BookingBlock, PartyBooking, SessionBookingHistory, PartyBookingHistory
 # from apps.shop.serializers import VoucherSerializer
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -35,6 +35,9 @@ class WaiverSerializer(serializers.ModelSerializer):
     # party_booking_details = serializers.SerializerMethodField()  # Temporarily disabled
     booking_type = serializers.SerializerMethodField(read_only=True)
     booking_reference = serializers.SerializerMethodField(read_only=True)
+    arrived = serializers.SerializerMethodField(read_only=True)
+    arrived_at = serializers.SerializerMethodField(read_only=True)
+    # Forced reload for serializer update
     
     class Meta:
         model = Waiver
@@ -58,6 +61,16 @@ class WaiverSerializer(serializers.ModelSerializer):
             }
         return None
     
+    def get_arrived(self, obj):
+        if obj.booking:
+            return obj.booking.arrived
+        return False
+
+    def get_arrived_at(self, obj):
+        if obj.booking and obj.booking.arrived:
+            return obj.booking.arrived_at
+        return None
+    
     def get_booking_type(self, obj):
         if obj.booking:
             return 'SESSION'
@@ -76,7 +89,8 @@ class BookingSerializer(serializers.ModelSerializer):
     customer_details = CustomerSerializer(source='customer', read_only=True)
     # voucher_details = VoucherSerializer(source='voucher', read_only=True)
     transactions = TransactionSerializer(many=True, read_only=True)
-    waivers = WaiverSerializer(many=True, read_only=True)
+    waiver_status = serializers.SerializerMethodField()
+    # waivers = WaiverSerializer(many=True, read_only=True)  # Temporarily disabled due to IPAddressField error
 
     class Meta:
         model = Booking
@@ -84,7 +98,15 @@ class BookingSerializer(serializers.ModelSerializer):
                   'adults', 'kids', 'spectators', 'subtotal', 'discount_amount', 'amount',
                   'voucher_code', 'status', 'booking_status', 'payment_status', 'waiver_status',
                   'type', 'qr_code', 'customer', 'customer_details', 'voucher', 'transactions',
-                  'waivers', 'created_at', 'updated_at']
+                  'arrived', 'arrived_at',  # Arrival tracking
+                  # 'waivers',  # Temporarily removed
+                  'created_at', 'updated_at']
+
+    def get_waiver_status(self, obj):
+        # Dynamically check if any waiver is linked to this booking
+        if obj.waivers.exists():
+            return 'SIGNED'
+        return obj.waiver_status or 'PENDING'
 
 class PartyBookingSerializer(serializers.ModelSerializer):
     duration = serializers.SerializerMethodField()
@@ -99,7 +121,7 @@ class PartyBookingSerializer(serializers.ModelSerializer):
         fields = ['id', 'uuid', 'name', 'email', 'phone', 'date', 'time', 'package_name', 
                   'kids', 'adults', 'amount', 'birthday_child_name', 'birthday_child_age',
                   'participants', 'waiver_signed', 'waiver_signed_at', 'waiver_ip_address',
-                  'status', 'customer', 'created_at', 'updated_at',
+                  'status', 'customer', 'arrived', 'arrived_at', 'created_at', 'updated_at',
                   'duration', 'spectators', 'qr_code', 'payment_status', 'waiver_status', 'booking_status']
 
     def get_duration(self, obj):
@@ -121,9 +143,53 @@ class PartyBookingSerializer(serializers.ModelSerializer):
         return 'PENDING'
 
     def get_waiver_status(self, obj):
+        if obj.waivers.exists():
+            return 'SIGNED'
         return 'SIGNED' if obj.waiver_signed else 'PENDING'
 
     def get_booking_status(self, obj):
         return obj.status
 
 
+class SessionBookingHistorySerializer(serializers.ModelSerializer):
+    """Serializer for SessionBookingHistory with computed fields"""
+    can_restore = serializers.SerializerMethodField()
+    restored_by_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = SessionBookingHistory
+        fields = '__all__'
+        read_only_fields = ['id', 'uuid', 'created_at', 'updated_at', 'restored', 
+                           'restored_at', 'restored_by', 'restored_booking_id']
+    
+    def get_can_restore(self, obj):
+        """Check if this history record can be restored"""
+        return not obj.restored
+    
+    def get_restored_by_name(self, obj):
+        """Get the name of the admin who restored this booking"""
+        if obj.restored_by:
+            return obj.restored_by.username
+        return None
+
+
+class PartyBookingHistorySerializer(serializers.ModelSerializer):
+    """Serializer for PartyBookingHistory with computed fields"""
+    can_restore = serializers.SerializerMethodField()
+    restored_by_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = PartyBookingHistory
+        fields = '__all__'
+        read_only_fields = ['id', 'uuid', 'created_at', 'updated_at', 'restored', 
+                           'restored_at', 'restored_by', 'restored_booking_id']
+    
+    def get_can_restore(self, obj):
+        """Check if this history record can be restored"""
+        return not obj.restored
+    
+    def get_restored_by_name(self, obj):
+        """Get the name of the admin who restored this booking"""
+        if obj.restored_by:
+            return obj.restored_by.username
+        return None

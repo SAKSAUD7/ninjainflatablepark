@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer, Booking, PartyBooking, Waiver, Transaction, BookingBlock
+from .models import Customer, Booking, PartyBooking, Waiver, Transaction, BookingBlock, SessionBookingHistory, PartyBookingHistory
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
@@ -123,3 +123,68 @@ class BookingBlockAdmin(admin.ModelAdmin):
             'fields': ('created_at', 'updated_at')
         }),
     )
+
+@admin.register(SessionBookingHistory)
+class SessionBookingHistoryAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'email', 'date', 'time', 'amount', 'restored', 'restored_at', 'restored_by', 'created_at']
+    list_filter = ['restored', 'date', 'created_at', 'restored_at']
+    search_fields = ['name', 'email', 'phone', 'failure_reason']
+    readonly_fields = ['uuid', 'created_at', 'updated_at', 'restored', 'restored_at', 'restored_by', 'restored_booking_id']
+    ordering = ['-created_at']
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('uuid', 'name', 'email', 'phone')
+        }),
+        ('Booking Details', {
+            'fields': ('date', 'time', 'duration', 'adults', 'kids', 'spectators')
+        }),
+        ('Payment', {
+            'fields': ('amount', 'subtotal', 'discount_amount', 'voucher_code', 'payment_amount', 'payment_transaction_id')
+        }),
+        ('History Information', {
+            'fields': ('original_booking_id', 'failure_reason')
+        }),
+        ('Restore Status', {
+            'fields': ('restored', 'restored_at', 'restored_by', 'restored_booking_id'),
+            'classes': ('collapse',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+
+@admin.register(PartyBookingHistory)
+class PartyBookingHistoryAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'email', 'date', 'time', 'package_name', 'amount', 'restored', 'restored_at', 'restored_by', 'created_at']
+    list_filter = ['restored', 'date', 'created_at', 'restored_at']
+    search_fields = ['name', 'email', 'phone', 'package_name', 'birthday_child_name', 'failure_reason']
+    readonly_fields = ['uuid', 'created_at', 'updated_at', 'restored', 'restored_at', 'restored_by', 'restored_booking_id']
+    ordering = ['-created_at']
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('uuid', 'name', 'email', 'phone')
+        }),
+        ('Party Details', {
+            'fields': ('date', 'time', 'package_name', 'kids', 'adults', 'amount')
+        }),
+        ('Birthday Child', {
+            'fields': ('birthday_child_name', 'birthday_child_age')
+        }),
+        ('Participants', {
+            'fields': ('participants',)
+        }),
+        ('Payment', {
+            'fields': ('payment_amount', 'payment_transaction_id')
+        }),
+        ('History Information', {
+            'fields': ('original_booking_id', 'failure_reason')
+        }),
+        ('Restore Status', {
+            'fields': ('restored', 'restored_at', 'restored_by', 'restored_booking_id'),
+            'classes': ('collapse',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+

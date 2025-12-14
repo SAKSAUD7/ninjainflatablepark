@@ -10,6 +10,14 @@ class Customer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['email']),
+            models.Index(fields=['-created_at']),  # For sorting by newest
+        ]
+        verbose_name = 'Customer'
+        verbose_name_plural = 'Customers'
+
     def __str__(self):
         return self.name
 
@@ -61,8 +69,26 @@ class Booking(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings')
     voucher = models.ForeignKey(Voucher, on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings')
     
+    # Arrival tracking
+    arrived = models.BooleanField(default=False)
+    arrived_at = models.DateTimeField(null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['date', 'time']),  # For availability checks
+            models.Index(fields=['email']),  # For customer lookups
+            models.Index(fields=['uuid']),  # For ticket retrieval
+            models.Index(fields=['booking_status']),  # For filtering by status
+            models.Index(fields=['payment_status']),  # For payment tracking
+            models.Index(fields=['-created_at']),  # For sorting by newest
+            models.Index(fields=['customer']),  # Foreign key lookup
+        ]
+        ordering = ['-created_at']
+        verbose_name = 'Booking'
+        verbose_name_plural = 'Bookings'
 
     def __str__(self):
         return f"Booking {self.id} - {self.name}"
@@ -101,11 +127,29 @@ class PartyBooking(models.Model):
     waiver_signed_at = models.DateTimeField(null=True, blank=True)
     waiver_ip_address = models.GenericIPAddressField(null=True, blank=True)
     
+    
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True, related_name='party_bookings')
     
+    # Arrival tracking (matching Booking model)
+    arrived = models.BooleanField(default=False)
+    arrived_at = models.DateTimeField(null=True, blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['date', 'time']),  # For availability checks
+            models.Index(fields=['email']),  # For customer lookups
+            models.Index(fields=['uuid']),  # For ticket retrieval
+            models.Index(fields=['status']),  # For filtering by status
+            models.Index(fields=['-created_at']),  # For sorting by newest
+            models.Index(fields=['customer']),  # Foreign key lookup
+        ]
+        ordering = ['-created_at']
+        verbose_name = 'Party Booking'
+        verbose_name_plural = 'Party Bookings'
 
     def __str__(self):
         return f"Party {self.id} - {self.name}"
@@ -143,6 +187,19 @@ class Waiver(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['email']),  # For customer lookups
+            models.Index(fields=['booking']),  # Foreign key lookup
+            models.Index(fields=['party_booking']),  # Foreign key lookup
+            models.Index(fields=['customer']),  # Foreign key lookup
+            models.Index(fields=['participant_type']),  # For filtering
+            models.Index(fields=['-created_at']),  # For sorting by newest
+        ]
+        ordering = ['-created_at']
+        verbose_name = 'Waiver'
+        verbose_name_plural = 'Waivers'
 
     def __str__(self):
         return f"Waiver for {self.name} ({self.participant_type})"
@@ -189,3 +246,95 @@ class BookingBlock(models.Model):
 
     def __str__(self):
         return f"Block: {self.reason} ({self.start_date} - {self.end_date})"
+
+class SessionBookingHistory(models.Model):
+    """
+    Stores session bookings that were paid but not saved due to system errors.
+    Allows admins to restore these bookings to the main Booking table.
+    """
+    # Original booking data (copied from Booking model)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=50)
+    date = models.DateField()
+    time = models.TimeField()
+    duration = models.IntegerField(help_text="Duration in minutes")
+    adults = models.IntegerField(default=0)
+    kids = models.IntegerField(default=0)
+    spectators = models.IntegerField(default=0)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    voucher_code = models.CharField(max_length=50, null=True, blank=True)
+    
+    # History-specific fields
+    original_booking_id = models.IntegerField(null=True, blank=True, help_text="Original booking ID if it existed")
+    payment_transaction_id = models.CharField(max_length=255, null=True, blank=True, help_text="Payment gateway transaction ID")
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Amount actually paid")
+    failure_reason = models.TextField(help_text="Why this booking went to history (e.g., 'Payment succeeded but save failed')")
+    
+    # Restore tracking
+    restored = models.BooleanField(default=False, help_text="Whether this booking has been restored")
+    restored_at = models.DateTimeField(null=True, blank=True, help_text="When the booking was restored")
+    restored_by = models.ForeignKey('core.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='restored_session_bookings', help_text="Admin who restored this booking")
+    restored_booking_id = models.IntegerField(null=True, blank=True, help_text="ID of the booking created when restored")
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Session Booking History"
+        verbose_name_plural = "Session Booking History"
+    
+    def __str__(self):
+        status = "Restored" if self.restored else "Pending"
+        return f"Session History #{self.id} - {self.name} ({status})"
+
+class PartyBookingHistory(models.Model):
+    """
+    Stores party bookings that were paid but not saved due to system errors.
+    Allows admins to restore these bookings to the main PartyBooking table.
+    """
+    # Original booking data (copied from PartyBooking model)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=50)
+    date = models.DateField()
+    time = models.TimeField()
+    package_name = models.CharField(max_length=255)
+    kids = models.IntegerField(default=0)
+    adults = models.IntegerField(default=0)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    birthday_child_name = models.CharField(max_length=255, null=True, blank=True)
+    birthday_child_age = models.IntegerField(null=True, blank=True)
+    participants = models.JSONField(null=True, blank=True)
+    
+    # History-specific fields
+    original_booking_id = models.IntegerField(null=True, blank=True, help_text="Original booking ID if it existed")
+    payment_transaction_id = models.CharField(max_length=255, null=True, blank=True, help_text="Payment gateway transaction ID")
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Amount actually paid")
+    failure_reason = models.TextField(help_text="Why this booking went to history (e.g., 'Payment succeeded but save failed')")
+    
+    # Restore tracking
+    restored = models.BooleanField(default=False, help_text="Whether this booking has been restored")
+    restored_at = models.DateTimeField(null=True, blank=True, help_text="When the booking was restored")
+    restored_by = models.ForeignKey('core.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='restored_party_bookings', help_text="Admin who restored this booking")
+    restored_booking_id = models.IntegerField(null=True, blank=True, help_text="ID of the booking created when restored")
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Party Booking History"
+        verbose_name_plural = "Party Booking History"
+    
+    def __str__(self):
+        status = "Restored" if self.restored else "Pending"
+        return f"Party History #{self.id} - {self.name} ({status})"

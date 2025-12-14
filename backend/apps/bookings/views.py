@@ -2,8 +2,8 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Customer, Booking, Waiver, Transaction, BookingBlock, PartyBooking
-from .serializers import CustomerSerializer, BookingSerializer, WaiverSerializer, TransactionSerializer, BookingBlockSerializer, PartyBookingSerializer
+from .models import Customer, Booking, Waiver, Transaction, BookingBlock, PartyBooking, SessionBookingHistory, PartyBookingHistory
+from .serializers import CustomerSerializer, BookingSerializer, WaiverSerializer, TransactionSerializer, BookingBlockSerializer, PartyBookingSerializer, SessionBookingHistorySerializer, PartyBookingHistorySerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from reportlab.pdfgen import canvas
@@ -11,6 +11,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from django.http import HttpResponse
 from django.utils import timezone
+from django.db import transaction
 import json
 
 from django.db.models import Sum, Count, Max, Q
@@ -49,7 +50,8 @@ class BookingViewSet(viewsets.ModelViewSet):
         if booking_type:
             queryset = queryset.filter(type=booking_type)
             
-        status = self.request.query_params.get('booking_status', None)
+        # Accept 'status' query param and filter by 'booking_status' field
+        status = self.request.query_params.get('status', None)
         if status:
             queryset = queryset.filter(booking_status=status)
             
@@ -65,6 +67,14 @@ class BookingViewSet(viewsets.ModelViewSet):
                 Q(phone__icontains=search) |
                 Q(uuid__icontains=search)
             )
+        
+        # Arrival status filter
+        has_arrived = self.request.query_params.get('has_arrived', None)
+        if has_arrived is not None:
+            if has_arrived.lower() == 'true':
+                queryset = queryset.filter(arrived=True)
+            elif has_arrived.lower() == 'false':
+                queryset = queryset.filter(arrived=False)
             
         # Ordering
         ordering = self.request.query_params.get('ordering', None)
@@ -72,6 +82,13 @@ class BookingViewSet(viewsets.ModelViewSet):
             queryset = queryset.order_by(ordering)
         else:
             queryset = queryset.order_by('-created_at') # Default to newest first
+        
+        # DEBUG: Print queryset info
+        print(f"[DEBUG] BookingViewSet.get_queryset()")
+        print(f"[DEBUG] Query params: {dict(self.request.query_params)}")
+        print(f"[DEBUG] Queryset count: {queryset.count()}")
+        if queryset.count() > 0:
+            print(f"[DEBUG] First booking: ID={queryset.first().id}, Name={queryset.first().name}")
             
         return queryset
     
@@ -87,6 +104,36 @@ class BookingViewSet(viewsets.ModelViewSet):
         booking = get_object_or_404(Booking, uuid=uuid)
         serializer = self.get_serializer(booking)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def mark_arrived(self, request, pk=None):
+        """Mark a booking as arrived"""
+        booking = self.get_object()
+        booking.arrived = True
+        booking.arrived_at = timezone.now()
+        booking.save()
+        
+        serializer = self.get_serializer(booking)
+        return Response({
+            'success': True,
+            'message': f'Booking #{booking.id} marked as arrived',
+            'booking': serializer.data
+        })
+    
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def mark_not_arrived(self, request, pk=None):
+        """Mark a booking as not arrived"""
+        booking = self.get_object()
+        booking.arrived = False
+        booking.arrived_at = None
+        booking.save()
+        
+        serializer = self.get_serializer(booking)
+        return Response({
+            'success': True,
+            'message': f'Booking #{booking.id} marked as not arrived',
+            'booking': serializer.data
+        })
 
 class WaiverViewSet(viewsets.ModelViewSet):
     queryset = Waiver.objects.all()
@@ -119,6 +166,10 @@ class WaiverViewSet(viewsets.ModelViewSet):
         print(f"DEBUG: Waiver saved successfully")
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+        
+    def force_reload(self):
+        # This method exists solely to force a file change event for the auto-reloader
+        pass
     
     @action(detail=True, methods=['get'])
     def download_pdf(self, request, pk=None):
@@ -532,6 +583,46 @@ class PartyBookingViewSet(viewsets.ModelViewSet):
     queryset = PartyBooking.objects.all()
     serializer_class = PartyBookingSerializer
     
+    def get_queryset(self):
+        queryset = PartyBooking.objects.all()
+        
+        # Status filter
+        status = self.request.query_params.get('status', None)
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        # Date filter
+        date = self.request.query_params.get('date', None)
+        if date:
+            queryset = queryset.filter(date=date)
+        
+        # Search filter
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search) | 
+                Q(email__icontains=search) | 
+                Q(phone__icontains=search) |
+                Q(uuid__icontains=search)
+            )
+        
+        # Arrival status filter
+        has_arrived = self.request.query_params.get('has_arrived', None)
+        if has_arrived is not None:
+            if has_arrived.lower() == 'true':
+                queryset = queryset.filter(arrived=True)
+            elif has_arrived.lower() == 'false':
+                queryset = queryset.filter(arrived=False)
+        
+        # Ordering
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering:
+            queryset = queryset.order_by(ordering)
+        else:
+            queryset = queryset.order_by('-created_at')
+        
+        return queryset
+    
     def get_permissions(self):
         # Allow public access for create, list (for duplicate checking), and ticket retrieval
         if self.action in ['create', 'list', 'ticket']:
@@ -615,6 +706,36 @@ class PartyBookingViewSet(viewsets.ModelViewSet):
                 'success': False,
                 'message': f'Failed to send email: {str(e)}'
             }, status=500)
+    
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def mark_arrived(self, request, pk=None):
+        """Mark a party booking as arrived"""
+        party_booking = self.get_object()
+        party_booking.arrived = True
+        party_booking.arrived_at = timezone.now()
+        party_booking.save()
+        
+        serializer = self.get_serializer(party_booking)
+        return Response({
+            'success': True,
+            'message': f'Party Booking #{party_booking.id} marked as arrived',
+            'booking': serializer.data
+        })
+    
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def mark_not_arrived(self, request, pk=None):
+        """Mark a party booking as not arrived"""
+        party_booking = self.get_object()
+        party_booking.arrived = False
+        party_booking.arrived_at = None
+        party_booking.save()
+        
+        serializer = self.get_serializer(party_booking)
+        return Response({
+            'success': True,
+            'message': f'Party Booking #{party_booking.id} marked as not arrived',
+            'booking': serializer.data
+        })
 
 
 @api_view(['POST'])
@@ -743,3 +864,203 @@ def party_booking_detail_view(request, id):
         return Response({'error': 'Party booking not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class SessionBookingHistoryViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing session booking history.
+    Allows listing and restoring bookings that were paid but not saved.
+    """
+    queryset = SessionBookingHistory.objects.all()
+    serializer_class = SessionBookingHistorySerializer
+    permission_classes = [permissions.IsAdminUser]
+    
+    def get_queryset(self):
+        """By default, only show non-restored history records"""
+        queryset = SessionBookingHistory.objects.all()
+        
+        # Filter by restored status
+        show_restored = self.request.query_params.get('show_restored', 'false')
+        if show_restored.lower() != 'true':
+            queryset = queryset.filter(restored=False)
+        
+        return queryset.order_by('-created_at')
+    
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def restore(self, request, pk=None):
+        """
+        Restore a booking from history to the main Booking table.
+        This operation is atomic and will mark the history record as restored.
+        """
+        try:
+            with transaction.atomic():
+                history = self.get_object()
+                
+                # Validate not already restored
+                if history.restored:
+                    return Response({
+                        'success': False,
+                        'error': 'This booking has already been restored',
+                        'restored_at': history.restored_at,
+                        'restored_by': history.restored_by.username if history.restored_by else None,
+                        'restored_booking_id': history.restored_booking_id
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                
+                # Create or get customer
+                customer = None
+                if history.email:
+                    customer, created = Customer.objects.get_or_create(
+                        email=history.email,
+                        defaults={
+                            'name': history.name,
+                            'phone': history.phone,
+                        }
+                    )
+                    if not created and not customer.name:
+                        customer.name = history.name
+                        customer.phone = history.phone
+                        customer.save()
+                
+                # Create new booking from history data
+                booking = Booking.objects.create(
+                    name=history.name,
+                    email=history.email,
+                    phone=history.phone,
+                    date=history.date,
+                    time=history.time,
+                    duration=history.duration,
+                    adults=history.adults,
+                    kids=history.kids,
+                    spectators=history.spectators,
+                    subtotal=history.subtotal,
+                    discount_amount=history.discount_amount,
+                    amount=history.amount,
+                    voucher_code=history.voucher_code,
+                    booking_status='CONFIRMED',  # Restored bookings are confirmed
+                    payment_status='PAID' if history.payment_amount else 'PENDING',
+                    waiver_status='PENDING',
+                    type='MANUAL',  # Mark as manual since it's being restored by admin
+                    customer=customer,
+                )
+                
+                # Mark history as restored
+                history.restored = True
+                history.restored_at = timezone.now()
+                history.restored_by = request.user
+                history.restored_booking_id = booking.id
+                history.save()
+                
+                # Serialize the created booking
+                booking_serializer = BookingSerializer(booking)
+                
+                return Response({
+                    'success': True,
+                    'message': f'Booking restored successfully as Booking #{booking.id}',
+                    'booking_id': booking.id,
+                    'booking': booking_serializer.data,
+                    'history_id': history.id
+                }, status=status.HTTP_201_CREATED)
+                
+        except Exception as e:
+            return Response({
+                'success': False,
+                'error': f'Failed to restore booking: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PartyBookingHistoryViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing party booking history.
+    Allows listing and restoring bookings that were paid but not saved.
+    """
+    queryset = PartyBookingHistory.objects.all()
+    serializer_class = PartyBookingHistorySerializer
+    permission_classes = [permissions.IsAdminUser]
+    
+    def get_queryset(self):
+        """By default, only show non-restored history records"""
+        queryset = PartyBookingHistory.objects.all()
+        
+        # Filter by restored status
+        show_restored = self.request.query_params.get('show_restored', 'false')
+        if show_restored.lower() != 'true':
+            queryset = queryset.filter(restored=False)
+        
+        return queryset.order_by('-created_at')
+    
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    def restore(self, request, pk=None):
+        """
+        Restore a party booking from history to the main PartyBooking table.
+        This operation is atomic and will mark the history record as restored.
+        """
+        try:
+            with transaction.atomic():
+                history = self.get_object()
+                
+                # Validate not already restored
+                if history.restored:
+                    return Response({
+                        'success': False,
+                        'error': 'This booking has already been restored',
+                        'restored_at': history.restored_at,
+                        'restored_by': history.restored_by.username if history.restored_by else None,
+                        'restored_booking_id': history.restored_booking_id
+                    }, status=status.HTTP_400_BAD_REQUEST)
+                
+                # Create or get customer
+                customer = None
+                if history.email:
+                    customer, created = Customer.objects.get_or_create(
+                        email=history.email,
+                        defaults={
+                            'name': history.name,
+                            'phone': history.phone,
+                        }
+                    )
+                    if not created and not customer.name:
+                        customer.name = history.name
+                        customer.phone = history.phone
+                        customer.save()
+                
+                # Create new party booking from history data
+                party_booking = PartyBooking.objects.create(
+                    name=history.name,
+                    email=history.email,
+                    phone=history.phone,
+                    date=history.date,
+                    time=history.time,
+                    package_name=history.package_name,
+                    kids=history.kids,
+                    adults=history.adults,
+                    amount=history.amount,
+                    birthday_child_name=history.birthday_child_name,
+                    birthday_child_age=history.birthday_child_age,
+                    participants=history.participants,
+                    status='CONFIRMED',  # Restored bookings are confirmed
+                    customer=customer,
+                )
+                
+                # Mark history as restored
+                history.restored = True
+                history.restored_at = timezone.now()
+                history.restored_by = request.user
+                history.restored_booking_id = party_booking.id
+                history.save()
+                
+                # Serialize the created booking
+                booking_serializer = PartyBookingSerializer(party_booking)
+                
+                return Response({
+                    'success': True,
+                    'message': f'Party booking restored successfully as Booking #{party_booking.id}',
+                    'booking_id': party_booking.id,
+                    'booking': booking_serializer.data,
+                    'history_id': history.id
+                }, status=status.HTTP_201_CREATED)
+                
+        except Exception as e:
+            return Response({
+                'success': False,
+                'error': f'Failed to restore party booking: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

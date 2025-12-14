@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Ticket } from "lucide-react";
+import { getMediaUrl } from "@/lib/media-utils";
 
 interface AnimatedHeroProps {
     title?: string;
@@ -26,7 +27,7 @@ export function AnimatedHero({
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <img
-                    src={backgroundImage}
+                    src={getMediaUrl(backgroundImage)}
                     alt="Ninja Inflatable Park"
                     className="w-full h-full object-cover"
                 />
