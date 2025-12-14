@@ -188,44 +188,44 @@ export default async function AdminDashboard() {
                 </div>
 
                 {/* Recent Alerts / Quick Actions */}
-                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6">
                     <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
                         <AlertCircle size={20} className="text-slate-400" />
                         System Status
                     </h2>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {stats.pendingWaivers > 0 ? (
-                            <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-3">
-                                <div className="p-2 bg-amber-100 rounded-lg shrink-0">
+                            <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-xl flex items-start gap-3 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="p-2.5 bg-amber-100 rounded-lg shrink-0 shadow-sm">
                                     <FileSignature size={18} className="text-amber-600" />
                                 </div>
-                                <div>
+                                <div className="flex-1">
                                     <p className="text-sm font-bold text-amber-900">{stats.pendingWaivers} Waivers Pending</p>
-                                    <p className="text-xs text-amber-700 mt-1">Guests arriving soon need to sign waivers.</p>
-                                    <Link href="/admin/waivers" className="text-xs font-bold text-amber-800 mt-2 inline-block hover:underline">
+                                    <p className="text-xs text-amber-700 mt-1 leading-relaxed">Guests arriving soon need to sign waivers.</p>
+                                    <Link href="/admin/waivers" className="text-xs font-bold text-amber-800 mt-2 inline-flex items-center gap-1 hover:gap-2 transition-all hover:underline">
                                         Review Waivers →
                                     </Link>
                                 </div>
                             </div>
                         ) : (
-                            <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-start gap-3">
-                                <div className="p-2 bg-emerald-100 rounded-lg shrink-0">
+                            <div className="p-4 bg-emerald-50 border-2 border-emerald-200 rounded-xl flex items-start gap-3 shadow-sm">
+                                <div className="p-2.5 bg-emerald-100 rounded-lg shrink-0 shadow-sm">
                                     <CheckCircle size={18} className="text-emerald-600" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-emerald-900">All Waivers Signed</p>
-                                    <p className="text-xs text-emerald-700 mt-1">No pending actions required.</p>
+                                    <p className="text-xs text-emerald-700 mt-1 leading-relaxed">No pending actions required.</p>
                                 </div>
                             </div>
                         )}
 
-                        <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-3">
-                            <div className="p-2 bg-blue-100 rounded-lg shrink-0">
+                        <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-xl flex items-start gap-3 shadow-sm">
+                            <div className="p-2.5 bg-blue-100 rounded-lg shrink-0 shadow-sm">
                                 <CalendarCheck size={18} className="text-blue-600" />
                             </div>
                             <div>
                                 <p className="text-sm font-bold text-blue-900">{stats.bookingsToday} Bookings Today</p>
-                                <p className="text-xs text-blue-700 mt-1">Check staff availability for peak hours.</p>
+                                <p className="text-xs text-blue-700 mt-1 leading-relaxed">Check staff availability for peak hours.</p>
                             </div>
                         </div>
                     </div>
@@ -233,29 +233,29 @@ export default async function AdminDashboard() {
             </div>
 
             {/* Recent Bookings Table */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
+            <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white">
                     <h2 className="text-lg font-bold text-slate-900">Recent Bookings</h2>
-                    <Link href="/admin/bookings" className="text-sm font-medium text-neon-blue hover:text-blue-700 flex items-center gap-1 transition-colors">
+                    <Link href="/admin/bookings" className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors hover:gap-2">
                         View All Bookings <ArrowRight size={16} />
                     </Link>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-slate-50 border-b border-slate-200">
+                        <thead className="bg-slate-100 border-b-2 border-slate-200">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Customer</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date & Time</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Amount</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Customer</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Type</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Date & Time</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Amount</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider text-right">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {stats.recentBookings.length > 0 ? (
                                 stats.recentBookings.map((booking: any) => (
-                                    <tr key={booking.id} className="hover:bg-slate-50 transition-colors group">
+                                    <tr key={booking.id} className="hover:bg-blue-50/50 transition-all duration-200 group border-b border-slate-100 last:border-b-0">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold text-xs">
@@ -288,7 +288,7 @@ export default async function AdminDashboard() {
                                             <StatusBadge status={booking.status} />
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            <Link href={booking.type === 'PARTY' ? `/admin/party-bookings/${booking.id}` : `/admin/bookings/${booking.id}`} className="text-slate-400 hover:text-neon-blue transition-colors">
+                                            <Link href={booking.type === 'PARTY' ? `/admin/party-bookings/${booking.id}` : `/admin/bookings/${booking.id}`} className="text-slate-400 hover:text-blue-600 transition-all duration-200 inline-block hover:translate-x-1">
                                                 <ArrowRight size={18} />
                                             </Link>
                                         </td>
@@ -311,18 +311,18 @@ export default async function AdminDashboard() {
 
 function StatCard({ title, value, icon, trend, trendUp, color, alert }: { title: string; value: string; icon: React.ReactNode; trend: string; trendUp: boolean; color: string; alert?: boolean }) {
     return (
-        <div className={`bg-white rounded-xl p-6 shadow-sm border transition-all hover:shadow-md ${alert ? 'border-amber-200 ring-1 ring-amber-100' : 'border-slate-200'}`}>
+        <div className={`bg-white rounded-xl p-6 shadow-md border transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${alert ? 'border-amber-200 ring-2 ring-amber-100' : 'border-slate-200'}`}>
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <p className="text-sm font-medium text-slate-500">{title}</p>
-                    <h3 className="text-2xl font-bold text-slate-900 mt-1">{value}</h3>
+                    <p className="text-sm font-semibold text-slate-500 uppercase tracking-wide">{title}</p>
+                    <h3 className="text-3xl font-bold text-slate-900 mt-2">{value}</h3>
                 </div>
-                <div className={`p-2.5 rounded-lg bg-${color}-50`}>
+                <div className={`p-3 rounded-xl bg-${color}-50 shadow-sm`}>
                     {icon}
                 </div>
             </div>
             <div className="flex items-center gap-2">
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${trendUp ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${trendUp ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
                     {trend}
                 </span>
             </div>
@@ -332,17 +332,17 @@ function StatCard({ title, value, icon, trend, trendUp, color, alert }: { title:
 
 function StatusBadge({ status }: { status: string }) {
     const styles: Record<string, string> = {
-        CONFIRMED: "bg-emerald-100 text-emerald-700 border-emerald-200",
-        PENDING: "bg-amber-100 text-amber-700 border-amber-200",
-        CANCELLED: "bg-red-100 text-red-700 border-red-200",
-        COMPLETED: "bg-blue-100 text-blue-700 border-blue-200",
+        CONFIRMED: "bg-emerald-100 text-emerald-700 border-emerald-300",
+        PENDING: "bg-amber-100 text-amber-700 border-amber-300",
+        CANCELLED: "bg-red-100 text-red-700 border-red-300",
+        COMPLETED: "bg-blue-100 text-blue-700 border-blue-300",
     };
 
-    const defaultStyle = "bg-slate-100 text-slate-700 border-slate-200";
+    const defaultStyle = "bg-slate-100 text-slate-700 border-slate-300";
 
     return (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${styles[status] || defaultStyle} inline-flex items-center gap-1`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${status === 'CONFIRMED' ? 'bg-emerald-500' : status === 'PENDING' ? 'bg-amber-500' : 'bg-slate-400'}`} />
+        <span className={`px-3 py-1.5 rounded-full text-xs font-bold border shadow-sm ${styles[status] || defaultStyle} inline-flex items-center gap-1.5`}>
+            <span className={`w-2 h-2 rounded-full ${status === 'CONFIRMED' ? 'bg-emerald-500' : status === 'PENDING' ? 'bg-amber-500' : 'bg-slate-400'}`} />
             {status}
         </span>
     );

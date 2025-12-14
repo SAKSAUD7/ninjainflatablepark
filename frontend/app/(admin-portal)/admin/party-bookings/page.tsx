@@ -8,9 +8,11 @@ import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter"
 import { getCachedData, setCachedData, clearCacheByPrefix } from "@/lib/admin-cache";
 import { ArrivalStatusButton } from "../components/ArrivalStatusButton";
 import { WaiverLink } from "../components/WaiverLink";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { Button } from "@/components/admin/Button";
+import { EmptyState } from "@/components/admin/EmptyState";
 import { toast } from 'sonner';
 import {
-    Search,
     Download,
     Calendar,
     Clock,
@@ -20,7 +22,9 @@ import {
     Edit,
     Trash2,
     Package,
-    Eye
+    Eye,
+    Plus,
+    PartyPopper
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -140,45 +144,40 @@ export default function PartyBookingsPage() {
 
     return (
         <div className="p-8 space-y-6">
-            <div className="bg-slate-50 border-b border-slate-200 -mx-8 -mt-8 px-8 py-4 mb-4">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <div className="text-sm text-slate-500 mb-1">
-                            <Link href="/admin" className="hover:text-primary">Dashboard</Link> / Party Bookings
-                        </div>
-                        <h1 className="text-2xl font-bold text-red-400">Party Bookings</h1>
-                        <p className="text-slate-600">View And Manage Party Bookings</p>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                title="Party Bookings"
+                description="View and manage all party bookings"
+                breadcrumbs={[
+                    { label: "Dashboard", href: "/admin" },
+                    { label: "Party Bookings" },
+                ]}
+                actions={
+                    <Button
+                        variant="primary"
+                        icon={<Plus size={16} />}
+                        onClick={() => router.push("/admin/party-bookings/new")}
+                    >
+                        Create New Booking
+                    </Button>
+                }
+            />
 
-            <div className="flex justify-end">
-                <Link
-                    href="/admin/party-bookings/new"
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors font-medium text-sm"
-                >
-                    + Create New Party Booking
-                </Link>
-            </div>
-
-            {/* Filters Bar */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-                <h3 className="text-xl font-normal text-slate-700 mb-6">Filter Data:</h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            {/* Filters */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm text-slate-600">Date</label>
+                        <label className="text-sm font-medium text-slate-700">Date</label>
                         <DateFilter value={dateFilter} onChange={setDateFilter} />
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm text-slate-600">Status</label>
+                        <label className="text-sm font-medium text-slate-700">Status</label>
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-slate-600 text-sm outline-none focus:border-primary"
+                            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                            <option value="all">All</option>
+                            <option value="all">All Statuses</option>
                             <option value="confirmed">Confirmed</option>
                             <option value="pending">Pending</option>
                             <option value="cancelled">Cancelled</option>
@@ -187,96 +186,101 @@ export default function PartyBookingsPage() {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm text-slate-600">Has Arrived</label>
+                        <label className="text-sm font-medium text-slate-700">Arrival Status</label>
                         <select
                             value={hasArrivedFilter}
                             onChange={(e) => setHasArrivedFilter(e.target.value)}
-                            className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-slate-600 text-sm outline-none focus:border-primary"
+                            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                            <option value="all">Select</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
+                            <option value="all">All</option>
+                            <option value="yes">Arrived</option>
+                            <option value="no">Not Arrived</option>
                         </select>
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm text-slate-600">Display</label>
+                        <label className="text-sm font-medium text-slate-700">Show</label>
                         <select
                             value={displayCount}
                             onChange={(e) => setDisplayCount(Number(e.target.value))}
-                            className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-slate-600 text-sm outline-none focus:border-primary"
+                            className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-slate-900 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                            <option value={25}>25</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
+                            <option value={25}>25 per page</option>
+                            <option value={50}>50 per page</option>
+                            <option value={100}>100 per page</option>
                         </select>
                     </div>
                 </div>
 
-                <div className="flex gap-2">
-                    <button
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors font-medium text-sm"
-                    >
-                        <Search size={16} />
-                        Search
-                    </button>
-                    <button
+                <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+                    <p className="text-sm text-slate-600">
+                        Showing <span className="font-semibold text-slate-900">{Math.min(filteredBookings.length, displayCount)}</span> of <span className="font-semibold text-slate-900">{filteredBookings.length}</span> bookings
+                    </p>
+                    <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={resetFilters}
-                        className="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-slate-900 rounded hover:bg-yellow-500 transition-colors font-medium text-sm"
+                        icon={<RefreshCw size={14} />}
                     >
-                        <RefreshCw size={16} />
-                        Reset
-                    </button>
-                </div>
-
-                <div className="mt-4 text-xs text-slate-500">
-                    Displaying {Math.min(filteredBookings.length, displayCount)} out of {filteredBookings.length}
-                    <br />
-                    Page 1 / 1
+                        Reset Filters
+                    </Button>
                 </div>
             </div>
 
             {/* Bookings Table */}
-            <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-slate-50 border-b border-slate-200">
+                        <thead className="bg-slate-100 border-b-2 border-slate-200">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Booking #</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Booked By</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Date</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Time</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Package</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Amount Paid (+ GST)</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Arrival Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Waiver</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">Manage</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Booking #</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Customer</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Date</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Time</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Package</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Amount</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Arrival</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Waiver</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-600 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {filteredBookings.length === 0 ? (
                                 <tr>
-                                    <td colSpan={10} className="px-6 py-12 text-center text-slate-500 font-medium">
-                                        No Party Bookings Found.
+                                    <td colSpan={10} className="px-6 py-16">
+                                        <EmptyState
+                                            icon={<PartyPopper size={48} />}
+                                            title="No party bookings found"
+                                            description="Try adjusting your filters or create a new party booking"
+                                            action={
+                                                <Button
+                                                    variant="primary"
+                                                    icon={<Plus size={16} />}
+                                                    onClick={() => router.push("/admin/party-bookings/new")}
+                                                >
+                                                    Create First Party Booking
+                                                </Button>
+                                            }
+                                        />
                                     </td>
                                 </tr>
                             ) : (
                                 filteredBookings.slice(0, displayCount).map((booking: any) => (
-                                    <tr key={booking.id} className="hover:bg-slate-50 transition-colors">
-                                        <td className="px-6 py-4 text-sm font-bold text-slate-900">
-                                            {booking.id}
+                                    <tr key={booking.id} className="hover:bg-purple-50/30 transition-all duration-200">
+                                        <td className="px-6 py-4">
+                                            <span className="text-sm font-bold text-slate-900">#{booking.id}</span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-bold text-slate-900">{booking.customerName || booking.name}</span>
+                                                <span className="text-sm font-medium text-slate-900">{booking.customerName || booking.name}</span>
                                                 <span className="text-xs text-slate-500">{booking.customerEmail || booking.email}</span>
                                                 <span className="text-xs text-slate-500">{booking.customerPhone || booking.phone}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-900">
-                                            {formatDate(booking.date)}
-                                            <div className="text-xs text-slate-500 mt-1">
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm font-medium text-slate-900">{formatDate(booking.date)}</div>
+                                            <div className="text-xs text-slate-500 mt-0.5">
                                                 {new Date(booking.date).getFullYear()}
                                             </div>
                                         </td>
@@ -285,15 +289,15 @@ export default function PartyBookingsPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
-                                                <Package size={14} className="text-slate-400" />
+                                                <Package size={14} className="text-purple-400" />
                                                 <span className="text-sm text-slate-900">{booking.packageName || booking.package_name || 'Standard Party'}</span>
                                             </div>
                                             <div className="text-xs text-slate-500 mt-1">
                                                 {(booking.kids || 0) + (booking.adults || 0)} Guests
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-900">
-                                            {formatCurrency(booking.amount || 0)}
+                                        <td className="px-6 py-4">
+                                            <span className="text-sm font-bold text-slate-900">{formatCurrency(booking.amount || 0)}</span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <StatusBadge status={booking.bookingStatus || booking.status} />
@@ -313,35 +317,27 @@ export default function PartyBookingsPage() {
                                             />
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex gap-2">
+                                            <div className="flex items-center gap-2">
                                                 <Link
                                                     href={`/admin/party-bookings/${booking.id}`}
-                                                    className="p-2 text-white bg-slate-500 rounded-md hover:bg-slate-600 transition-colors"
-                                                    title="View"
+                                                    className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
+                                                    title="View Details"
                                                 >
-                                                    <div className="flex flex-col items-center justify-center w-full h-full">
-                                                        <Eye size={16} />
-                                                        <span className="text-[10px] leading-tight">View</span>
-                                                    </div>
+                                                    <Eye size={18} />
                                                 </Link>
                                                 <Link
                                                     href={`/admin/party-bookings/${booking.id}/edit`}
-                                                    className="p-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
-                                                    title="Edit"
+                                                    className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all"
+                                                    title="Edit Booking"
                                                 >
-                                                    <div className="flex flex-col items-center justify-center w-full h-full">
-                                                        <Edit size={16} />
-                                                        <span className="text-[10px] leading-tight">Edit</span>
-                                                    </div>
+                                                    <Edit size={18} />
                                                 </Link>
                                                 <button
                                                     onClick={() => toast.info("Delete functionality disabled for safety")}
-                                                    className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                                    className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
+                                                    title="Delete Booking"
                                                 >
-                                                    <div className="flex flex-col items-center text-[10px] leading-tight w-8">
-                                                        <Trash2 size={14} />
-                                                        <span>Delete</span>
-                                                    </div>
+                                                    <Trash2 size={18} />
                                                 </button>
                                             </div>
                                         </td>
@@ -358,17 +354,17 @@ export default function PartyBookingsPage() {
 
 function StatusBadge({ status }: { status: string }) {
     const styles: Record<string, string> = {
-        CONFIRMED: "bg-emerald-100 text-emerald-700 border-emerald-200",
-        PENDING: "bg-amber-100 text-amber-700 border-amber-200",
-        CANCELLED: "bg-red-100 text-red-700 border-red-200",
-        COMPLETED: "bg-blue-100 text-blue-700 border-blue-200",
+        CONFIRMED: "bg-emerald-100 text-emerald-700 border-emerald-300",
+        PENDING: "bg-amber-100 text-amber-700 border-amber-300",
+        CANCELLED: "bg-red-100 text-red-700 border-red-300",
+        COMPLETED: "bg-blue-100 text-blue-700 border-blue-300",
     };
 
-    const defaultStyle = "bg-slate-100 text-slate-700 border-slate-200";
+    const defaultStyle = "bg-slate-100 text-slate-700 border-slate-300";
 
     return (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${styles[status?.toUpperCase()] || defaultStyle} inline-flex items-center gap-1`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${status?.toUpperCase() === 'CONFIRMED' ? 'bg-emerald-500' : status?.toUpperCase() === 'PENDING' ? 'bg-amber-500' : 'bg-slate-400'}`} />
+        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border shadow-sm ${styles[status?.toUpperCase()] || defaultStyle} inline-flex items-center gap-1.5`}>
+            <span className={`w-2 h-2 rounded-full ${status?.toUpperCase() === 'CONFIRMED' ? 'bg-emerald-500' : status?.toUpperCase() === 'PENDING' ? 'bg-amber-500' : 'bg-slate-400'}`} />
             {status || 'PENDING'}
         </span>
     );

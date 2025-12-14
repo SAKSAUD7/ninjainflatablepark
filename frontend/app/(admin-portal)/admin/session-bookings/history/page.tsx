@@ -3,7 +3,10 @@
 import { useState, useEffect } from "react";
 import { getSessionBookingHistory, restoreSessionBooking } from "@/app/actions/admin";
 import { RestoreConfirmationModal } from "../../components/RestoreConfirmationModal";
-import { Calendar, AlertTriangle, RefreshCw, ArrowLeft } from "lucide-react";
+import { PageHeader } from "@/components/admin/PageHeader";
+import { WarningBanner } from "@/components/admin/WarningBanner";
+import { Button } from "@/components/admin/Button";
+import { Calendar, RefreshCw, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -70,123 +73,124 @@ export default function SessionBookingHistoryPage() {
 
     return (
         <div className="p-8 space-y-6">
-            {/* Header */}
-            <div className="flex justify-between items-start">
-                <div>
-                    <Link
-                        href="/admin/bookings"
-                        className="text-slate-500 hover:text-slate-700 flex items-center gap-2 mb-2 transition-colors text-sm"
-                    >
-                        <ArrowLeft size={16} />
-                        Back to Dashboard
+            <PageHeader
+                title="Session Booking History"
+                description="Restore session bookings that were paid but not saved"
+                icon={<Calendar className="w-8 h-8" />}
+                breadcrumbs={[
+                    { label: "Dashboard", href: "/admin" },
+                    { label: "Session Bookings", href: "/admin/bookings" },
+                    { label: "History" },
+                ]}
+                actions={
+                    <Link href="/admin/bookings">
+                        <Button variant="secondary" icon={<ArrowLeft size={16} />}>
+                            Back to Bookings
+                        </Button>
                     </Link>
-                    <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-                        <Calendar className="w-8 h-8 text-primary" />
-                        Session Booking History
-                    </h1>
-                    <p className="text-slate-600 mt-1">Move Session Bookings That Were Paid But Not Saved</p>
-                </div>
-            </div>
+                }
+            />
 
             {/* Warning Banner */}
-            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 flex items-start gap-3">
-                <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
-                <div>
-                    <p className="text-red-800 font-bold text-base">
-                        Warning! Restoring These Bookings From History Will Move The Data To The Manual Session Booking Page.
-                    </p>
-                    <p className="text-red-700 text-sm mt-1">
-                        Be Super Careful When You Use This Facility!
-                    </p>
-                </div>
-            </div>
+            <WarningBanner severity="danger">
+                <WarningBanner.Title>Irreversible Action - Use With Caution</WarningBanner.Title>
+                <WarningBanner.Description>
+                    Restoring a booking will <strong>permanently move it to Manual Session Bookings</strong>. This action cannot be undone and may affect your reporting and records. Only restore bookings if you are certain they need to be recovered.
+                </WarningBanner.Description>
+            </WarningBanner>
 
-            {/* Filter Data Section */}
-            <div className="bg-white rounded-lg border border-slate-200 p-4">
-                <h3 className="text-sm font-bold text-slate-700 mb-3">Filter Data:</h3>
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                        <label className="text-sm text-slate-600">Display</label>
-                        <select
-                            value={displayCount}
-                            onChange={(e) => setDisplayCount(Number(e.target.value))}
-                            className="px-3 py-1.5 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
-                        >
-                            <option value={10}>10</option>
-                            <option value={25}>25</option>
-                            <option value={50}>50</option>
-                            <option value={100}>100</option>
-                        </select>
+            {/* Display Options */}
+            <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <label className="text-sm font-medium text-slate-700">Show:</label>
+                            <select
+                                value={displayCount}
+                                onChange={(e) => setDisplayCount(Number(e.target.value))}
+                                className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
+                            >
+                                <option value={10}>10</option>
+                                <option value={25}>25</option>
+                                <option value={50}>50</option>
+                                <option value={100}>100</option>
+                            </select>
+                        </div>
                     </div>
                     <p className="text-sm text-slate-600">
-                        Displaying {Math.min(displayCount, history.length)} out of {history.length}
-                    </p>
-                    <p className="text-sm text-slate-600">
-                        Page 1 / 1
+                        Showing <span className="font-semibold text-slate-900">{Math.min(displayCount, history.length)}</span> of <span className="font-semibold text-slate-900">{history.length}</span> records
                     </p>
                 </div>
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-slate-50 border-b border-slate-200">
+                        <thead className="bg-slate-100 border-b-2 border-slate-200">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    Session Booking ID #
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
+                                    Booking ID
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
                                     Customer Name
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
                                     Email
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
                                     Date & Time
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    Amount Checked Out
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
+                                    Amount
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    Manage
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">
+                                    Action
                                 </th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {history.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
-                                        No session booking history found
+                                    <td colSpan={6} className="px-6 py-16 text-center">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <Calendar className="w-12 h-12 text-slate-300" />
+                                            <p className="text-base font-medium text-slate-900">No booking history found</p>
+                                            <p className="text-sm text-slate-500">Restored bookings will be removed from this list</p>
+                                        </div>
                                     </td>
                                 </tr>
                             ) : (
                                 history.slice(0, displayCount).map((booking) => (
-                                    <tr key={booking.id} className="hover:bg-slate-50 transition-colors">
-                                        <td className="px-6 py-4 text-sm font-medium text-slate-900">
-                                            {booking.id}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-slate-900">
-                                            {booking.name}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-slate-600">
-                                            {booking.email}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm text-slate-900">
-                                            {new Date(booking.date).toLocaleDateString()} at {booking.time}
-                                        </td>
-                                        <td className="px-6 py-4 text-sm font-bold text-slate-900">
-                                            ₹{parseFloat(booking.amount).toFixed(2)}
+                                    <tr key={booking.id} className="hover:bg-amber-50/30 transition-all duration-200 border-b border-slate-100 last:border-b-0">
+                                        <td className="px-6 py-4">
+                                            <span className="text-sm font-bold text-slate-900">#{booking.id}</span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <button
+                                            <span className="text-sm font-medium text-slate-900">{booking.name}</span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-sm text-slate-600">{booking.email}</span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="text-sm text-slate-900">
+                                                <div className="font-medium">{new Date(booking.date).toLocaleDateString()}</div>
+                                                <div className="text-xs text-slate-500 mt-0.5">{booking.time}</div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className="text-sm font-bold text-slate-900">₹{parseFloat(booking.amount).toFixed(2)}</span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <Button
+                                                variant="warning"
+                                                size="sm"
                                                 onClick={() => handleRestoreClick(booking)}
                                                 disabled={!booking.canRestore}
-                                                className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                                icon={<RefreshCw className="w-4 h-4" />}
                                             >
-                                                <RefreshCw className="w-4 h-4" />
-                                                Restore?
-                                            </button>
+                                                Restore
+                                            </Button>
                                         </td>
                                     </tr>
                                 ))

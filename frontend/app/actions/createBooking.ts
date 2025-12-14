@@ -240,6 +240,13 @@ export async function createBooking(formData: any) {
             body: JSON.stringify(waiverPayload)
         });
 
+        // Update booking waiver status to SIGNED (since waiver was just created)
+        await fetch(`${API_URL}/bookings/bookings/${booking.id}/`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ waiver_status: "SIGNED" })
+        });
+
         // Generate QR Code for the booking
         const qrData = JSON.stringify({
             id: booking.uuid || booking.id,

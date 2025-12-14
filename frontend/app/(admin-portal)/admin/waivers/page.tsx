@@ -177,17 +177,22 @@ export default function AdminWaivers() {
         }
     }
 
-    async function handleMarkArrived(bookingId: number, e: React.MouseEvent) {
+    async function handleMarkArrived(bookingId: number, bookingType: 'session' | 'party', e: React.MouseEvent) {
         e.stopPropagation(); // Prevent row click
 
         try {
             // Optimistic update - immediately show as arrived
-            setWaivers(prev => prev.map(w =>
-                w.booking === bookingId ? { ...w, arrived: true } : w
-            ));
+            setWaivers(prev => prev.map(w => {
+                const matchesBooking = bookingType === 'session'
+                    ? w.booking === bookingId
+                    : w.party_booking === bookingId;
+                return matchesBooking ? { ...w, arrived: true } : w;
+            }));
 
-            const { markBookingArrived } = await import('@/lib/client-api');
-            const result = await markBookingArrived(bookingId);
+            const { markBookingArrived, markPartyBookingArrived } = await import('@/lib/client-api');
+            const result = bookingType === 'session'
+                ? await markBookingArrived(bookingId)
+                : await markPartyBookingArrived(bookingId);
 
             if (result.success) {
                 toast.success(`Booking #${bookingId} marked as arrived!`);
@@ -195,16 +200,22 @@ export default function AdminWaivers() {
                 await loadWaivers();
             } else {
                 // Revert on failure
-                setWaivers(prev => prev.map(w =>
-                    w.booking === bookingId ? { ...w, arrived: false } : w
-                ));
+                setWaivers(prev => prev.map(w => {
+                    const matchesBooking = bookingType === 'session'
+                        ? w.booking === bookingId
+                        : w.party_booking === bookingId;
+                    return matchesBooking ? { ...w, arrived: false } : w;
+                }));
                 toast.error("Failed to mark booking as arrived");
             }
         } catch (error) {
             // Revert on error
-            setWaivers(prev => prev.map(w =>
-                w.booking === bookingId ? { ...w, arrived: false } : w
-            ));
+            setWaivers(prev => prev.map(w => {
+                const matchesBooking = bookingType === 'session'
+                    ? w.booking === bookingId
+                    : w.party_booking === bookingId;
+                return matchesBooking ? { ...w, arrived: false } : w;
+            }));
             console.error("Mark arrived error:", error);
             toast.error("Failed to mark booking as arrived");
         }
@@ -714,8 +725,8 @@ export default function AdminWaivers() {
                                                 <p className="text-xs text-slate-500">{new Date(waiver.signed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                                             </div>
 
-                                            {/* Arrived Button - Only show for session bookings */}
-                                            {waiver.booking && (
+                                            {/* Arrived Button - Show for both session and party bookings */}
+                                            {(waiver.booking || waiver.party_booking) && (
                                                 waiver.arrived ? (
                                                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-100 text-green-700 border-2 border-green-300">
                                                         <CheckCircle size={16} className="fill-current" />
@@ -723,7 +734,11 @@ export default function AdminWaivers() {
                                                     </div>
                                                 ) : (
                                                     <button
-                                                        onClick={(e: React.MouseEvent) => handleMarkArrived(waiver.booking, e)}
+                                                        onClick={(e: React.MouseEvent) => handleMarkArrived(
+                                                            waiver.booking || waiver.party_booking,
+                                                            waiver.booking ? 'session' : 'party',
+                                                            e
+                                                        )}
                                                         className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-all text-sm font-bold"
                                                     >
                                                         <CheckCircle size={16} />

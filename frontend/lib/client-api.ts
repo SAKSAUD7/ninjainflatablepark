@@ -134,3 +134,32 @@ export async function markBookingArrived(bookingId: number) {
         throw error;
     }
 }
+
+export async function markPartyBookingArrived(bookingId: number) {
+    const url = `${API_URL}/bookings/party-bookings/${bookingId}/mark_arrived/`;
+    console.log('[CLIENT] Marking party booking as arrived:', url);
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // This sends the httpOnly cookie automatically
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('[CLIENT] Mark party arrived failed:', response.status, errorText);
+            throw new Error(`Failed to mark party arrived: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('[CLIENT] Party marked as arrived:', data);
+        return data;
+    } catch (error) {
+        console.error('[CLIENT] Error marking party arrived:', error);
+        throw error;
+    }
+}
+
