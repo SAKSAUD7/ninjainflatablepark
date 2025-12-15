@@ -295,7 +295,23 @@ export default function AdminWaivers() {
                     bookingType, // Add bookingType explicitly
                     totalParticipants: relatedWaivers.length,
                     adultCount: relatedWaivers.filter((w: any) => w.participant_type === 'ADULT').length,
-                    minorCount: relatedWaivers.filter((w: any) => w.participant_type === 'MINOR').length
+                    minorCount: relatedWaivers.filter((w: any) => w.participant_type === 'MINOR').length,
+                    // Properly populate adults and minors arrays for display
+                    adults: relatedWaivers
+                        .filter((w: any) => w.participant_type === 'ADULT' && !w.is_primary_signer)
+                        .map((w: any) => ({
+                            name: w.name,
+                            dob: w.dob,
+                            email: w.email,
+                            phone: w.phone
+                        })),
+                    minors: relatedWaivers
+                        .filter((w: any) => w.participant_type === 'MINOR')
+                        .map((w: any) => ({
+                            name: w.name,
+                            dob: w.dob,
+                            guardian: w.emergency_contact
+                        }))
                 });
             }
         });

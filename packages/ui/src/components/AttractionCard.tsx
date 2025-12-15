@@ -88,10 +88,6 @@ export const AttractionCard = ({
                     <p className="text-white/80 line-clamp-2 mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                         {description}
                     </p>
-                    <div className="flex items-center gap-2 text-primary font-bold opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                        <span>Explore</span>
-                        <ArrowRight className="w-4 h-4" />
-                    </div>
                 </div>
             </div>
 

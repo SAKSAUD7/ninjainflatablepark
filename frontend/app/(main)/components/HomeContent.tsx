@@ -181,21 +181,13 @@ export default function HomeContent({ stats, gallery, banners, reels, settings, 
                                     <div className="aspect-[4/3] relative">
                                         <img
                                             src={getMediaUrl(photo.src)}
-                                            alt={photo.title || 'Gallery image'}
+                                            alt=""
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             onError={(e) => {
                                                 e.currentTarget.src = "/park-slides-action.jpg";
                                             }}
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                        {photo.title && (
-                                            <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                                                <h3 className="text-2xl font-display font-bold text-white mb-2">
-                                                    {photo.title}
-                                                </h3>
-                                                {photo.desc && <p className="text-white/80">{photo.desc}</p>}
-                                            </div>
-                                        )}
                                     </div>
                                 </motion.div>
                             </ScrollReveal>

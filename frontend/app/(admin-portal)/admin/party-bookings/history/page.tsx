@@ -93,7 +93,7 @@ export default function PartyBookingHistoryPage() {
                 <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" />
                 <div>
                     <p className="text-red-800 font-bold text-base">
-                        Warning! Restoring These Bookings From History Will Move The Data To The Manual Party Booking Page.
+                        Warning! Restoring These Bookings From History Will Move The Data To The Party Booking Page.
                     </p>
                     <p className="text-red-700 text-sm mt-1">
                         Be Super Careful When You Use This Facility!

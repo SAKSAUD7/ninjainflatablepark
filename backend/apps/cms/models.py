@@ -397,3 +397,166 @@ class ContactMessage(models.Model):
         return f"{self.name} - {self.email}"
 
 
+class SessionBookingConfig(models.Model):
+    """Configuration for session booking wizard - makes all pricing and labels editable from CMS"""
+    
+    # Adult Pricing & Labels
+    adult_price = models.DecimalField(max_digits=10, decimal_places=2, default=899, help_text="Price per adult")
+    adult_label = models.CharField(max_length=100, default="Ninja Warrior (7+ Years)", help_text="Display label for adults")
+    adult_description = models.CharField(max_length=200, default="₹ 899 + GST per person", help_text="Price description for adults")
+    
+    # Kid Pricing & Labels
+    kid_price = models.DecimalField(max_digits=10, decimal_places=2, default=500, help_text="Price per kid")
+    kid_label = models.CharField(max_length=100, default="Little Ninjas (1-7 Years)", help_text="Display label for kids")
+    kid_description = models.CharField(max_length=200, default="₹ 500 + GST per person", help_text="Price description for kids")
+    
+    # Spectator Pricing & Labels
+    spectator_price = models.DecimalField(max_digits=10, decimal_places=2, default=150, help_text="Price per spectator")
+    spectator_label = models.CharField(max_length=100, default="Spectators", help_text="Display label for spectators")
+    spectator_description = models.CharField(max_length=200, default="₹ 150 + GST per person", help_text="Price description for spectators")
+    
+    # Tax Configuration
+    gst_rate = models.DecimalField(max_digits=5, decimal_places=2, default=18.00, help_text="GST percentage (e.g., 18 for 18%)")
+    
+    # Duration Configuration
+    duration_minutes = models.IntegerField(default=60, help_text="Session duration in minutes")
+    duration_label = models.CharField(max_length=100, default="60 Minutes", help_text="Display label for duration")
+    duration_description = models.CharField(max_length=200, default="Standard Session", help_text="Duration description")
+    
+    # Meta
+    active = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Session Booking Configuration"
+        verbose_name_plural = "Session Booking Configuration"
+    
+    def __str__(self):
+        return f"Session Booking Config (Updated: {self.updated_at.strftime('%Y-%m-%d %H:%M')})"
+    
+    @classmethod
+    def get_config(cls):
+        """Get or create singleton config"""
+        config, created = cls.objects.get_or_create(id=1)
+        if created:
+            config.save()  # Ensure defaults are saved
+        return config
+
+
+class PartyBookingConfig(models.Model):
+    """Singleton model for party booking wizard configuration"""
+    
+    # Pricing
+    participant_price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=1500.00,
+        help_text="Price per participant"
+    )
+    participant_label = models.CharField(
+        max_length=200, 
+        default="Participants",
+        help_text="Label for participants"
+    )
+    participant_description = models.CharField(
+        max_length=500, 
+        default="₹ 1500 per person",
+        help_text="Description shown for participants"
+    )
+    
+    spectator_price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        default=100.00,
+        help_text="Price per extra spectator (after free count)"
+    )
+    free_spectators = models.IntegerField(
+        default=10,
+        help_text="Number of free spectators included"
+    )
+    spectator_label = models.CharField(
+        max_length=200, 
+        default="Spectators",
+        help_text="Label for spectators"
+    )
+    spectator_description = models.CharField(
+        max_length=500, 
+        default="First 10 free, ₹100 each after",
+        help_text="Description shown for spectators"
+    )
+    
+    # Minimums & Limits
+    min_participants = models.IntegerField(
+        default=10,
+        help_text="Minimum number of participants required"
+    )
+    
+    # Tax & Deposit
+    gst_rate = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        default=18.00,
+        help_text="GST rate in percentage"
+    )
+    deposit_percentage = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        default=50.00,
+        help_text="Deposit percentage required"
+    )
+    
+    # Package Inclusions (JSON field for flexibility)
+    package_inclusions = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="List of package inclusions (e.g., ['75 mins play + 1hr party room', 'Party feast included'])"
+    )
+    
+    # Time Slots
+    available_time_slots = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="List of available time slots (e.g., ['12:00 PM', '2:00 PM', '4:00 PM', '6:00 PM'])"
+    )
+    
+    # Duration & Labels
+    duration_label = models.CharField(
+        max_length=200, 
+        default="75 mins play + 1hr party room",
+        help_text="Duration/package label"
+    )
+    
+    # Status
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Party Booking Configuration"
+        verbose_name_plural = "Party Booking Configuration"
+    
+    def __str__(self):
+        return f"Party Booking Config (Updated: {self.updated_at.strftime('%Y-%m-%d %H:%M')})"
+    
+    def save(self, *args, **kwargs):
+        # Ensure default values for JSON fields
+        if not self.package_inclusions:
+            self.package_inclusions = [
+                "75 mins play + 1hr party room",
+                "Party feast included",
+                "Drinks & mini slush",
+                "10 free spectators"
+            ]
+        if not self.available_time_slots:
+            self.available_time_slots = ["12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM"]
+        super().save(*args, **kwargs)
+    
+    @classmethod
+    def get_config(cls):
+        """Get or create singleton config"""
+        config, created = cls.objects.get_or_create(id=1)
+        if created:
+            config.save()  # Ensure defaults are saved
+        return config
+

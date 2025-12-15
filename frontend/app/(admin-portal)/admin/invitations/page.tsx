@@ -47,14 +47,35 @@ export default function InvitationTemplatesPage() {
 
         try {
             const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+            
+            // Get auth token from cookies
+            const getCookie = (name: string) => {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return parts.pop()?.split(';').shift();
+            };
+            
+            const token = getCookie('admin_token');
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
             const res = await fetch(`${API_URL}/invitations/templates/${id}/`, {
                 method: "DELETE",
+                headers,
+                credentials: 'include',
             });
 
             if (res.ok) {
                 toast.success("Template deleted successfully");
                 loadTemplates();
             } else {
+                const errorText = await res.text();
+                console.error('Delete failed:', errorText);
                 toast.error("Failed to delete template");
             }
         } catch (error) {
@@ -76,7 +97,7 @@ export default function InvitationTemplatesPage() {
                 </div>
                 <Link
                     href="/admin/invitations/new"
-                    className="flex items-center gap-2 bg-neon-blue hover:bg-blue-600 text-white px-4 py-2 rounded-xl font-bold transition-all shadow-lg hover:shadow-neon-blue/30"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold transition-colors shadow-lg"
                 >
                     <Plus size={20} />
                     New Template
@@ -122,7 +143,7 @@ export default function InvitationTemplatesPage() {
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                         <Link
                                             href={`/admin/invitations/${template.id}`}
-                                            className="p-2 bg-white text-slate-900 rounded-full hover:bg-neon-blue hover:text-white transition-colors"
+                                            className="p-2 bg-white text-blue-600 rounded-full hover:bg-blue-600 hover:text-white transition-colors"
                                         >
                                             <Edit size={20} />
                                         </Link>

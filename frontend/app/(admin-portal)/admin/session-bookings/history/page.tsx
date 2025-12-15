@@ -95,7 +95,7 @@ export default function SessionBookingHistoryPage() {
             <WarningBanner severity="danger">
                 <WarningBanner.Title>Irreversible Action - Use With Caution</WarningBanner.Title>
                 <WarningBanner.Description>
-                    Restoring a booking will <strong>permanently move it to Manual Session Bookings</strong>. This action cannot be undone and may affect your reporting and records. Only restore bookings if you are certain they need to be recovered.
+                    Restoring a booking will <strong>permanently move it to Session Bookings</strong>. This action cannot be undone and may affect your reporting and records. Only restore bookings if you are certain they need to be recovered.
                 </WarningBanner.Description>
             </WarningBanner>
 

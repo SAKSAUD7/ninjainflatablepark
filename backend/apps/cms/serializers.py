@@ -3,8 +3,9 @@ from .models import (
     Banner, Activity, Faq, SocialLink, GalleryItem,
     StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
     PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
-    Page, ContactMessage
+    Page, ContactMessage, SessionBookingConfig, PartyBookingConfig
 )
+
 
 class PageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -111,3 +112,13 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         model = ContactMessage
         fields = '__all__'
         read_only_fields = ['is_read', 'created_at']
+
+class SessionBookingConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SessionBookingConfig
+        fields = '__all__'
+
+class PartyBookingConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartyBookingConfig
+        fields = '__all__'

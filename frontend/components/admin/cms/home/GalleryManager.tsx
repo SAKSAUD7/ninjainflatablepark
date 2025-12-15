@@ -116,9 +116,6 @@ export function GalleryManager({ items: initialItems }: GalleryManagerProps) {
                                     <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
-                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/60 text-white text-xs truncate">
-                                {item.title}
-                            </div>
                         </div>
                     ))}
 

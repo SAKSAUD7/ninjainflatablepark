@@ -11,6 +11,12 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'name']
 
+    def save(self, *args, **kwargs):
+        # Automatically set is_staff for employees, managers, and content managers
+        if self.role in ['STAFF', 'EMPLOYEE', 'MANAGER', 'CONTENT_MANAGER']:
+            self.is_staff = True
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.email
 

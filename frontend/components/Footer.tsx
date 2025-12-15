@@ -133,9 +133,9 @@ export const Footer = ({ settings, socialLinks }: { settings?: any; socialLinks?
                             <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
                                 <MapPin className="w-5 h-5 text-accent" />
                             </div>
-                            <div>
+                            <div className="flex-1">
                                 <div className="text-xs text-white/60">Visit Us</div>
-                                <div className="font-bold text-white text-sm line-clamp-1">
+                                <div className="font-bold text-white text-sm">
                                     {address}
                                 </div>
                             </div>

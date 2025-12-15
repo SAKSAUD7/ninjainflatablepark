@@ -1,16 +1,17 @@
 'use client';
 
-import { Loader2, Search, Filter, Calendar, Mail, Phone, MessageSquare, Trash2, Eye } from 'lucide-react';
+import { Loader2, Search, Filter, Calendar, Mail, Phone, MessageSquare, Trash2, Eye, Download } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import { getContactMessages, deleteContactMessage } from '@/app/actions/contact-messages';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { exportToCSV } from '@/lib/export-csv';
 
 export default function ContactMessagesPage() {
     const [items, setItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    
+
     // Filter states
     const [searchQuery, setSearchQuery] = useState('');
     const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
@@ -35,7 +36,7 @@ export default function ContactMessagesPage() {
 
     const handleDelete = async (id: number) => {
         if (!confirm('Are you sure you want to delete this message?')) return;
-        
+
         const result = await deleteContactMessage(id);
         if (result.success) {
             toast.success('Message deleted');
@@ -43,6 +44,34 @@ export default function ContactMessagesPage() {
         } else {
             toast.error('Failed to delete message');
         }
+    };
+
+    const handleExportCSV = () => {
+        const columns = [
+            { key: 'id', label: 'Message ID' },
+            { key: 'name', label: 'Name' },
+            { key: 'email', label: 'Email' },
+            { key: 'phone', label: 'Phone' },
+            { key: 'message', label: 'Message' },
+            { key: 'is_read', label: 'Status' },
+            { key: 'created_at', label: 'Received At' },
+        ];
+
+        // Transform data for export
+        const dataToExport = filteredItems.map(item => ({
+            ...item,
+            is_read: item.is_read ? 'Read' : 'Unread',
+            created_at: new Date(item.created_at).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+        }));
+
+        exportToCSV(dataToExport, 'contact_messages', columns);
+        toast.success('CSV exported successfully!');
     };
 
     // Filter logic
@@ -64,10 +93,10 @@ export default function ContactMessagesPage() {
         if (dateFilter !== 'all') {
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            
+
             filtered = filtered.filter(item => {
                 const itemDate = new Date(item.created_at);
-                
+
                 switch (dateFilter) {
                     case 'today':
                         return itemDate >= today;
@@ -174,6 +203,16 @@ export default function ContactMessagesPage() {
                     <div className="ml-auto text-sm text-slate-500">
                         Showing {filteredItems.length} of {items.length} messages
                     </div>
+
+                    {/* Export CSV Button */}
+                    <button
+                        onClick={handleExportCSV}
+                        disabled={filteredItems.length === 0}
+                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                    >
+                        <Download className="w-4 h-4" />
+                        Export CSV
+                    </button>
                 </div>
             </div>
 
@@ -194,9 +233,8 @@ export default function ContactMessagesPage() {
                         {filteredItems.map((message) => (
                             <div
                                 key={message.id}
-                                className={`p-6 hover:bg-slate-50 transition-colors ${
-                                    !message.is_read ? 'bg-blue-50/30' : ''
-                                }`}
+                                className={`p-6 hover:bg-slate-50 transition-colors ${!message.is_read ? 'bg-blue-50/30' : ''
+                                    }`}
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1 space-y-3">

@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Customer, Booking, Waiver, Transaction, BookingBlock, PartyBooking, SessionBookingHistory, PartyBookingHistory
 from .serializers import CustomerSerializer, BookingSerializer, WaiverSerializer, TransactionSerializer, BookingBlockSerializer, PartyBookingSerializer, SessionBookingHistorySerializer, PartyBookingHistorySerializer
+from .permissions import IsStaffUser, IsSuperAdminOnly
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from reportlab.pdfgen import canvas
@@ -19,7 +20,7 @@ from django.db.models import Sum, Count, Max, Q
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsStaffUser]  # Allow employees to access customers
 
     def get_queryset(self):
         queryset = Customer.objects.annotate(
@@ -94,10 +95,10 @@ class BookingViewSet(viewsets.ModelViewSet):
     
     def get_permissions(self):
         # Allow public access ONLY for create and ticket retrieval
-        # List and retrieve require admin authentication to protect customer data
+        # List and retrieve require staff authentication to protect customer data
         if self.action in ['create', 'ticket']:
             return [permissions.AllowAny()]
-        return [permissions.IsAdminUser()]
+        return [IsStaffUser()]  # Allow employees to access bookings
 
     @action(detail=False, methods=['get'], url_path='ticket/(?P<uuid>[^/.]+)')
     def ticket(self, request, uuid=None):
@@ -105,7 +106,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(booking)
         return Response(serializer.data)
     
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
     def mark_arrived(self, request, pk=None):
         """Mark a booking as arrived"""
         booking = self.get_object()
@@ -140,11 +141,11 @@ class WaiverViewSet(viewsets.ModelViewSet):
     serializer_class = WaiverSerializer
     
     def get_permissions(self):
-        # Allow public access ONLY for create (waiver signing)
-        # List requires admin authentication to protect personal data
+        # Allow public access for create (when customers sign waivers)
+        # Require staff authentication for list/retrieve/update
         if self.action == 'create':
             return [permissions.AllowAny()]
-        return [permissions.IsAdminUser()]
+        return [IsStaffUser()]  # Allow employees to access waivers
     
     def partial_update(self, request, *args, **kwargs):
         """Handle PATCH requests for updating waiver fields like minors"""
@@ -480,12 +481,12 @@ def waiver_detail_view(request, id):
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsStaffUser]  # Allow employees to access transactions
 
 class BookingBlockViewSet(viewsets.ModelViewSet):
     queryset = BookingBlock.objects.all()
     serializer_class = BookingBlockSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsStaffUser]  # Allow employees to manage booking blocks
 
 # Custom function-based view for party booking creation (bypasses serializer bug)
 @api_view(['POST', 'GET'])
@@ -627,7 +628,7 @@ class PartyBookingViewSet(viewsets.ModelViewSet):
         # Allow public access for create, list (for duplicate checking), and ticket retrieval
         if self.action in ['create', 'list', 'ticket']:
             return [permissions.AllowAny()]
-        return [permissions.IsAdminUser()]
+        return [IsStaffUser()]  # Allow employees to access party bookings
 
     @action(detail=False, methods=['get'], url_path='ticket/(?P<uuid>[^/.]+)')
     def ticket(self, request, uuid=None):
@@ -872,7 +873,7 @@ class SessionBookingHistoryViewSet(viewsets.ModelViewSet):
     """
     queryset = SessionBookingHistory.objects.all()
     serializer_class = SessionBookingHistorySerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsStaffUser]  # Allow employees to view booking history
     
     def get_queryset(self):
         """By default, only show non-restored history records"""
@@ -974,7 +975,7 @@ class PartyBookingHistoryViewSet(viewsets.ModelViewSet):
     """
     queryset = PartyBookingHistory.objects.all()
     serializer_class = PartyBookingHistorySerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsStaffUser]  # Allow employees to view party booking history
     
     def get_queryset(self):
         """By default, only show non-restored history records"""

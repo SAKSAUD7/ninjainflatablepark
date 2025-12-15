@@ -1,10 +1,11 @@
 "use client";
 
 import { format } from "date-fns";
-import { Printer, Download, MapPin, Calendar, Clock, Users, CheckCircle } from "lucide-react";
+import { Printer, Download, MapPin, Calendar, Clock, Users, CheckCircle, User } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
-import { useReactToPrint } from "react-to-print";
+import { useRef, useState } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 interface TicketViewProps {
     booking: any; // Using any to avoid Prisma dependency
@@ -12,11 +13,38 @@ interface TicketViewProps {
 
 export const TicketView = ({ booking }: TicketViewProps) => {
     const componentRef = useRef<HTMLDivElement>(null);
+    const [isDownloading, setIsDownloading] = useState(false);
 
-    const handlePrint = useReactToPrint({
-        contentRef: componentRef,
-        documentTitle: `Ticket-${booking.id}`,
-    });
+    const handleDownload = async () => {
+        if (!componentRef.current) return;
+
+        setIsDownloading(true);
+        try {
+            const canvas = await html2canvas(componentRef.current, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const imgWidth = 210; // A4 width in mm
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            pdf.save(`Ninja-Park-Ticket-${booking.id}.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-background text-white p-4 md:p-8 flex flex-col items-center justify-center">
@@ -25,10 +53,20 @@ export const TicketView = ({ booking }: TicketViewProps) => {
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold">Booking Confirmed!</h1>
                     <button
-                        onClick={handlePrint}
-                        className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-bold rounded-xl hover:bg-primary-dark transition-colors"
+                        onClick={handleDownload}
+                        disabled={isDownloading}
+                        className="flex items-center gap-2 px-6 py-3 bg-primary text-black font-bold rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <Printer size={20} /> Print Ticket
+                        {isDownloading ? (
+                            <>
+                                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                                Generating PDF...
+                            </>
+                        ) : (
+                            <>
+                                <Download size={20} /> Download Ticket
+                            </>
+                        )}
                     </button>
                 </div>
 
@@ -68,27 +106,55 @@ export const TicketView = ({ booking }: TicketViewProps) => {
                             </div>
 
                             <div>
+                                <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Booked By</p>
+                                <div className="flex items-center gap-2 font-bold text-lg">
+                                    <User className="w-5 h-5 text-primary" />
+                                    {booking.name || 'Guest'}
+                                </div>
+                            </div>
+
+                            <div>
                                 <p className="text-xs uppercase tracking-widest text-gray-500 mb-2">Guests</p>
                                 <div className="bg-gray-100 p-4 rounded-xl flex items-center gap-4">
                                     <Users className="w-6 h-6 text-gray-400" />
                                     <div className="flex gap-6">
-                                        {booking.adults > 0 && (
-                                            <div>
-                                                <span className="block font-bold text-xl">{booking.adults}</span>
-                                                <span className="text-xs text-gray-500 uppercase">Adults</span>
-                                            </div>
+                                        {/* Session Booking: adults, kids, spectators */}
+                                        {(booking.adults !== undefined || booking.kids !== undefined) && (
+                                            <>
+                                                {booking.adults > 0 && (
+                                                    <div>
+                                                        <span className="block font-bold text-xl">{booking.adults}</span>
+                                                        <span className="text-xs text-gray-500 uppercase">Adults</span>
+                                                    </div>
+                                                )}
+                                                {booking.kids > 0 && (
+                                                    <div>
+                                                        <span className="block font-bold text-xl">{booking.kids}</span>
+                                                        <span className="text-xs text-gray-500 uppercase">Kids</span>
+                                                    </div>
+                                                )}
+                                                {booking.spectators > 0 && (
+                                                    <div>
+                                                        <span className="block font-bold text-xl">{booking.spectators}</span>
+                                                        <span className="text-xs text-gray-500 uppercase">Spectators</span>
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
-                                        {booking.kids > 0 && (
-                                            <div>
-                                                <span className="block font-bold text-xl">{booking.kids}</span>
-                                                <span className="text-xs text-gray-500 uppercase">Kids</span>
-                                            </div>
-                                        )}
-                                        {booking.spectators > 0 && (
-                                            <div>
-                                                <span className="block font-bold text-xl">{booking.spectators}</span>
-                                                <span className="text-xs text-gray-500 uppercase">Spectators</span>
-                                            </div>
+                                        {/* Party Booking: participants, spectators */}
+                                        {booking.participants !== undefined && (
+                                            <>
+                                                <div>
+                                                    <span className="block font-bold text-xl">{booking.participants}</span>
+                                                    <span className="text-xs text-gray-500 uppercase">Participants</span>
+                                                </div>
+                                                {booking.spectators > 0 && (
+                                                    <div>
+                                                        <span className="block font-bold text-xl">{booking.spectators}</span>
+                                                        <span className="text-xs text-gray-500 uppercase">Spectators</span>
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </div>

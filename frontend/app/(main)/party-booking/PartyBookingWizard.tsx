@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollReveal, BouncyButton } from "@repo/ui";
 import { motion } from "framer-motion";
 import { Calendar, Clock, Users, Mail, Phone, User, Cake, MessageSquare, PartyPopper, CheckCircle } from "lucide-react";
@@ -28,7 +28,7 @@ export default function PartyBookingWizard({ cmsContent = [] }: PartyBookingWiza
         childAge: "",
         date: "",
         time: "",
-        participants: MIN_PARTICIPANTS,
+        participants: 10, // Will be validated against config.min_participants
         spectators: 0,
         specialRequests: "",
     });
@@ -38,6 +38,25 @@ export default function PartyBookingWizard({ cmsContent = [] }: PartyBookingWiza
     const [bookingDetails, setBookingDetails] = useState<any>(null);
     const [participantError, setParticipantError] = useState("");
     const [tempBookingId, setTempBookingId] = useState<string | null>(null);
+    const [config, setConfig] = useState<any>(null);
+
+    // Load party booking config from CMS
+    useEffect(() => {
+        const loadConfig = async () => {
+            try {
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                const res = await fetch(`${API_URL}/cms/party-booking-config/1/`);
+                const data = await res.json();
+                setConfig(data);
+            } catch (error) {
+                console.error('Failed to load party booking config:', error);
+            }
+        };
+        loadConfig();
+    }, []);
+
+    // Dynamic minimum participants from config
+    const MIN_PARTICIPANTS = config?.min_participants || 10;
 
     const getContent = (key: string, defaultTitle: string, defaultSubtitle: string) => {
         const section = cmsContent?.find(s => s.section_key === key);
@@ -125,18 +144,21 @@ export default function PartyBookingWizard({ cmsContent = [] }: PartyBookingWiza
     };
 
     const calculateTotal = () => {
-        const participantPrice = 1500;
-        const extraSpectatorPrice = 100;
-        const freeSpectators = 10;
+        const participantPrice = config?.participant_price || 1500;
+        const extraSpectatorPrice = config?.spectator_price || 100;
+        const freeSpectators = config?.free_spectators || 10;
+        const gstRate = config?.gst_rate || 18;
+        const depositPercentage = config?.deposit_percentage || 50;
+
         const chargeableSpectators = Math.max(0, formData.spectators - freeSpectators);
 
         const participantCost = formData.participants * participantPrice;
         const spectatorCost = chargeableSpectators * extraSpectatorPrice;
         const subtotal = participantCost + spectatorCost;
-        const gst = subtotal * 0.18;
+        const gst = subtotal * (gstRate / 100);
         const total = subtotal + gst;
 
-        return { subtotal, gst, total, deposit: total * 0.5 };
+        return { subtotal, gst, total, deposit: total * (depositPercentage / 100) };
     };
 
     const costs = calculateTotal();
@@ -353,10 +375,9 @@ export default function PartyBookingWizard({ cmsContent = [] }: PartyBookingWiza
                                             className="w-full px-4 py-3 bg-background-dark border-2 border-surface-700 rounded-xl focus:border-primary focus:outline-none transition-colors text-white"
                                         >
                                             <option value="">Select time</option>
-                                            <option value="12:00 PM">12:00 PM</option>
-                                            <option value="2:00 PM">2:00 PM</option>
-                                            <option value="4:00 PM">4:00 PM</option>
-                                            <option value="6:00 PM">6:00 PM</option>
+                                            {(config?.available_time_slots || ["12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM"]).map((slot: string) => (
+                                                <option key={slot} value={slot}>{slot}</option>
+                                            ))}
                                         </select>
                                     </div>
 
@@ -482,8 +503,8 @@ export default function PartyBookingWizard({ cmsContent = [] }: PartyBookingWiza
                                             <span className="text-white/70">Subtotal</span>
                                             <span className="text-white font-bold">₹{costs.subtotal.toLocaleString()}</span>
                                         </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-white/70">GST (18%)</span>
+                                        <div className="text-sm">
+                                            <span className="text-white/70">GST ({config?.gst_rate || 18}%)</span>
                                             <span className="text-white font-bold">₹{costs.gst.toFixed(2)}</span>
                                         </div>
                                         <div className="border-t border-white/10 pt-3 flex justify-between">
@@ -491,18 +512,22 @@ export default function PartyBookingWizard({ cmsContent = [] }: PartyBookingWiza
                                             <span className="font-bold text-xl text-primary">₹{costs.total.toFixed(2)}</span>
                                         </div>
                                         <div className="bg-accent/10 border border-accent/30 rounded-lg p-3">
-                                            <p className="text-xs text-white/80">
-                                                <strong className="text-accent">Deposit (50%):</strong> ₹{costs.deposit.toFixed(2)}
+                                            <p className="text-xs text-white/70">
+                                                <strong className="text-accent">Deposit ({config?.deposit_percentage || 50}%):</strong> ₹{costs.deposit.toFixed(2)}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="bg-background-dark rounded-xl p-4 text-xs text-white/70 space-y-2">
                                         <p className="font-bold text-white text-sm mb-2">Includes:</p>
-                                        <p>✓ 75 mins play + 1hr party room</p>
-                                        <p>✓ Party feast included</p>
-                                        <p>✓ Drinks & mini slush</p>
-                                        <p>✓ 10 free spectators</p>
+                                        {(config?.package_inclusions || [
+                                            "75 mins play + 1hr party room",
+                                            "Party feast included",
+                                            "Drinks & mini slush",
+                                            "10 free spectators"
+                                        ]).map((item: string, index: number) => (
+                                            <p key={index}>✓ {item}</p>
+                                        ))}
                                     </div>
                                 </div>
                             </ScrollReveal>

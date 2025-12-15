@@ -57,15 +57,20 @@ export const AttractionsGrid = ({ activities }: AttractionsGridProps) => {
                 )}
             </motion.div>
 
-            {/* Show All Button */}
-            {hasMore && !showAll && (
+            {/* Show All / Show Less Button */}
+            {hasMore && (
                 <div className="flex justify-center mt-12">
                     <BouncyButton
-                        onClick={() => setShowAll(true)}
+                        onClick={() => setShowAll(!showAll)}
                         className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary via-secondary to-accent text-black font-bold text-lg rounded-full hover:shadow-2xl hover:shadow-primary/50 transition-all"
                     >
-                        Show All {activities.length} Attractions
-                        <svg className="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        {showAll ? 'Show Less' : `Show All ${activities.length} Attractions`}
+                        <svg
+                            className={`w-5 h-5 transition-transform ${showAll ? 'rotate-180' : 'group-hover:translate-y-1'}`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                     </BouncyButton>

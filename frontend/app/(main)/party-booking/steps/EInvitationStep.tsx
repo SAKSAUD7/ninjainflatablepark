@@ -100,12 +100,18 @@ export default function EInvitationStep({ bookingId, bookingDetails, onNext, onS
 
         try {
             const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+
+            // Backend expects integer ID, not UUID
+            const bookingIntegerId = bookingDetails.id;
+
+            console.log('[EInvitation] Submitting with booking ID:', bookingIntegerId);
+            console.log('[EInvitation] Full booking details:', bookingDetails);
+
             const res = await fetch(`${API_URL}/invitations/invitations/create-or-update/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    booking_id: bookingDetails.bookingId || bookingDetails.id, // Handle likely ID types
-                    booking: bookingDetails.id, // Ensure integer ID is passed if needed by legacy
+                    booking_id: bookingIntegerId, // Must be integer ID
                     template: selectedTemplate.id,
                     child_name: childName,
                     custom_message: customMessage,
@@ -116,12 +122,17 @@ export default function EInvitationStep({ bookingId, bookingDetails, onNext, onS
             });
 
             if (res.ok) {
+                console.log('[EInvitation] Success!');
+                toast.success("Invitation saved successfully!");
                 onNext();
             } else {
-                toast.error("Failed to save invitation details");
+                const errorData = await res.json().catch(() => ({}));
+                const errorMsg = errorData.error || "Failed to save invitation details";
+                console.error('[EInvitation] Error:', errorMsg, errorData);
+                toast.error(errorMsg);
             }
         } catch (error) {
-            console.error("Error saving invitation:", error);
+            console.error("[EInvitation] Exception:", error);
             toast.error("Error saving invitation");
         } finally {
             setSubmitting(false);

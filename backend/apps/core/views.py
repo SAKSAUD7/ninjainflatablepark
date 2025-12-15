@@ -134,8 +134,10 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
 
 
+from apps.bookings.permissions import IsStaffUser
+
 class DashboardViewSet(viewsets.ViewSet):
-    permission_classes = [permissions.AllowAny]  # TODO: Change to IsAdminUser in production
+    permission_classes = [IsStaffUser]  # Allow employees to access dashboard
 
     @action(detail=False, methods=['get'])
     def stats(self, request):

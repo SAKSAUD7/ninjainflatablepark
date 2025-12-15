@@ -28,6 +28,7 @@ export const BookingWizard = ({ onSubmit, cmsContent = [] }: BookingWizardProps)
     const [discount, setDiscount] = useState(0);
     const [voucherMessage, setVoucherMessage] = useState("");
     const [appliedVoucher, setAppliedVoucher] = useState<string | null>(null);
+    const [config, setConfig] = useState<any>(null); // Session booking configuration from CMS
 
     const methods = useForm<BookingFormData>({
         resolver: zodResolver(bookingSchema),
@@ -68,6 +69,36 @@ export const BookingWizard = ({ onSubmit, cmsContent = [] }: BookingWizardProps)
             subtitle: section?.subtitle || defaultSubtitle
         };
     };
+
+    // Load session booking configuration from CMS
+    useEffect(() => {
+        const loadConfig = async () => {
+            try {
+                const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+                const res = await fetch(`${API_URL}/cms/session-booking-config/1/`);
+                const data = await res.json();
+                setConfig(data);
+            } catch (error) {
+                console.error('Failed to load session booking config:', error);
+                // Use defaults if config fails to load
+                setConfig({
+                    adult_price: 899,
+                    kid_price: 500,
+                    spectator_price: 150,
+                    gst_rate: 18,
+                    adult_label: "Ninja Warrior (7+ Years)",
+                    kid_label: "Little Ninjas (1-7 Years)",
+                    spectator_label: "Spectators",
+                    adult_description: "₹ 899 + GST per person",
+                    kid_description: "₹ 500 + GST per person",
+                    spectator_description: "₹ 150 + GST per person",
+                    duration_label: "60 Minutes",
+                    duration_description: "Standard Session"
+                });
+            }
+        };
+        loadConfig();
+    }, []);
 
     // Update available time slots when date changes
     useEffect(() => {
@@ -135,14 +166,15 @@ export const BookingWizard = ({ onSubmit, cmsContent = [] }: BookingWizardProps)
     };
 
     const calculateTotal = () => {
-        const kidPrice = 500;
-        const adultPrice = 899;
-        const spectatorPrice = 150;
+        // Use config values if available, otherwise fallback to defaults
+        const kidPrice = config?.kid_price || 500;
+        const adultPrice = config?.adult_price || 899;
+        const spectatorPrice = config?.spectator_price || 150;
+        const gstRate = config?.gst_rate || 18;
 
         let subtotal = (formData.kids * kidPrice) + (formData.adults * adultPrice) + (formData.spectators * spectatorPrice);
 
-
-        const gst = subtotal * 0.18;
+        const gst = subtotal * (gstRate / 100);
         return { subtotal, gst, total: subtotal + gst };
     };
 
@@ -466,8 +498,8 @@ export const BookingWizard = ({ onSubmit, cmsContent = [] }: BookingWizardProps)
                                                     <Sparkles className="w-5 h-5 text-primary" />
                                                 </motion.div>
                                             )}
-                                            <div>60 Minutes</div>
-                                            <div className="text-sm font-normal text-white/40 mt-1">Standard Session</div>
+                                            <div>{config?.duration_label || "60 Minutes"}</div>
+                                            <div className="text-sm font-normal text-white/40 mt-1">{config?.duration_description || "Standard Session"}</div>
                                         </motion.button>
                                     </div>
                                     <ErrorMessage message={errors.duration?.message} />
@@ -517,10 +549,10 @@ export const BookingWizard = ({ onSubmit, cmsContent = [] }: BookingWizardProps)
                                         >
                                             <div className="text-center md:text-left flex-1">
                                                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                                    Ninja Warrior (7+ Years)
+                                                    {config?.adult_label || "Ninja Warrior (7+ Years)"}
                                                     {formData.adults > 0 && <Check className="w-5 h-5 text-green-400" />}
                                                 </h3>
-                                                <p className="text-white/50 font-medium">₹ 899 + GST per person</p>
+                                                <p className="text-white/50 font-medium">{config?.adult_description || "₹ 899 + GST per person"}</p>
                                             </div>
                                             <div className="flex items-center space-x-6">
                                                 <motion.button
@@ -553,10 +585,10 @@ export const BookingWizard = ({ onSubmit, cmsContent = [] }: BookingWizardProps)
                                         >
                                             <div className="text-center md:text-left flex-1">
                                                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                                    Little Ninjas (1-7 Years)
+                                                    {config?.kid_label || "Little Ninjas (1-7 Years)"}
                                                     {formData.kids > 0 && <Check className="w-5 h-5 text-green-400" />}
                                                 </h3>
-                                                <p className="text-white/50 font-medium">₹ 500 + GST per person</p>
+                                                <p className="text-white/50 font-medium">{config?.kid_description || "₹ 500 + GST per person"}</p>
                                             </div>
                                             <div className="flex items-center space-x-6">
                                                 <motion.button
@@ -589,10 +621,10 @@ export const BookingWizard = ({ onSubmit, cmsContent = [] }: BookingWizardProps)
                                         >
                                             <div className="text-center md:text-left flex-1">
                                                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                                    Spectators
+                                                    {config?.spectator_label || "Spectators"}
                                                     {formData.spectators > 0 && <Check className="w-5 h-5 text-green-400" />}
                                                 </h3>
-                                                <p className="text-white/50 font-medium">₹ 150 + GST per person</p>
+                                                <p className="text-white/50 font-medium">{config?.spectator_description || "₹ 150 + GST per person"}</p>
                                             </div>
                                             <div className="flex items-center space-x-6">
                                                 <motion.button

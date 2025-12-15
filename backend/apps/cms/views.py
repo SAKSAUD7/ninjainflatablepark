@@ -2,11 +2,12 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
+from apps.bookings.permissions import IsStaffUser
 from .models import (
     Banner, Activity, Faq, SocialLink, GalleryItem,
     StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
     PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
-    Page, ContactMessage
+    Page, ContactMessage, SessionBookingConfig, PartyBookingConfig
 )
 from .serializers import (
     BannerSerializer, ActivitySerializer, FaqSerializer, 
@@ -15,13 +16,15 @@ from .serializers import (
     GuidelineCategorySerializer, LegalDocumentSerializer,
     PageSectionSerializer, PricingPlanSerializer, ContactInfoSerializer, PartyPackageSerializer,
     TimelineItemSerializer, ValueItemSerializer, FacilityItemSerializer,
-    PageSerializer, ContactMessageSerializer
+    PageSerializer, ContactMessageSerializer, SessionBookingConfigSerializer, PartyBookingConfigSerializer
 )
 
 class BaseCmsViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
-        # Allow all requests for now - TODO: Add proper authentication later
-        return [permissions.AllowAny()]
+        # Allow public read access, require staff authentication for write operations
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [IsStaffUser()]  # Allow managers to manage CMS content
 
 class BannerViewSet(BaseCmsViewSet):
     queryset = Banner.objects.all()
@@ -168,20 +171,55 @@ class FacilityItemViewSet(BaseCmsViewSet):
 class ContactMessageViewSet(viewsets.ModelViewSet):
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
-    filterset_fields = ['is_read']
+    permission_classes = [IsStaffUser]  # Allow managers to view contact messages
+    ordering = ['-created_at']
     ordering_fields = ['created_at']
     ordering = ['-created_at']
 
     def get_permissions(self):
-        if self.action == 'create':
+        if self.action in ['list', 'retrieve']:
             return [permissions.AllowAny()]
-        return [permissions.IsAdminUser()]
+        return [IsStaffUser()]  # Allow managers to manage activities
 
 class PageViewSet(BaseCmsViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
     filterset_fields = ['active', 'slug']
     lookup_field = 'slug'
+
+class SessionBookingConfigViewSet(BaseCmsViewSet):
+    """Singleton viewset for session booking configuration"""
+    queryset = SessionBookingConfig.objects.all()
+    serializer_class = SessionBookingConfigSerializer
+    
+    def list(self, request, *args, **kwargs):
+        """Return the singleton config"""
+        config = SessionBookingConfig.get_config()
+        serializer = self.get_serializer(config)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        """Always return the singleton config regardless of ID"""
+        config = SessionBookingConfig.get_config()
+        serializer = self.get_serializer(config)
+        return Response(serializer.data)
+
+class PartyBookingConfigViewSet(BaseCmsViewSet):
+    """Singleton viewset for party booking configuration"""
+    queryset = PartyBookingConfig.objects.all()
+    serializer_class = PartyBookingConfigSerializer
+    
+    def list(self, request, *args, **kwargs):
+        """Return the singleton config"""
+        config = PartyBookingConfig.get_config()
+        serializer = self.get_serializer(config)
+        return Response(serializer.data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        """Always return the singleton config regardless of ID"""
+        config = PartyBookingConfig.get_config()
+        serializer = self.get_serializer(config)
+        return Response(serializer.data)
 
 class UploadView(APIView):
     """

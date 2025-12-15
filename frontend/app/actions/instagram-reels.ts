@@ -33,12 +33,13 @@ export async function createInstagramReel(data: {
 
     // Fetch thumbnail from Instagram oEmbed if reelUrl is provided
     let derivedThumbnail = data.thumbnailUrl;
-    if (data.reelUrl && !derivedThumbnail) {
+    if (data.reelUrl && (!derivedThumbnail || derivedThumbnail.trim() === '')) {
         try {
             console.log(`[InstagramReel] Fetching oEmbed for: ${data.reelUrl}`);
             const oembedRes = await fetch(`https://www.instagram.com/oembed/?url=${encodeURIComponent(data.reelUrl)}`);
             if (oembedRes.ok) {
                 const oembedData = await oembedRes.json();
+                console.log(`[InstagramReel] oEmbed response:`, oembedData);
                 if (oembedData.thumbnail_url) {
                     derivedThumbnail = oembedData.thumbnail_url;
                     console.log(`[InstagramReel] Found thumbnail: ${derivedThumbnail}`);
@@ -72,7 +73,11 @@ export async function createInstagramReel(data: {
         body: JSON.stringify(payload)
     });
 
-    if (!res || !res.ok) return { success: false };
+    if (!res || !res.ok) {
+        const errorText = await res?.text().catch(() => 'Unknown error');
+        console.error('[InstagramReel] Create failed:', errorText);
+        return { success: false, error: errorText || 'Failed to create reel' };
+    }
 
     const item = await res.json();
 

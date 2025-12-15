@@ -19,23 +19,30 @@ export function ReelsManager({ items: initialItems }: ReelsManagerProps) {
 
         setLoading(true);
         try {
+            console.log('[ReelsManager] Adding reel:', newUrl);
             const result = await createInstagramReel({
                 reelUrl: newUrl,
-                thumbnailUrl: '/park-slides-action.jpg', // Default thumbnail
+                thumbnailUrl: '', // Let the backend fetch from Instagram oEmbed
                 title: 'New Reel',
                 active: true,
                 order: items.length
             });
 
+            console.log('[ReelsManager] Result:', result);
+
             if (result.success && result.item) {
                 setItems(prev => [...prev, result.item]);
                 setNewUrl('');
-                toast.success('Reel added');
+                toast.success('Reel added successfully!');
             } else {
-                toast.error('Failed to add reel');
+                const errorMsg = result.error || 'Failed to add reel. Please check console for details.';
+                console.error('[ReelsManager] Add failed:', errorMsg);
+                toast.error(errorMsg);
             }
-        } catch (error) {
-            toast.error('An error occurred');
+        } catch (error: any) {
+            console.error('[ReelsManager] Error adding reel:', error);
+            const errorMsg = error.message || error.toString() || 'An error occurred';
+            toast.error(`Error: ${errorMsg}`);
         } finally {
             setLoading(false);
         }

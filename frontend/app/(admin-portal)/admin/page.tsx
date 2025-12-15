@@ -37,7 +37,7 @@ export default async function AdminDashboard() {
     const stats = await getDashboardStats();
 
     // Calculate max revenue for chart scaling
-    const maxRevenue = Math.max(...stats.monthlyRevenue.map(d => d.total), 1000);
+    const maxRevenue = Math.max(...stats.monthlyRevenue.map((d: any) => d.total), 1000);
 
     return (
         <div className="p-8">
@@ -128,60 +128,104 @@ export default async function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                {/* Revenue Chart */}
-                <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                            <TrendingUp size={20} className="text-slate-400" />
-                            Revenue Overview (Last 7 Days)
-                        </h2>
+                {/* Revenue Chart - Enhanced */}
+                <div className="lg:col-span-2 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+                    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 border-b border-slate-200">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-1">
+                                    <TrendingUp size={20} className="text-emerald-600" />
+                                    Revenue Overview (Last 7 Days)
+                                </h2>
+                                <p className="text-sm text-slate-600">Daily revenue breakdown</p>
+                            </div>
+                            {stats.monthlyRevenue && stats.monthlyRevenue.length > 0 && (
+                                <div className="text-right">
+                                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-1">Total</p>
+                                    <p className="text-2xl font-black text-emerald-600">
+                                        ₹{stats.monthlyRevenue.reduce((sum: number, item: any) => sum + item.total, 0).toLocaleString()}
+                                    </p>
+                                    <p className="text-xs text-slate-500 mt-1">
+                                        Avg: ₹{Math.round(stats.monthlyRevenue.reduce((sum: number, item: any) => sum + item.total, 0) / stats.monthlyRevenue.length).toLocaleString()}/day
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <div className="h-64 bg-slate-50 rounded-lg border border-dashed border-slate-300 flex items-end justify-between px-4 pb-0 pt-4 relative overflow-hidden">
-                        {stats.monthlyRevenue && stats.monthlyRevenue.length > 0 ? (
-                            stats.monthlyRevenue.map((item, i) => {
-                                const heightPercent = maxRevenue > 0 ? (item.total / maxRevenue) * 100 : 0;
-                                const displayHeight = item.total > 0 ? Math.max(heightPercent, 8) : 0; // Minimum 8% height if there's any revenue
 
-                                // Vibrant color gradients for each day
-                                const colorGradients = [
-                                    'from-violet-500 to-purple-400 hover:from-violet-600 hover:to-purple-500', // Thu
-                                    'from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500', // Fri
-                                    'from-emerald-500 to-teal-400 hover:from-emerald-600 hover:to-teal-500', // Sat
-                                    'from-amber-500 to-orange-400 hover:from-amber-600 hover:to-orange-500', // Sun
-                                    'from-rose-500 to-pink-400 hover:from-rose-600 hover:to-pink-500', // Mon
-                                    'from-indigo-500 to-blue-400 hover:from-indigo-600 hover:to-blue-500', // Tue
-                                    'from-fuchsia-500 to-purple-400 hover:from-fuchsia-600 hover:to-purple-500', // Wed
-                                ];
-                                const gradient = colorGradients[i % colorGradients.length];
+                    <div className="p-6">
+                        <div className="h-64 bg-gradient-to-b from-slate-50 to-white rounded-xl border-2 border-slate-200 flex items-end justify-between px-6 pb-4 pt-4 relative overflow-hidden">
+                            {stats.monthlyRevenue && stats.monthlyRevenue.length > 0 ? (
+                                stats.monthlyRevenue.map((item: any, i: number) => {
+                                    const heightPercent = maxRevenue > 0 ? (item.total / maxRevenue) * 100 : 0;
+                                    const displayHeight = item.total > 0 ? Math.max(heightPercent, 10) : 0;
+                                    const isHighest = item.total === Math.max(...stats.monthlyRevenue.map((d: any) => d.total));
 
-                                return (
-                                    <div key={i} className="flex flex-col items-center gap-2 w-full group relative">
-                                        {item.total > 0 ? (
-                                            <>
-                                                <div
-                                                    style={{ height: `${displayHeight}%` }}
-                                                    className={`w-full max-w-[40px] bg-gradient-to-t ${gradient} rounded-t-lg transition-all duration-500 relative shadow-lg hover:shadow-xl hover:scale-105`}
-                                                >
-                                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                                        ₹{item.total.toLocaleString()}
+                                    // Enhanced vibrant gradients
+                                    const colorGradients = [
+                                        'from-violet-500 via-purple-500 to-fuchsia-500',
+                                        'from-blue-500 via-cyan-500 to-teal-500',
+                                        'from-emerald-500 via-green-500 to-lime-500',
+                                        'from-amber-500 via-orange-500 to-red-500',
+                                        'from-rose-500 via-pink-500 to-purple-500',
+                                        'from-indigo-500 via-blue-500 to-cyan-500',
+                                        'from-fuchsia-500 via-purple-500 to-violet-500',
+                                    ];
+                                    const gradient = colorGradients[i % colorGradients.length];
+
+                                    return (
+                                        <div key={i} className="flex flex-col items-center gap-3 w-full group relative">
+                                            {item.total > 0 ? (
+                                                <>
+                                                    <div
+                                                        style={{ height: `${displayHeight}%` }}
+                                                        className={`w-full max-w-[50px] bg-gradient-to-t ${gradient} rounded-t-xl transition-all duration-500 relative shadow-lg hover:shadow-2xl hover:scale-110 cursor-pointer ${isHighest ? 'ring-4 ring-yellow-400 ring-offset-2' : ''}`}
+                                                    >
+                                                        {isHighest && (
+                                                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-yellow-500 animate-bounce">
+                                                                ⭐
+                                                            </div>
+                                                        )}
+                                                        <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs py-2 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap z-10 shadow-xl">
+                                                            <div className="font-bold">₹{item.total.toLocaleString()}</div>
+                                                            <div className="text-[10px] text-slate-300 mt-0.5">
+                                                                {((item.total / stats.monthlyRevenue.reduce((sum: number, d: any) => sum + d.total, 0)) * 100).toFixed(1)}% of total
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <span className="text-xs text-slate-500 font-medium">{item.name}</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div className="w-full max-w-[40px] h-2 bg-slate-200 rounded-t-sm"></div>
-                                                <span className="text-xs text-slate-400 font-medium">{item.name}</span>
-                                            </>
-                                        )}
+                                                    <span className="text-xs text-slate-600 font-bold uppercase tracking-wide">{item.name}</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="w-full max-w-[70px] h-3 bg-slate-200 rounded-t-md opacity-50"></div>
+                                                    <span className="text-xs text-slate-400 font-medium">{item.name}</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                                    <div className="bg-slate-100 rounded-full p-4 mb-3">
+                                        <TrendingUp className="w-12 h-12 text-slate-300" />
                                     </div>
-                                );
-                            })
-                        ) : (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
-                                <TrendingUp className="w-12 h-12 mb-2 opacity-30" />
-                                <p className="text-sm">No revenue data for this period</p>
-                                <p className="text-xs mt-1">Create some bookings to see the chart</p>
+                                    <p className="text-sm font-medium text-slate-600">No revenue data yet</p>
+                                    <p className="text-xs mt-1 text-slate-400">Create bookings to see your revenue chart</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Legend */}
+                        {stats.monthlyRevenue && stats.monthlyRevenue.length > 0 && (
+                            <div className="mt-4 flex items-center justify-center gap-4 text-xs text-slate-500">
+                                <div className="flex items-center gap-1.5">
+                                    <div className="w-3 h-3 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500"></div>
+                                    <span>Daily Revenue</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-yellow-500">⭐</span>
+                                    <span>Highest Day</span>
+                                </div>
                             </div>
                         )}
                     </div>
