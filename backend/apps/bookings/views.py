@@ -108,6 +108,34 @@ class BookingViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
     def mark_arrived(self, request, pk=None):
+        """Mark a party booking as arrived"""
+        party_booking = self.get_object()
+        party_booking.arrived = True
+        party_booking.save()
+        
+        serializer = self.get_serializer(party_booking)
+        return Response({
+            'success': True,
+            'message': f'Party booking #{party_booking.id} marked as arrived',
+            'booking': serializer.data
+        })
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
+    def mark_not_arrived(self, request, pk=None):
+        """Mark a party booking as not arrived"""
+        party_booking = self.get_object()
+        party_booking.arrived = False
+        party_booking.save()
+        
+        serializer = self.get_serializer(party_booking)
+        return Response({
+            'success': True,
+            'message': f'Party booking #{party_booking.id} marked as not arrived',
+            'booking': serializer.data
+        })
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
+    def mark_arrived(self, request, pk=None):
         """Mark a booking as arrived"""
         booking = self.get_object()
         booking.arrived = True
@@ -708,7 +736,7 @@ class PartyBookingViewSet(viewsets.ModelViewSet):
                 'message': f'Failed to send email: {str(e)}'
             }, status=500)
     
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
     def mark_arrived(self, request, pk=None):
         """Mark a party booking as arrived"""
         party_booking = self.get_object()
@@ -723,7 +751,7 @@ class PartyBookingViewSet(viewsets.ModelViewSet):
             'booking': serializer.data
         })
     
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAdminUser])
+    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
     def mark_not_arrived(self, request, pk=None):
         """Mark a party booking as not arrived"""
         party_booking = self.get_object()
@@ -862,10 +890,49 @@ def party_booking_detail_view(request, id):
             return Response(status=status.HTTP_204_NO_CONTENT)
             
     except PartyBooking.DoesNotExist:
-        return Response({'error': 'Party booking not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'success': False, 'error': 'Party booking not found'}, status=404)
     except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'success': False, 'error': str(e)}, status=500)
 
+@api_view(['POST'])
+@permission_classes([IsStaffUser])
+def mark_party_arrived_view(request, pk):
+    """Mark a party booking as arrived"""
+    try:
+        party_booking = PartyBooking.objects.get(pk=pk)
+        party_booking.arrived = True
+        party_booking.arrived_at = timezone.now()
+        party_booking.save()
+        
+        return Response({
+            'success': True,
+            'message': f'Party Booking #{party_booking.id} marked as arrived'
+        })
+    except PartyBooking.DoesNotExist:
+        return Response({'success': False, 'error': 'Party booking not found'}, status=404)
+    except Exception as e:
+        return Response({'success': False, 'error': str(e)}, status=500)
+
+@api_view(['POST'])
+@permission_classes([IsStaffUser])
+def mark_party_not_arrived_view(request, pk):
+    """Mark a party booking as not arrived"""
+    try:
+        party_booking = PartyBooking.objects.get(pk=pk)
+        party_booking.arrived = False
+        party_booking.arrived_at = None
+        party_booking.save()
+        
+        return Response({
+            'success': True,
+            'message': f'Party Booking #{party_booking.id} marked as not arrived'
+        })
+    except PartyBooking.DoesNotExist:
+        return Response({'success': False, 'error': 'Party booking not found'}, status=404)
+    except Exception as e:
+        return Response({'success': False, 'error': str(e)}, status=500)
+
+# Session Booking History ViewSet
 class SessionBookingHistoryViewSet(viewsets.ModelViewSet):
     """
     ViewSet for managing session booking history.

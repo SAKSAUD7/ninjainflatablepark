@@ -47,9 +47,10 @@ export default function AdminWaivers() {
     async function fetchWaiversWithStatus() {
         // Fetch waivers and bookings in parallel to merge status
         // This is a robust workaround to ensure 'arrived' status is accurate even if WaiverSerializer is cached/stale
-        const [waiversRes, bookingsRes] = await Promise.all([
+        const [waiversRes, bookingsRes, partyBookingsRes] = await Promise.all([
             fetch(`${API_URL}/bookings/waivers/`, { credentials: 'include', cache: 'no-store' }),
-            fetch(`${API_URL}/bookings/bookings/?type=SESSION&limit=100`, { credentials: 'include', cache: 'no-store' })
+            fetch(`${API_URL}/bookings/bookings/?type=SESSION&limit=100`, { credentials: 'include', cache: 'no-store' }),
+            fetch(`${API_URL}/bookings/party-bookings/`, { credentials: 'include', cache: 'no-store' })
         ]);
 
         if (!waiversRes.ok) throw new Error(`API returned ${waiversRes.status}`);
@@ -75,11 +76,31 @@ export default function AdminWaivers() {
             }
         }
 
+        // Merge arrived status from party bookings
+        const partyArrivedMap = new Map<number, boolean>();
+        if (partyBookingsRes.ok) {
+            try {
+                const partyData = await partyBookingsRes.json();
+                const partyList = Array.isArray(partyData) ? partyData : (partyData.results || []);
+                partyList.forEach((p: any) => {
+                    if (p.id) partyArrivedMap.set(p.id, !!p.arrived);
+                });
+            } catch (e) {
+                console.error("Failed to parse party bookings for status", e);
+            }
+        }
+
         return waiversData.map((w: any) => {
             const bookingId = w.booking;
             if (bookingId && arrivedMap.has(bookingId)) {
                 return { ...w, arrived: arrivedMap.get(bookingId) };
             }
+
+            const partyBookingId = w.party_booking;
+            if (partyBookingId && partyArrivedMap.has(partyBookingId)) {
+                return { ...w, arrived: partyArrivedMap.get(partyBookingId) };
+            }
+
             return w;
         });
     }

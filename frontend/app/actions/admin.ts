@@ -9,20 +9,13 @@ const API_URL = process.env.API_URL || 'http://localhost:8000/api/v1';
 
 export async function updateBooking(id: string | number, data: any) {
     try {
-        const session = await getAdminSession();
-        if (!session) return { success: false, error: "Unauthorized" };
-
-        const res = await fetch(`${API_URL}/bookings/bookings/${id}/`, {
+        const res = await fetchAPI(`/bookings/bookings/${id}/`, {
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                Cookie: `sessionid=${session.sessionId}`,
-            },
             body: JSON.stringify(data),
         });
 
-        if (!res.ok) {
-            const errorData = await res.json();
+        if (!res || !res.ok) {
+            const errorData = await res.json().catch(() => ({}));
             return {
                 success: false,
                 error: errorData.detail || "Failed to update booking",
@@ -159,16 +152,25 @@ export async function getDashboardStats() {
 }
 
 export async function getAllBookings(filter?: { type?: string; status?: string; search?: string }): Promise<any[]> {
-    const params = new URLSearchParams();
-    if (filter?.type) params.append("type", filter.type);
-    if (filter?.status) params.append("status", filter.status);
-    if (filter?.search) params.append("search", filter.search);
+    try {
+        const params = new URLSearchParams();
+        if (filter?.type) params.append("type", filter.type);
+        if (filter?.status) params.append("status", filter.status);
+        if (filter?.search) params.append("search", filter.search);
 
-    const res = await fetchAPI(`/core/dashboard/all_bookings/?${params.toString()}`);
-    if (!res || !res.ok) return [];
+        const res = await fetchAPI(`/core/dashboard/all_bookings/?${params.toString()}`);
 
-    const data = await res.json();
-    return data.results || [];
+        if (!res || !res.ok) {
+            console.error('Failed to fetch bookings:', res?.status, res?.statusText);
+            return [];
+        }
+
+        const data = await res.json();
+        return data.results || [];
+    } catch (error) {
+        console.error('Error fetching all bookings:', error);
+        return [];
+    }
 }
 
 // --- Booking Actions ---

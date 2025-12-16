@@ -64,11 +64,15 @@ class WaiverSerializer(serializers.ModelSerializer):
     def get_arrived(self, obj):
         if obj.booking:
             return obj.booking.arrived
+        elif obj.party_booking:
+            return obj.party_booking.arrived
         return False
 
     def get_arrived_at(self, obj):
         if obj.booking and obj.booking.arrived:
             return obj.booking.arrived_at
+        elif obj.party_booking and obj.party_booking.arrived:
+            return obj.party_booking.arrived_at
         return None
     
     def get_booking_type(self, obj):
