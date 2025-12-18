@@ -111,6 +111,42 @@ class BookingSerializer(serializers.ModelSerializer):
         if obj.waivers.exists():
             return 'SIGNED'
         return obj.waiver_status or 'PENDING'
+    
+    def create(self, validated_data):
+        """Override create to automatically create/link customer"""
+        # Extract customer data
+        email = validated_data.get('email')
+        name = validated_data.get('name')
+        phone = validated_data.get('phone')
+        
+        # Get or create customer by email
+        if email:
+            customer, created = Customer.objects.get_or_create(
+                email=email,
+                defaults={
+                    'name': name,
+                    'phone': phone
+                }
+            )
+            
+            # Update customer info if changed
+            if not created:
+                updated = False
+                if customer.name != name:
+                    customer.name = name
+                    updated = True
+                if phone and customer.phone != phone:
+                    customer.phone = phone
+                    updated = True
+                if updated:
+                    customer.save()
+            
+            # Link customer to booking
+            validated_data['customer'] = customer
+        
+        # Create booking with linked customer
+        booking = super().create(validated_data)
+        return booking
 
 class PartyBookingSerializer(serializers.ModelSerializer):
     duration = serializers.SerializerMethodField()
@@ -153,6 +189,42 @@ class PartyBookingSerializer(serializers.ModelSerializer):
 
     def get_booking_status(self, obj):
         return obj.status
+    
+    def create(self, validated_data):
+        """Override create to automatically create/link customer"""
+        # Extract customer data
+        email = validated_data.get('email')
+        name = validated_data.get('name')
+        phone = validated_data.get('phone')
+        
+        # Get or create customer by email
+        if email:
+            customer, created = Customer.objects.get_or_create(
+                email=email,
+                defaults={
+                    'name': name,
+                    'phone': phone
+                }
+            )
+            
+            # Update customer info if changed
+            if not created:
+                updated = False
+                if customer.name != name:
+                    customer.name = name
+                    updated = True
+                if phone and customer.phone != phone:
+                    customer.phone = phone
+                    updated = True
+                if updated:
+                    customer.save()
+            
+            # Link customer to booking
+            validated_data['customer'] = customer
+        
+        # Create party booking with linked customer
+        party_booking = super().create(validated_data)
+        return party_booking
 
 
 class SessionBookingHistorySerializer(serializers.ModelSerializer):
