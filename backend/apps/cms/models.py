@@ -397,6 +397,33 @@ class ContactMessage(models.Model):
         return f"{self.name} - {self.email}"
 
 
+class FreeEntry(models.Model):
+    """Free entry requests from customers"""
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+    ]
+    
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    reason = models.TextField(help_text="Reason for free entry request")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    notes = models.TextField(null=True, blank=True, help_text="Admin notes")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Free Entry"
+        verbose_name_plural = "Free Entries"
+
+    def __str__(self):
+        return f"{self.name} - {self.status}"
+
+
+
 class SessionBookingConfig(models.Model):
     """Configuration for session booking wizard - makes all pricing and labels editable from CMS"""
     

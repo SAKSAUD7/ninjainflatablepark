@@ -3,7 +3,7 @@ from .models import (
     Banner, Activity, Faq, SocialLink, GalleryItem,
     StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
     PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
-    Page, ContactMessage, SessionBookingConfig, PartyBookingConfig
+    Page, ContactMessage, FreeEntry, SessionBookingConfig, PartyBookingConfig
 )
 
 
@@ -112,6 +112,12 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         model = ContactMessage
         fields = '__all__'
         read_only_fields = ['is_read', 'created_at']
+
+class FreeEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FreeEntry
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at']
 
 class SessionBookingConfigSerializer(serializers.ModelSerializer):
     class Meta:

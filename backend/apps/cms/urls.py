@@ -6,7 +6,7 @@ from .views import (
     GuidelineCategoryViewSet, LegalDocumentViewSet,
     PageSectionViewSet, PricingPlanViewSet, ContactInfoViewSet, PartyPackageViewSet,
     TimelineItemViewSet, ValueItemViewSet, FacilityItemViewSet,
-    PageViewSet, UploadView, ReorderView, ContactMessageViewSet, SessionBookingConfigViewSet, PartyBookingConfigViewSet
+    PageViewSet, UploadView, ReorderView, ContactMessageViewSet, FreeEntryViewSet, SessionBookingConfigViewSet, PartyBookingConfigViewSet
 )
 
 router = DefaultRouter()
@@ -29,6 +29,7 @@ router.register(r'timeline-items', TimelineItemViewSet)
 router.register(r'value-items', ValueItemViewSet)
 router.register(r'facility-items', FacilityItemViewSet)
 router.register(r'contact-messages', ContactMessageViewSet)
+router.register(r'free-entries', FreeEntryViewSet)
 router.register(r'pages', PageViewSet)
 router.register(r'session-booking-config', SessionBookingConfigViewSet)
 router.register(r'party-booking-config', PartyBookingConfigViewSet)

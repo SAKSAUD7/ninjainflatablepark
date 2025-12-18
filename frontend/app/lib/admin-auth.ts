@@ -32,16 +32,17 @@ export async function getAdminSession(): Promise<AdminSession | null> {
         // Ideally this should come from the backend
         let permissions: Permission[] = [];
         if (user.is_superuser || user.role === 'SUPER_ADMIN') {
+            // Super Admin: Full Access to Everything
             permissions = ['*:*'];
-        } else if (user.role === 'ADMIN' || user.role === 'CONTENT_MANAGER') {
-            // Content Manager: Website Content ONLY
+        } else if (user.role === 'MANAGER') {
+            // Manager: Website Management (CMS) ONLY
             permissions = [
                 'cms:read',
                 'cms:write',
                 'cms:delete',
             ];
         } else if (user.role === 'EMPLOYEE' || user.role === 'STAFF') {
-            // Employee: Dashboard, Bookings, Waivers
+            // Employee: Booking Management, Waivers, Dashboard, Contact Messages
             permissions = [
                 'dashboard:read',
                 'bookings:read',
@@ -51,11 +52,23 @@ export async function getAdminSession(): Promise<AdminSession | null> {
                 'waivers:write',
                 'customers:read',
                 'parties:read',
-                'parties:write'
+                'parties:write',
+                'parties:delete',
+                'messages:read',
+                'messages:write',
+                'entries:read',
+                'entries:write',
+            ];
+        } else if (user.role === 'ADMIN' || user.role === 'CONTENT_MANAGER') {
+            // Legacy: Content Manager (same as Manager)
+            permissions = [
+                'cms:read',
+                'cms:write',
+                'cms:delete',
             ];
         } else {
-            // Fallback
-            permissions = ['dashboard:read']; // Minimal access
+            // Fallback: Minimal access
+            permissions = ['dashboard:read'];
         }
 
         return {

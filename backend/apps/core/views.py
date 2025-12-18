@@ -237,6 +237,46 @@ class DashboardViewSet(viewsets.ViewSet):
 
         waiver_completion_rate = 100 if total_waivers == 0 else int((signed_waivers / total_waivers) * 100)
 
+        # NEW METRICS FOR DASHBOARD REDESIGN
+        
+        # Unread Contact Messages
+        from apps.cms.models import ContactMessage
+        unread_messages = ContactMessage.objects.filter(is_read=False).count()
+        latest_message = ContactMessage.objects.filter(is_read=False).order_by('-created_at').first()
+        latest_message_preview = None
+        if latest_message:
+            latest_message_preview = f"{latest_message.name}: {latest_message.message[:50]}..." if len(latest_message.message) > 50 else f"{latest_message.name}: {latest_message.message}"
+        
+        # Today's Revenue
+        today_session_revenue = Booking.objects.filter(date=today).exclude(status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
+        today_party_revenue = PartyBooking.objects.filter(date=today).exclude(status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
+        today_revenue = today_session_revenue + today_party_revenue
+        
+        # Yesterday's Revenue for comparison
+        yesterday = today - timedelta(days=1)
+        yesterday_session_revenue = Booking.objects.filter(date=yesterday).exclude(status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
+        yesterday_party_revenue = PartyBooking.objects.filter(date=yesterday).exclude(status='CANCELLED').aggregate(Sum('amount'))['amount__sum'] or 0
+        yesterday_revenue = yesterday_session_revenue + yesterday_party_revenue
+        
+        # Booking Trend (This week vs Last week)
+        week_ago = today - timedelta(days=7)
+        two_weeks_ago = today - timedelta(days=14)
+        
+        this_week_session = Booking.objects.filter(created_at__gte=week_ago).exclude(status='CANCELLED').count()
+        this_week_party = PartyBooking.objects.filter(created_at__gte=week_ago).exclude(status='CANCELLED').count()
+        this_week_bookings = this_week_session + this_week_party
+        
+        last_week_session = Booking.objects.filter(created_at__gte=two_weeks_ago, created_at__lt=week_ago).exclude(status='CANCELLED').count()
+        last_week_party = PartyBooking.objects.filter(created_at__gte=two_weeks_ago, created_at__lt=week_ago).exclude(status='CANCELLED').count()
+        last_week_bookings = last_week_session + last_week_party
+        
+        # Calculate growth percentage
+        booking_growth = 0
+        if last_week_bookings > 0:
+            booking_growth = round(((this_week_bookings - last_week_bookings) / last_week_bookings) * 100, 1)
+        elif this_week_bookings > 0:
+            booking_growth = 100  # 100% growth if we had 0 last week
+
         return Response({
             "bookingsToday": bookings_today,
             "totalBookings": total_bookings,
@@ -257,7 +297,15 @@ class DashboardViewSet(viewsets.ViewSet):
             "avgBookingValue": round(avg_booking_value),
             "waiverCompletionRate": waiver_completion_rate,
             "totalWaivers": total_waivers,
-            "signedWaivers": signed_waivers
+            "signedWaivers": signed_waivers,
+            # New metrics
+            "unreadMessages": unread_messages,
+            "latestMessagePreview": latest_message_preview,
+            "todayRevenue": float(today_revenue),
+            "yesterdayRevenue": float(yesterday_revenue),
+            "thisWeekBookings": this_week_bookings,
+            "lastWeekBookings": last_week_bookings,
+            "bookingGrowth": booking_growth,
         })
     
     @action(detail=False, methods=['get'])

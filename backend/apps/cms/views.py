@@ -7,7 +7,7 @@ from .models import (
     Banner, Activity, Faq, SocialLink, GalleryItem,
     StatCard, InstagramReel, MenuSection, GroupPackage, GuidelineCategory, LegalDocument,
     PageSection, PricingPlan, ContactInfo, PartyPackage, TimelineItem, ValueItem, FacilityItem,
-    Page, ContactMessage, SessionBookingConfig, PartyBookingConfig
+    Page, ContactMessage, FreeEntry, SessionBookingConfig, PartyBookingConfig
 )
 from .serializers import (
     BannerSerializer, ActivitySerializer, FaqSerializer, 
@@ -16,7 +16,7 @@ from .serializers import (
     GuidelineCategorySerializer, LegalDocumentSerializer,
     PageSectionSerializer, PricingPlanSerializer, ContactInfoSerializer, PartyPackageSerializer,
     TimelineItemSerializer, ValueItemSerializer, FacilityItemSerializer,
-    PageSerializer, ContactMessageSerializer, SessionBookingConfigSerializer, PartyBookingConfigSerializer
+    PageSerializer, ContactMessageSerializer, FreeEntrySerializer, SessionBookingConfigSerializer, PartyBookingConfigSerializer
 )
 
 class BaseCmsViewSet(viewsets.ModelViewSet):
@@ -186,6 +186,14 @@ class PageViewSet(BaseCmsViewSet):
     serializer_class = PageSerializer
     filterset_fields = ['active', 'slug']
     lookup_field = 'slug'
+
+class FreeEntryViewSet(viewsets.ModelViewSet):
+    queryset = FreeEntry.objects.all()
+    serializer_class = FreeEntrySerializer
+    permission_classes = [IsStaffUser]  # Only staff can view/manage free entries
+    filterset_fields = ['status']
+    ordering = ['-created_at']
+    ordering_fields = ['created_at', 'status']
 
 class SessionBookingConfigViewSet(BaseCmsViewSet):
     """Singleton viewset for session booking configuration"""

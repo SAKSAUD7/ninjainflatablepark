@@ -13,7 +13,7 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         # Automatically set is_staff for employees, managers, and content managers
-        if self.role in ['STAFF', 'EMPLOYEE', 'MANAGER', 'CONTENT_MANAGER']:
+        if self.role in ['STAFF', 'EMPLOYEE', 'MANAGER', 'CONTENT_MANAGER', 'ADMIN']:
             self.is_staff = True
         super().save(*args, **kwargs)
 
