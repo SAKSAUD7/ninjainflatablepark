@@ -682,32 +682,55 @@ class PartyBookingViewSet(viewsets.ModelViewSet):
             party_booking.waiver_ip_address = ip_address
         party_booking.save()
         
-        # Create individual waiver records for adults
+        # Delete existing waivers for this party booking to prevent duplicates
+        # This makes the endpoint idempotent - calling it multiple times won't create duplicates
+        Waiver.objects.filter(party_booking=party_booking).delete()
+        
+        # Find the primary adult
+        primary_adult = None
+        additional_adults = []
+        
         for adult in participants.get('adults', []):
+            if adult.get('is_primary', False):
+                primary_adult = adult
+            else:
+                additional_adults.append(adult)
+        
+        # If no primary adult is marked, use the first adult
+        if not primary_adult and participants.get('adults'):
+            primary_adult = participants['adults'][0]
+            additional_adults = participants['adults'][1:]
+        
+        # Create waiver for primary adult with minors nested
+        if primary_adult:
+            Waiver.objects.create(
+                name=primary_adult.get('name'),
+                email=primary_adult.get('email'),
+                phone=primary_adult.get('phone'),
+                dob=primary_adult.get('dob'),
+                participant_type='ADULT',
+                is_primary_signer=True,
+                party_booking=party_booking,
+                customer=party_booking.customer,
+                ip_address=ip_address,
+                version='1.0',
+                minors=participants.get('minors', []),  # Store minors in JSON field
+                adults=additional_adults  # Store additional adults in JSON field
+            )
+        
+        # Create separate waiver records for additional adults only
+        for adult in additional_adults:
             Waiver.objects.create(
                 name=adult.get('name'),
                 email=adult.get('email'),
                 phone=adult.get('phone'),
                 dob=adult.get('dob'),
                 participant_type='ADULT',
-                is_primary_signer=adult.get('is_primary', False),
+                is_primary_signer=False,
                 party_booking=party_booking,
                 customer=party_booking.customer,
                 ip_address=ip_address,
                 version='1.0'
-            )
-        
-        # Create individual waiver records for minors
-        for minor in participants.get('minors', []):
-            Waiver.objects.create(
-                name=minor.get('name'),
-                dob=minor.get('dob'),
-                participant_type='MINOR',
-                party_booking=party_booking,
-                customer=party_booking.customer,
-                ip_address=ip_address,
-                version='1.0',
-                emergency_contact=minor.get('guardian')
             )
         
         return Response({
@@ -789,32 +812,55 @@ def add_party_participants_view(request, uuid):
         party_booking.waiver_ip_address = ip_address
     party_booking.save()
     
-    # Create individual waiver records for adults
+    # Delete existing waivers for this party booking to prevent duplicates
+    # This makes the endpoint idempotent - calling it multiple times won't create duplicates
+    Waiver.objects.filter(party_booking=party_booking).delete()
+    
+    # Find the primary adult
+    primary_adult = None
+    additional_adults = []
+    
     for adult in participants.get('adults', []):
+        if adult.get('is_primary', False):
+            primary_adult = adult
+        else:
+            additional_adults.append(adult)
+    
+    # If no primary adult is marked, use the first adult
+    if not primary_adult and participants.get('adults'):
+        primary_adult = participants['adults'][0]
+        additional_adults = participants['adults'][1:]
+    
+    # Create waiver for primary adult with minors nested
+    if primary_adult:
+        Waiver.objects.create(
+            name=primary_adult.get('name'),
+            email=primary_adult.get('email'),
+            phone=primary_adult.get('phone'),
+            dob=primary_adult.get('dob'),
+            participant_type='ADULT',
+            is_primary_signer=True,
+            party_booking=party_booking,
+            customer=party_booking.customer,
+            ip_address=ip_address,
+            version='1.0',
+            minors=participants.get('minors', []),  # Store minors in JSON field
+            adults=additional_adults  # Store additional adults in JSON field
+        )
+    
+    # Create separate waiver records for additional adults only
+    for adult in additional_adults:
         Waiver.objects.create(
             name=adult.get('name'),
             email=adult.get('email'),
             phone=adult.get('phone'),
             dob=adult.get('dob'),
             participant_type='ADULT',
-            is_primary_signer=adult.get('is_primary', False),
+            is_primary_signer=False,
             party_booking=party_booking,
             customer=party_booking.customer,
             ip_address=ip_address,
             version='1.0'
-        )
-    
-    # Create individual waiver records for minors
-    for minor in participants.get('minors', []):
-        Waiver.objects.create(
-            name=minor.get('name'),
-            dob=minor.get('dob'),
-            participant_type='MINOR',
-            party_booking=party_booking,
-            customer=party_booking.customer,
-            ip_address=ip_address,
-            version='1.0',
-            emergency_contact=minor.get('guardian')
         )
     
     return Response({

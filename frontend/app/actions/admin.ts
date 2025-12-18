@@ -83,6 +83,11 @@ function transformWaiver(w: any) {
         signedAt: w.signed_at,
         fileUrl: w.file_url,
         emergencyContact: w.emergency_contact,
+        minors: w.minors || [],  // Preserve minors field
+        adults: w.adults || [],  // Preserve adults field
+        isPrimarySigner: w.is_primary_signer,
+        participantType: w.participant_type,
+        isVerified: w.is_verified,
         booking: w.booking_details ? transformBooking(w.booking_details) : null
     };
 }
