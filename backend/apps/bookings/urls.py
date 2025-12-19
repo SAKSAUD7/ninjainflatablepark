@@ -7,6 +7,7 @@ from .views import (
     waiver_detail_view, add_party_participants_view, party_booking_detail_view,
     mark_party_arrived_view, mark_party_not_arrived_view
 )
+from .calendar_views import calendar_bookings
 
 router = DefaultRouter()
 router.register(r'customers', CustomerViewSet)
@@ -21,6 +22,8 @@ router.register(r'session-booking-history', SessionBookingHistoryViewSet)
 router.register(r'party-booking-history', PartyBookingHistoryViewSet)
 
 urlpatterns = [
+    # Calendar endpoint
+    path('calendar/', calendar_bookings, name='calendar-bookings'),
     # Custom party booking endpoints (bypasses serializer bug)
     path('party-bookings/', create_party_booking_view, name='party-bookings-list-create'),
     path('party-bookings/<int:id>/', party_booking_detail_view, name='party-booking-detail'),

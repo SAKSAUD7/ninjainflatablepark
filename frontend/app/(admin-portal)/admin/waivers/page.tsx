@@ -44,6 +44,8 @@ export default function AdminWaivers() {
             }
 
             const data = await getWaivers();
+            console.log('Waivers data:', data);
+            console.log('First waiver:', data[0]);
             if (Array.isArray(data)) {
                 setWaivers(data);
                 // Cache the data
@@ -169,17 +171,18 @@ export default function AdminWaivers() {
                 uniqueId: waiver.id
             });
 
-            // Add additional adults
+            // Add additional adults (minors stay with primary adult)
             if (waiver.adults && Array.isArray(waiver.adults)) {
                 waiver.adults.forEach((adult: any, index: number) => {
                     flatList.push({
                         ...waiver, // Inherit parent details
                         name: adult.name,
                         dob: adult.dob,
-                        email: null, // Additional adults usually don't have separate email captured
-                        phone: null,
+                        email: adult.email || null,
+                        phone: adult.phone || null,
                         participant_type: 'ADULT',
                         minors: [], // Minors belong to the primary signer
+                        adults: [], // Clear to avoid recursion
                         isPrimary: false,
                         isAdditionalAdult: true,
                         uniqueId: `${waiver.id}-adult-${index}`
@@ -278,159 +281,226 @@ export default function AdminWaivers() {
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-slate-50 border-b border-slate-200">
+                        <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b-2 border-slate-200">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Booking Ref</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Signer Name</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Email</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Telephone</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">DOB</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Date of Arrival</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Minors</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Type</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    <div className="flex items-center gap-2">
+                                        <User size={16} className="text-slate-500" />
+                                        Participant
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    <div className="flex items-center gap-2">
+                                        <Mail size={16} className="text-slate-500" />
+                                        Contact Info
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    <div className="flex items-center gap-2">
+                                        <Calendar size={16} className="text-slate-500" />
+                                        Signed On
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    <div className="flex items-center gap-2">
+                                        <Users size={16} className="text-slate-500" />
+                                        Group Details
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle size={16} className="text-slate-500" />
+                                        Arrival Status
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
                             {filteredWaivers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={10} className="px-6 py-12 text-center text-slate-500">
-                                        No waivers found
+                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <FileSignature size={48} className="text-slate-300" />
+                                            <p className="text-lg font-medium">No waivers found</p>
+                                            <p className="text-sm text-slate-400">Try adjusting your filters</p>
+                                        </div>
                                     </td>
                                 </tr>
                             ) : (
                                 filteredWaivers.map((waiver: any) => (
-                                    <tr key={waiver.uniqueId || waiver.id} className="hover:bg-slate-50 transition-colors group">
-                                        {/* 1. Booking Ref */}
-                                        <td className="px-6 py-4">
-                                            {waiver.booking_reference ? (
-                                                <span className={`text-sm font-medium ${waiver.party_booking ? 'text-purple-600' : 'text-neon-blue'
-                                                    }`}>
-                                                    {waiver.booking_reference}
-                                                </span>
-                                            ) : (
-                                                <span className="text-xs text-slate-400 italic">Walk-in</span>
-                                            )}
-                                        </td>
-                                        {/* 2. Signer Name */}
+                                    <tr key={waiver.uniqueId || waiver.id} className={`hover:bg-blue-50/50 transition-all duration-150 group ${!waiver.isPrimary ? 'bg-slate-50/70 border-l-4 border-slate-300' : 'border-l-4 border-transparent hover:border-blue-400'}`}>
+                                        {/* 1. Participant */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${waiver.party_booking
-                                                    ? 'bg-purple-100 text-purple-700'
-                                                    : 'bg-blue-100 text-blue-700'
+                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-sm ${waiver.isPrimary
+                                                    ? waiver.party_booking
+                                                        ? 'bg-gradient-to-br from-purple-100 to-purple-200 text-purple-700 ring-2 ring-purple-300'
+                                                        : 'bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 ring-2 ring-blue-300'
+                                                    : 'bg-slate-100 text-slate-600'
                                                     }`}>
-                                                    {(waiver.name || 'U').charAt(0)}
+                                                    {waiver.isPrimary
+                                                        ? (waiver.booking || waiver.party_booking || (waiver.name || 'U').charAt(0).toUpperCase())
+                                                        : (waiver.name || 'U').charAt(0).toUpperCase()
+                                                    }
                                                 </div>
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <p className="text-sm font-bold text-slate-900">{waiver.name || 'Unknown'}</p>
-                                                        {waiver.party_booking && (
-                                                            <span className="px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 text-[10px] font-bold uppercase tracking-wider border border-purple-200">
-                                                                Party
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <p className={`text-base font-bold ${waiver.isPrimary ? 'text-slate-900' : 'text-slate-700'}`}>
+                                                            {waiver.isPrimary && <span className="text-lg mr-1">👤</span>}
+                                                            {!waiver.isPrimary && waiver.isAdditionalAdult && <span className="text-lg mr-1">👥</span>}
+                                                            {waiver.name || 'Unknown'}
+                                                        </p>
+                                                        {waiver.isPrimary && waiver.party_booking && (
+                                                            <span className="px-2 py-1 rounded-md bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wide border border-purple-300 shadow-sm">
+                                                                🎉 Party
                                                             </span>
                                                         )}
-                                                        {waiver.booking && (
-                                                            <span className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider border border-blue-100">
-                                                                Session
+                                                        {waiver.isPrimary && waiver.booking && (
+                                                            <span className="px-2 py-1 rounded-md bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide border border-blue-300 shadow-sm">
+                                                                🎯 Session
                                                             </span>
                                                         )}
                                                     </div>
+                                                    {waiver.isPrimary && waiver.booking_reference && (
+                                                        <p className="text-sm text-slate-500 mt-1 font-mono">
+                                                            Ref: <span className="font-bold text-slate-700">{waiver.booking_reference}</span>
+                                                        </p>
+                                                    )}
+                                                    {!waiver.isPrimary && (
+                                                        <p className="text-xs text-slate-500 mt-0.5 italic font-medium">
+                                                            {waiver.isAdditionalAdult ? '↳ Additional Adult in Group' : '↳ Participant'}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
                                         </td>
-                                        {/* 3. Email */}
-                                        <td className="px-6 py-4 text-sm text-slate-600">
-                                            {waiver.email || <span className="text-slate-400 italic">N/A</span>}
-                                        </td>
-                                        {/* 4. Telephone */}
-                                        <td className="px-6 py-4 text-sm text-slate-600">
-                                            {waiver.phone || <span className="text-slate-400 italic">N/A</span>}
-                                        </td>
-                                        {/* 5. DOB */}
-                                        <td className="px-6 py-4 text-sm text-slate-600">
-                                            {waiver.dob || <span className="text-slate-400 italic">N/A</span>}
-                                        </td>
-                                        {/* 6. Date of Arrival */}
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2 text-sm text-slate-600">
-                                                <Calendar size={14} className="text-slate-400" />
-                                                {new Date(waiver.signed_at).toLocaleDateString()}
-                                            </div>
-                                            <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
-                                                <Clock size={12} />
-                                                {new Date(waiver.signed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </div>
-                                        </td>
-                                        {/* 7. Minors */}
-                                        <td className="px-6 py-4">
-                                            {waiver.minors && waiver.minors.length > 0 ? (
-                                                <div className="flex flex-col gap-2">
-                                                    {waiver.minors.map((m: any, idx: number) => (
-                                                        <div key={idx} className="text-sm text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
-                                                            <div className="grid grid-cols-[auto,1fr] gap-x-2 gap-y-0.5">
-                                                                <span className="text-xs font-bold text-slate-400 uppercase">Name:</span>
-                                                                <span className="font-medium text-slate-900">{m.name}</span>
 
-                                                                <span className="text-xs font-bold text-slate-400 uppercase">DOB:</span>
-                                                                <span>{m.dob || 'N/A'}</span>
+                                        {/* 2. Contact */}
+                                        <td className="px-6 py-4">
+                                            <div className="space-y-1.5">
+                                                {waiver.email ? (
+                                                    <div className="flex items-center gap-2 text-sm text-slate-700">
+                                                        <Mail size={14} className="text-blue-500 flex-shrink-0" />
+                                                        <span className="truncate max-w-[200px] font-medium">{waiver.email}</span>
+                                                    </div>
+                                                ) : waiver.phone ? (
+                                                    <div className="flex items-center gap-2 text-sm text-slate-700">
+                                                        <Phone size={14} className="text-green-500 flex-shrink-0" />
+                                                        <span className="font-medium">{waiver.phone}</span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-xs text-slate-400 italic">No contact info</span>
+                                                )}
+                                                {waiver.dob && (
+                                                    <div className="flex items-center gap-1.5 text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded-md w-fit">
+                                                        <span className="font-semibold">Age:</span>
+                                                        <span className="font-bold text-slate-900">{calculateAge(waiver.dob)}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </td>
 
-                                                                <span className="text-xs font-bold text-slate-400 uppercase">Age:</span>
-                                                                <span>{calculateAge(m.dob)}</span>
+                                        {/* 3. Signed On */}
+                                        <td className="px-6 py-4">
+                                            {waiver.isPrimary ? (
+                                                <div className="space-y-1.5">
+                                                    <div className="flex items-center gap-2 text-sm text-slate-700 font-medium">
+                                                        <Calendar size={14} className="text-blue-500" />
+                                                        {new Date(waiver.signed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded-md w-fit">
+                                                        <Clock size={12} className="text-slate-500" />
+                                                        {new Date(waiver.signed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <span className="text-xs text-slate-400">—</span>
+                                            )}
+                                        </td>
+
+                                        {/* 4. Group Details */}
+                                        <td className="px-6 py-4">
+                                            {waiver.isPrimary ? (
+                                                <div className="flex flex-col gap-2.5">
+                                                    {/* Adults Count */}
+                                                    <div className="flex items-center gap-2 text-sm bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200">
+                                                        <User size={14} className="text-blue-600" />
+                                                        <span className="font-bold text-blue-900">
+                                                            {1 + (waiver.adults?.length || 0)} Adult{(1 + (waiver.adults?.length || 0)) > 1 ? 's' : ''}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Minors Details */}
+                                                    {waiver.minors && waiver.minors.length > 0 && (
+                                                        <div className="flex flex-col gap-1.5 bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                                            <div className="flex items-center gap-2 text-sm">
+                                                                <Users size={14} className="text-purple-600" />
+                                                                <span className="font-bold text-purple-900">{waiver.minors.length} Minor{waiver.minors.length > 1 ? 's' : ''}:</span>
+                                                            </div>
+                                                            <div className="ml-1 flex flex-col gap-1.5">
+                                                                {waiver.minors.map((minor: any, idx: number) => (
+                                                                    <div key={idx} className="text-xs bg-white px-2.5 py-1.5 rounded-md border border-purple-200 shadow-sm">
+                                                                        <span className="font-bold text-purple-900">👶 {minor.name}</span>
+                                                                        {minor.dob && (
+                                                                            <span className="text-slate-600 ml-2">• <span className="font-semibold">Age {calculateAge(minor.dob)}</span></span>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
                                                             </div>
                                                         </div>
-                                                    ))}
+                                                    )}
                                                 </div>
                                             ) : (
-                                                <span className="text-xs text-slate-400 italic">None</span>
+                                                <span className="text-xs text-slate-400">—</span>
                                             )}
                                         </td>
-                                        {/* 8. Type */}
+
+                                        {/* 5. Arrival Status */}
                                         <td className="px-6 py-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${waiver.participant_type === 'ADULT'
-                                                ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                                                : 'bg-purple-100 text-purple-700 border border-purple-200'
-                                                }`}>
-                                                {waiver.participant_type === 'ADULT' ? <User size={12} /> : <Users size={12} />}
-                                                {waiver.participant_type === 'ADULT' ? 'Adult' : 'Minor'}
-                                            </span>
-                                        </td>
-                                        {/* 9. Status */}
-                                        <td className="px-6 py-4">
-                                            {waiver.is_verified ? (
-                                                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 w-fit">
-                                                    <CheckCircle size={14} className="fill-current" />
-                                                    <span className="text-xs font-bold">Arrived</span>
-                                                </div>
+                                            {waiver.isPrimary ? (
+                                                waiver.is_verified ? (
+                                                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-100 to-emerald-50 border-2 border-emerald-300 w-fit shadow-sm">
+                                                        <CheckCircle size={16} className="text-emerald-600 fill-current" />
+                                                        <span className="text-sm font-bold text-emerald-900">Arrived</span>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={(e: React.MouseEvent) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
+                                                        disabled={waiver.updating}
+                                                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-600 border-2 border-slate-300 hover:bg-slate-200 hover:border-slate-400 hover:text-slate-800 transition-all w-fit text-sm font-bold shadow-sm hover:shadow"
+                                                    >
+                                                        <div className="w-4 h-4 rounded-full border-2 border-current"></div>
+                                                        Mark as Arrived
+                                                    </button>
+                                                )
                                             ) : (
-                                                <button
-                                                    onClick={(e: React.MouseEvent) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
-                                                    disabled={waiver.updating}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200 hover:text-slate-700 transition-colors w-fit text-xs font-bold"
-                                                >
-                                                    <div className="w-3.5 h-3.5 rounded-full border-2 border-current opacity-60"></div>
-                                                    Mark Arrived
-                                                </button>
+                                                <span className="text-xs text-slate-400">—</span>
                                             )}
                                         </td>
-                                        {/* 10. Actions */}
+
+                                        {/* 6. Actions */}
                                         <td className="px-6 py-4 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Link
-                                                    href={`/admin/waivers/${waiver.id}`}
-                                                    className="p-2 text-slate-400 hover:text-neon-blue hover:bg-slate-100 rounded-lg transition-colors"
-                                                    title="View Details"
-                                                >
-                                                    <Eye size={18} />
-                                                </Link>
-                                                <button
-                                                    onClick={() => handleDownloadPDF(waiver.id)}
-                                                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                                                    title="Download PDF"
-                                                >
-                                                    <Download size={18} />
-                                                </button>
-                                            </div>
+                                            {waiver.isPrimary ? (
+                                                <div className="flex justify-end gap-2">
+                                                    <Link
+                                                        href={`/admin/waivers/${waiver.id}`}
+                                                        className="p-2.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all border border-transparent hover:border-blue-200 shadow-sm hover:shadow"
+                                                        title="View Full Details"
+                                                    >
+                                                        <Eye size={18} />
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => handleDownloadPDF(waiver.id)}
+                                                        className="p-2.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all border border-transparent hover:border-emerald-200 shadow-sm hover:shadow"
+                                                        title="Download PDF"
+                                                    >
+                                                        <Download size={18} />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <span className="text-xs text-slate-400">—</span>
+                                            )}
                                         </td>
                                     </tr>
                                 ))
@@ -440,10 +510,20 @@ export default function AdminWaivers() {
                 </div>
 
                 {/* Pagination */}
-                <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
-                    <p className="text-sm text-slate-500">
-                        Showing <span className="font-bold">{filteredWaivers.length}</span> of <span className="font-bold">{waivers.length}</span> waivers
+                <div className="px-6 py-4 border-t-2 border-slate-200 flex items-center justify-between bg-gradient-to-r from-slate-50 to-slate-100">
+                    <p className="text-sm text-slate-600 font-medium">
+                        Showing <span className="font-bold text-slate-900">{filteredWaivers.length}</span> of <span className="font-bold text-slate-900">{waivers.length}</span> waivers
                     </p>
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded-full bg-blue-200 border-2 border-blue-400"></div>
+                            <span>Session</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-3 h-3 rounded-full bg-purple-200 border-2 border-purple-400"></div>
+                            <span>Party</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
