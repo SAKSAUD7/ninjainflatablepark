@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions, status
+from rest_framework.decorators import action
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -180,6 +181,22 @@ class ContactMessageViewSet(viewsets.ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return [permissions.AllowAny()]
         return [IsStaffUser()]  # Allow managers to manage activities
+    
+    @action(detail=True, methods=['post'])
+    def mark_read(self, request, pk=None):
+        """Mark a contact message as read"""
+        message = self.get_object()
+        message.is_read = True
+        message.save()
+        return Response({'status': 'marked as read', 'is_read': True})
+    
+    @action(detail=True, methods=['post'])
+    def mark_unread(self, request, pk=None):
+        """Mark a contact message as unread"""
+        message = self.get_object()
+        message.is_read = False
+        message.save()
+        return Response({'status': 'marked as unread', 'is_read': False})
 
 class PageViewSet(BaseCmsViewSet):
     queryset = Page.objects.all()

@@ -6,7 +6,7 @@ import { formatDate, formatCurrency, getInitials } from "@repo/utils";
 import { exportBookingsToCSV } from "../../../../lib/export-csv";
 import { DateFilter, filterBookingsByDate } from "@/components/admin/DateFilter";
 import { getCachedData, setCachedData, clearCacheByPrefix } from "@/lib/admin-cache";
-import { ArrivalStatusButton } from "../components/ArrivalStatusButton";
+import { ArrivedToggle } from "@/components/admin/ArrivedToggle";
 import { WaiverLink } from "../components/WaiverLink";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { Button } from "@/components/admin/Button";
@@ -293,10 +293,31 @@ export default function AdminBookings() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <ArrivalStatusButton
+                                            <ArrivedToggle
                                                 bookingId={booking.id}
-                                                isArrived={booking.arrived}
-                                                onToggle={handleToggleArrival}
+                                                arrived={booking.arrived}
+                                                onToggle={async (id, newStatus) => {
+                                                    // Optimistic update
+                                                    setBookings(prev => prev.map(b =>
+                                                        String(b.id) === String(id)
+                                                            ? { ...b, arrived: newStatus, arrived_at: newStatus ? new Date().toISOString() : null }
+                                                            : b
+                                                    ));
+
+                                                    const result = await toggleBookingArrival(id.toString(), 'session', newStatus);
+                                                    if (result.success) {
+                                                        toast.success(newStatus ? "Marked as arrived" : "Marked as not arrived");
+                                                    } else {
+                                                        // Revert on failure
+                                                        setBookings(prev => prev.map(b =>
+                                                            String(b.id) === String(id)
+                                                                ? { ...b, arrived: !newStatus, arrived_at: !newStatus ? new Date().toISOString() : null }
+                                                                : b
+                                                        ));
+                                                        toast.error("Failed to update arrival status");
+                                                        throw new Error("Failed to update arrival status");
+                                                    }
+                                                }}
                                                 type="session"
                                             />
                                         </td>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getCachedData, setCachedData } from "@/lib/admin-cache";
 import { verifyWaiver, toggleWaiverVerification, getWaivers } from "@/app/actions/admin";
 import { toast } from 'sonner';
+import { ArrivedToggle } from "@/components/admin/ArrivedToggle";
 import {
     Search,
     Download,
@@ -35,23 +36,12 @@ export default function AdminWaivers() {
 
     async function loadWaivers() {
         try {
-            // Check cache first
-            const cached = getCachedData<any[]>('waivers');
-            if (cached) {
-                setWaivers(cached);
-                setLoading(false);
-                return;
-            }
-
             const data = await getWaivers();
-            console.log('Waivers data:', data);
-            console.log('First waiver:', data[0]);
             if (Array.isArray(data)) {
                 setWaivers(data);
-                // Cache the data
                 setCachedData('waivers', data);
             } else {
-                console.error("Failed to load waivers: Invalid data format", data);
+                console.error("Failed to load waivers: Invalid data format");
                 setWaivers([]);
             }
         } catch (error) {
@@ -61,33 +51,6 @@ export default function AdminWaivers() {
             setLoading(false);
         }
     }
-
-    // Real-time polling for new waivers
-    useEffect(() => {
-        let previousCount = waivers.length;
-
-        const pollInterval = setInterval(async () => {
-            try {
-                const data = await getWaivers();
-
-                if (Array.isArray(data)) {
-                    // Check if there are new waivers
-                    if (data.length > previousCount) {
-                        const newCount = data.length - previousCount;
-                        console.log(`${newCount} new waiver(s) received!`);
-                    }
-
-                    previousCount = data.length;
-                    setWaivers(data);
-                    setCachedData('waivers', data);
-                }
-            } catch (error) {
-                console.error("Polling error:", error);
-            }
-        }, 15000); // Poll every 15 seconds
-
-        return () => clearInterval(pollInterval);
-    }, [waivers.length]);
 
     async function handleExportCSV() {
         try {
@@ -101,9 +64,10 @@ export default function AdminWaivers() {
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
+            toast.success('CSV exported successfully');
         } catch (error) {
             console.error('Failed to export CSV:', error);
-            alert('Failed to export CSV');
+            toast.error('Failed to export CSV');
         }
     }
 
@@ -111,36 +75,10 @@ export default function AdminWaivers() {
         try {
             const response = await fetch(`${API_URL}/bookings/waivers/${waiverId}/download_pdf/`);
             const data = await response.json();
-            alert(data.message || 'PDF download not yet implemented');
+            toast.info(data.message || 'PDF download not yet implemented');
         } catch (error) {
             console.error('Failed to download PDF:', error);
-            alert('Failed to download PDF');
-        }
-    }
-
-    async function handleStatusToggle(id: string, currentStatus: boolean, e: React.MouseEvent) {
-        e.stopPropagation(); // Prevent row click
-
-        try {
-            const newStatus = !currentStatus;
-
-            // Optimistic update
-            setWaivers(prev => prev.map(w => w.id === id ? { ...w, is_verified: newStatus } : w));
-
-            const res = await toggleWaiverVerification(id, newStatus);
-            if (res.success) {
-                toast.success(newStatus ? "Marked as Arrived" : "Marked as Not Arrived");
-                // Don't reload immediately to prevent race condition overwriting optimistic state
-            } else {
-                // Revert on failure
-                setWaivers(prev => prev.map(w => w.id === id ? { ...w, is_verified: currentStatus } : w));
-                toast.error(res.error || "Failed to update status");
-            }
-        } catch (error) {
-            // Revert on error
-            setWaivers(prev => prev.map(w => w.id === id ? { ...w, is_verified: currentStatus } : w));
-            console.error("Toggle error:", error);
-            toast.error("Error updating status");
+            toast.error('Failed to download PDF');
         }
     }
 
@@ -281,39 +219,14 @@ export default function AdminWaivers() {
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b-2 border-slate-200">
+                        <thead className="bg-slate-50 border-b border-slate-200">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    <div className="flex items-center gap-2">
-                                        <User size={16} className="text-slate-500" />
-                                        Participant
-                                    </div>
-                                </th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    <div className="flex items-center gap-2">
-                                        <Mail size={16} className="text-slate-500" />
-                                        Contact Info
-                                    </div>
-                                </th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    <div className="flex items-center gap-2">
-                                        <Calendar size={16} className="text-slate-500" />
-                                        Signed On
-                                    </div>
-                                </th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    <div className="flex items-center gap-2">
-                                        <Users size={16} className="text-slate-500" />
-                                        Group Details
-                                    </div>
-                                </th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    <div className="flex items-center gap-2">
-                                        <CheckCircle size={16} className="text-slate-500" />
-                                        Arrival Status
-                                    </div>
-                                </th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-700 uppercase tracking-wider text-right">Actions</th>
+                                <th className="px-6 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">Participant</th>
+                                <th className="px-6 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">Contact Info</th>
+                                <th className="px-6 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">Signed On</th>
+                                <th className="px-6 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">Group Details</th>
+                                <th className="px-6 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">Arrival Status</th>
+                                <th className="px-6 py-3 text-xs font-semibold text-slate-600 uppercase tracking-wide text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -329,36 +242,26 @@ export default function AdminWaivers() {
                                 </tr>
                             ) : (
                                 filteredWaivers.map((waiver: any) => (
-                                    <tr key={waiver.uniqueId || waiver.id} className={`hover:bg-blue-50/50 transition-all duration-150 group ${!waiver.isPrimary ? 'bg-slate-50/70 border-l-4 border-slate-300' : 'border-l-4 border-transparent hover:border-blue-400'}`}>
+                                    <tr key={waiver.uniqueId || waiver.id} className="hover:bg-slate-50 transition-colors border-b border-slate-100">
                                         {/* 1. Participant */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-sm ${waiver.isPrimary
-                                                    ? waiver.party_booking
-                                                        ? 'bg-gradient-to-br from-purple-100 to-purple-200 text-purple-700 ring-2 ring-purple-300'
-                                                        : 'bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 ring-2 ring-blue-300'
-                                                    : 'bg-slate-100 text-slate-600'
-                                                    }`}>
-                                                    {waiver.isPrimary
-                                                        ? (waiver.booking || waiver.party_booking || (waiver.name || 'U').charAt(0).toUpperCase())
-                                                        : (waiver.name || 'U').charAt(0).toUpperCase()
-                                                    }
+                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-semibold text-sm text-slate-700">
+                                                    {(waiver.name || 'U').charAt(0).toUpperCase()}
                                                 </div>
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                        <p className={`text-base font-bold ${waiver.isPrimary ? 'text-slate-900' : 'text-slate-700'}`}>
-                                                            {waiver.isPrimary && <span className="text-lg mr-1">👤</span>}
-                                                            {!waiver.isPrimary && waiver.isAdditionalAdult && <span className="text-lg mr-1">👥</span>}
+                                                        <p className="text-sm font-medium text-slate-900">
                                                             {waiver.name || 'Unknown'}
                                                         </p>
                                                         {waiver.isPrimary && waiver.party_booking && (
-                                                            <span className="px-2 py-1 rounded-md bg-purple-100 text-purple-700 text-xs font-bold uppercase tracking-wide border border-purple-300 shadow-sm">
-                                                                🎉 Party
+                                                            <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-700 text-xs font-semibold">
+                                                                Party
                                                             </span>
                                                         )}
                                                         {waiver.isPrimary && waiver.booking && (
-                                                            <span className="px-2 py-1 rounded-md bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wide border border-blue-300 shadow-sm">
-                                                                🎯 Session
+                                                            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-semibold">
+                                                                Session
                                                             </span>
                                                         )}
                                                     </div>
@@ -424,26 +327,24 @@ export default function AdminWaivers() {
                                             {waiver.isPrimary ? (
                                                 <div className="flex flex-col gap-2.5">
                                                     {/* Adults Count */}
-                                                    <div className="flex items-center gap-2 text-sm bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-200">
-                                                        <User size={14} className="text-blue-600" />
-                                                        <span className="font-bold text-blue-900">
+                                                    <div className="flex items-center gap-2 text-sm bg-blue-50 px-3 py-1.5 rounded">
+                                                        <span className="font-semibold text-blue-900">
                                                             {1 + (waiver.adults?.length || 0)} Adult{(1 + (waiver.adults?.length || 0)) > 1 ? 's' : ''}
                                                         </span>
                                                     </div>
 
                                                     {/* Minors Details */}
                                                     {waiver.minors && waiver.minors.length > 0 && (
-                                                        <div className="flex flex-col gap-1.5 bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                                        <div className="flex flex-col gap-1.5 bg-purple-50 p-3 rounded">
                                                             <div className="flex items-center gap-2 text-sm">
-                                                                <Users size={14} className="text-purple-600" />
-                                                                <span className="font-bold text-purple-900">{waiver.minors.length} Minor{waiver.minors.length > 1 ? 's' : ''}:</span>
+                                                                <span className="font-semibold text-purple-900">{waiver.minors.length} Minor{waiver.minors.length > 1 ? 's' : ''}:</span>
                                                             </div>
                                                             <div className="ml-1 flex flex-col gap-1.5">
                                                                 {waiver.minors.map((minor: any, idx: number) => (
-                                                                    <div key={idx} className="text-xs bg-white px-2.5 py-1.5 rounded-md border border-purple-200 shadow-sm">
-                                                                        <span className="font-bold text-purple-900">👶 {minor.name}</span>
+                                                                    <div key={idx} className="text-xs bg-white px-2.5 py-1.5 rounded">
+                                                                        <span className="font-semibold text-purple-900">{minor.name}</span>
                                                                         {minor.dob && (
-                                                                            <span className="text-slate-600 ml-2">• <span className="font-semibold">Age {calculateAge(minor.dob)}</span></span>
+                                                                            <span className="text-slate-600 ml-2">• Age {calculateAge(minor.dob)}</span>
                                                                         )}
                                                                     </div>
                                                                 ))}
@@ -459,21 +360,24 @@ export default function AdminWaivers() {
                                         {/* 5. Arrival Status */}
                                         <td className="px-6 py-4">
                                             {waiver.isPrimary ? (
-                                                waiver.is_verified ? (
-                                                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-100 to-emerald-50 border-2 border-emerald-300 w-fit shadow-sm">
-                                                        <CheckCircle size={16} className="text-emerald-600 fill-current" />
-                                                        <span className="text-sm font-bold text-emerald-900">Arrived</span>
-                                                    </div>
-                                                ) : (
-                                                    <button
-                                                        onClick={(e: React.MouseEvent) => handleStatusToggle(waiver.id, waiver.is_verified, e)}
-                                                        disabled={waiver.updating}
-                                                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-600 border-2 border-slate-300 hover:bg-slate-200 hover:border-slate-400 hover:text-slate-800 transition-all w-fit text-sm font-bold shadow-sm hover:shadow"
-                                                    >
-                                                        <div className="w-4 h-4 rounded-full border-2 border-current"></div>
-                                                        Mark as Arrived
-                                                    </button>
-                                                )
+                                                <ArrivedToggle
+                                                    bookingId={waiver.id}
+                                                    arrived={waiver.is_verified}
+                                                    onToggle={async (id, newStatus) => {
+                                                        // Optimistic update
+                                                        setWaivers(prev => prev.map(w => w.id === id ? { ...w, is_verified: newStatus } : w));
+
+                                                        const res = await toggleWaiverVerification(id.toString(), newStatus);
+                                                        if (res.success) {
+                                                            toast.success(newStatus ? "Marked as Arrived" : "Marked as Not Arrived");
+                                                        } else {
+                                                            // Revert on failure
+                                                            setWaivers(prev => prev.map(w => w.id === id ? { ...w, is_verified: !newStatus } : w));
+                                                            toast.error(res.error || "Failed to update status");
+                                                            throw new Error(res.error || "Failed to update status");
+                                                        }
+                                                    }}
+                                                />
                                             ) : (
                                                 <span className="text-xs text-slate-400">—</span>
                                             )}

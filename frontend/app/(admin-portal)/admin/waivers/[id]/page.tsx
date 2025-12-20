@@ -40,38 +40,78 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
         try {
             // Load all waivers using server action (authenticated)
             const allData = await getWaivers();
+            console.log('All waivers loaded:', allData.length);
             setAllWaivers(allData);
 
-            // Find the primary waiver (convert params.id to number for comparison)
+            // Find the primary waiver
             const data = allData.find((w: any) => w.id === parseInt(params.id) || w.id === params.id);
             if (!data) {
                 console.error('Waiver not found. Available IDs:', allData.map((w: any) => w.id));
+                console.error('Looking for ID:', params.id);
                 throw new Error('Waiver not found');
             }
+            console.log('Found primary waiver:', data);
             setWaiver(data);
 
-
-
-            // Extract booking ID - handle both object and direct ID
+            // Extract booking ID
             const bookingId = typeof data.booking === 'object' ? data.booking?.id : data.booking;
             const partyBookingId = typeof data.party_booking === 'object' ? data.party_booking?.id : data.party_booking;
             const actualBookingId = bookingId || partyBookingId;
             const bookingType = bookingId ? 'SESSION' : 'PARTY';
 
-            console.log('Looking for booking:', { actualBookingId, bookingType }); // Debug log
+            console.log('Booking ID:', actualBookingId, 'Type:', bookingType);
 
-            // Find all waivers for the same booking
-            const related = allData.filter((w: any) => {
-                const wBookingId = typeof w.booking === 'object' ? w.booking?.id : w.booking;
-                const wPartyBookingId = typeof w.party_booking === 'object' ? w.party_booking?.id : w.party_booking;
-                const wActualBookingId = wBookingId || wPartyBookingId;
-                const wBookingType = wBookingId ? 'SESSION' : 'PARTY';
+            // Build participants list from waiver data
+            const participants: any[] = [];
 
-                return wActualBookingId === actualBookingId && wBookingType === bookingType && actualBookingId != null;
+            // Add primary signer
+            participants.push({
+                id: data.id,
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
+                dob: data.dob,
+                participant_type: 'ADULT',
+                is_primary_signer: true,
+                signed_at: data.signed_at
             });
 
-            console.log('Found related waivers:', related); // Debug log
-            setRelatedWaivers(related);
+            // Add additional adults from waiver.adults array
+            if (data.adults && Array.isArray(data.adults)) {
+                data.adults.forEach((adult: any, index: number) => {
+                    participants.push({
+                        id: `adult_${index}`,
+                        name: adult.name,
+                        email: adult.email || data.email, // Use primary email if not provided
+                        phone: adult.phone || data.phone,
+                        dob: adult.dob,
+                        participant_type: 'ADULT',
+                        is_primary_signer: false,
+                        signed_at: data.signed_at
+                    });
+                });
+            }
+
+            // Add minors from waiver.minors array
+            if (data.minors && Array.isArray(data.minors)) {
+                data.minors.forEach((minor: any, index: number) => {
+                    participants.push({
+                        id: `minor_${index}`,
+                        name: minor.name,
+                        dob: minor.dob,
+                        participant_type: 'MINOR',
+                        is_primary_signer: false,
+                        signed_at: data.signed_at,
+                        emergency_contact: data.name // Primary signer is the guardian
+                    });
+                });
+            }
+
+            console.log('Total participants:', participants.length);
+            console.log('Adults:', participants.filter(p => p.participant_type === 'ADULT').length);
+            console.log('Minors:', participants.filter(p => p.participant_type === 'MINOR').length);
+
+            setRelatedWaivers(participants);
         } catch (error) {
             console.error('Failed to load waiver:', error);
         } finally {
@@ -219,95 +259,6 @@ export default function WaiverDetailsPage({ params }: { params: { id: string } }
                                         waiver.booking || waiver.party_booking}
                             </p>
                         </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Minors Included in Waiver */}
-            {waiver.minors && waiver.minors.length > 0 && (
-                <div className="mb-6">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                            <Users className="w-5 h-5 text-purple-600" />
-                            Minors Included ({waiver.minors.length})
-                        </h2>
-                        {!isEditingMinors ? (
-                            <button
-                                onClick={handleEditMinors}
-                                className="flex items-center gap-1.5 text-sm font-medium text-neon-blue hover:text-blue-600 transition-colors"
-                            >
-                                <Pencil size={14} />
-                                Edit Minors
-                            </button>
-                        ) : (
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={handleCancelEdit}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-                                >
-                                    <X size={14} />
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleSaveMinors}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-neon-blue hover:bg-blue-600 rounded-lg transition-colors"
-                                >
-                                    <Save size={14} />
-                                    Save Changes
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {(isEditingMinors ? editedMinors : waiver.minors).map((minor: any, index: number) => (
-                            <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-                                <div className="flex items-start justify-between mb-3">
-                                    <div className="flex items-center gap-3 w-full">
-                                        <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-lg shrink-0">
-                                            {(minor.name || 'U').charAt(0)}
-                                        </div>
-                                        <div className="w-full">
-                                            {isEditingMinors ? (
-                                                <div className="space-y-2">
-                                                    <input
-                                                        type="text"
-                                                        value={minor.name}
-                                                        onChange={(e) => handleMinorChange(index, 'name', e.target.value)}
-                                                        className="w-full px-2 py-1 text-sm border border-slate-300 rounded focus:border-neon-blue outline-none"
-                                                        placeholder="Minor Name"
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <p className="text-sm font-bold text-slate-900">{minor.name}</p>
-                                                    <span className="text-xs text-purple-600">Minor</span>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="space-y-2 text-sm">
-                                    {isEditingMinors ? (
-                                        <div className="flex items-center gap-2 text-slate-600">
-                                            <Calendar size={14} className="text-slate-400" />
-                                            <input
-                                                type="date"
-                                                value={minor.dob}
-                                                onChange={(e) => handleMinorChange(index, 'dob', e.target.value)}
-                                                className="px-2 py-1 text-sm border border-slate-300 rounded focus:border-neon-blue outline-none"
-                                            />
-                                        </div>
-                                    ) : (
-                                        minor.dob && (
-                                            <div className="flex items-center gap-2 text-slate-600">
-                                                <Calendar size={14} className="text-slate-400" />
-                                                DOB: {new Date(minor.dob).toLocaleDateString()} ({calculateAge(minor.dob)} years)
-                                            </div>
-                                        )
-                                    )}
-                                </div>
-                            </div>
-                        ))}
                     </div>
                 </div>
             )}

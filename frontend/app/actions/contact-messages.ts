@@ -74,3 +74,49 @@ export async function deleteContactMessage(id: string | number) {
         return { success: false, error: 'Failed to delete message' };
     }
 }
+
+export async function markMessageAsRead(id: string | number) {
+    try {
+        const { revalidatePath } = await import('next/cache');
+        const res = await fetchAPI(`/cms/contact-messages/${id}/mark_read/`, {
+            method: 'POST'
+        });
+
+        if (!res || !res.ok) {
+            const text = await res?.text();
+            throw new Error(`Failed to mark as read: ${res?.status} ${text}`);
+        }
+
+        // Revalidate both the messages list and dashboard
+        revalidatePath('/admin/cms/contact-messages');
+        revalidatePath('/admin/dashboard');
+
+        return { success: true };
+    } catch (error) {
+        console.error("markMessageAsRead error:", error);
+        return { success: false, error: 'Failed to mark as read' };
+    }
+}
+
+export async function markMessageAsUnread(id: string | number) {
+    try {
+        const { revalidatePath } = await import('next/cache');
+        const res = await fetchAPI(`/cms/contact-messages/${id}/mark_unread/`, {
+            method: 'POST'
+        });
+
+        if (!res || !res.ok) {
+            const text = await res?.text();
+            throw new Error(`Failed to mark as unread: ${res?.status} ${text}`);
+        }
+
+        // Revalidate both the messages list and dashboard
+        revalidatePath('/admin/cms/contact-messages');
+        revalidatePath('/admin/dashboard');
+
+        return { success: true };
+    } catch (error) {
+        console.error("markMessageAsUnread error:", error);
+        return { success: false, error: 'Failed to mark as unread' };
+    }
+}
