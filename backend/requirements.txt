@@ -17,6 +17,9 @@ Pillow>=10.0.0
 # PDF Generation
 reportlab>=4.0.0
 
+# HTTP Requests
+requests>=2.32.0
+
 # Database (Production)
 # Uncomment for PostgreSQL in production:
 # psycopg2-binary>=2.9.9
