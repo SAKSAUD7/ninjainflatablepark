@@ -4,11 +4,19 @@
 
 /**
  * Converts a relative backend media URL to an absolute URL
+ * Also rewrites old port 8000 URLs to use the current API port
  * @param url - The URL from the backend (could be relative or absolute)
  * @returns Absolute URL pointing to the backend server
  */
 export function getMediaUrl(url: string | null | undefined): string {
     if (!url) return '';
+
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8080';
+
+    // If it's an absolute URL with localhost:8000, rewrite it to use the current API port
+    if (url.includes('localhost:8000')) {
+        return url.replace('http://localhost:8000', API_BASE);
+    }
 
     // If it's already an absolute URL (http/https), return as is
     if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -17,7 +25,6 @@ export function getMediaUrl(url: string | null | undefined): string {
 
     // If it's a relative media URL, convert to absolute
     if (url.startsWith('/media/') || url.startsWith('media/')) {
-        const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8000';
         return `${API_BASE}${url.startsWith('/') ? url : '/' + url}`;
     }
 

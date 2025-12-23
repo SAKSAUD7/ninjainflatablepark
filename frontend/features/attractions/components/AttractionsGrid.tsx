@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AttractionCard, ScrollReveal, BouncyButton } from "@repo/ui";
 import { motion } from "framer-motion";
 import { staggerContainer } from "@repo/animations";
+import { getMediaUrl } from "@/lib/media-utils";
 
 interface Activity {
     id: string;
@@ -44,7 +45,7 @@ export const AttractionsGrid = ({ activities }: AttractionsGridProps) => {
                             <AttractionCard
                                 title={activity.name}
                                 description={activity.description}
-                                image={activity.imageUrl}
+                                image={getMediaUrl(activity.imageUrl)}
                                 category="attraction"
                                 intensity="medium"
                             />

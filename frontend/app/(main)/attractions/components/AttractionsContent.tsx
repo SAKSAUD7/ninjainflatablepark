@@ -3,6 +3,7 @@
 import { AttractionsGrid } from "@/features/attractions/components/AttractionsGrid";
 import { ScrollReveal, SectionDivider } from "@repo/ui";
 import { Coffee, Car, Shield, Wifi, Utensils, Users, Zap } from "lucide-react";
+import { getMediaUrl } from "@/lib/media-utils";
 
 interface AttractionsContentProps {
     activities: any[];
@@ -82,7 +83,7 @@ export default function AttractionsContent({ activities, facilities, hero }: Att
                                 <div className="bg-surface-800 rounded-3xl border border-white/10 hover:border-primary/30 transition-colors flex flex-col overflow-hidden group h-full">
                                     <div className="h-48 overflow-hidden relative flex-shrink-0">
                                         <img
-                                            src={facility.image_url || `/images/uploads/img-${(index % 6) + 1}.jpg`}
+                                            src={getMediaUrl(facility.image_url) || `/images/uploads/img-${(index % 6) + 1}.jpg`}
                                             alt={facility.title}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             onError={(e) => {

@@ -5,6 +5,7 @@ import { ScrollReveal, BouncyButton, SectionDivider } from "@repo/ui";
 import { motion } from "framer-motion";
 import { Check, Clock, AlertCircle, Users, Mail } from "lucide-react";
 import { formatCurrency } from "@repo/utils";
+import { getMediaUrl } from "@/lib/media-utils";
 
 interface PricingContentProps {
     plans: any[];
@@ -44,7 +45,7 @@ export default function PricingContent({ plans, settings, info, hero }: PricingC
                         {hero?.image && (
                             <div className="relative w-full max-w-4xl mx-auto h-64 md:h-96 rounded-3xl overflow-hidden mb-8 shadow-2xl border border-white/10">
                                 <img
-                                    src={hero.image}
+                                    src={getMediaUrl(hero.image)}
                                     alt={heroTitle}
                                     className="w-full h-full object-cover"
                                 />

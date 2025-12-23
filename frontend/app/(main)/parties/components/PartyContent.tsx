@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ScrollReveal, BouncyButton, SectionDivider, ImageCarousel } from "@repo/ui";
 import { motion } from "framer-motion";
 import { Check, PartyPopper, Mail, Utensils, Cake, Gift, Music, AlertCircle, CheckCircle } from "lucide-react";
+import { getMediaUrl } from "@/lib/media-utils";
 
 interface PartyContentProps {
     packages: any[];
@@ -24,7 +25,7 @@ export default function PartyContent({ packages, menus, hero, settings, terms, c
 
     const heroTitle = hero?.title || "Ninja Party Booking";
     const heroSubtitle = hero?.subtitle || "Celebrate with the ultimate adventure! Birthdays, school trips, corporate events - we've got you covered.";
-    const heroImage = hero?.image || "/images/uploads/img-3.jpg";
+    const heroImage = getMediaUrl(hero?.image) || "/images/uploads/img-3.jpg";
     const phone = settings?.contact_phone || "98454 71611";
     const email = settings?.contact_email || "info@ninjapark.com";
 
